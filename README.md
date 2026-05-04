@@ -1,303 +1,309 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistema Prode SM - Dashboard RBAC
 
-## Getting Started
+Un sistema de gestión de usuarios y roles basado en Next.js para el manejo de predicciones deportivas (Prode), con control de acceso basado en roles (RBAC).
 
-First, run the development server:
+## 📋 Descripción del Proyecto
+
+Este proyecto es un dashboard administrativo para gestionar usuarios, roles, permisos y legajos de empleados en un sistema de predicciones deportivas. Incluye autenticación, autorización RBAC, y funcionalidades de soporte con IA.
+
+**Versión:** 0.1.0  
+**Fecha:** 4 de mayo de 2026  
+**Estado:** ✅ Completo y funcional
+
+## 🎯 Características Principales
+
+### Sistema RBAC (Role-Based Access Control)
+- **12 Permisos** definidos:
+  - legajo: ver, editar
+  - roles: ver, crear, editar, eliminar
+  - usuarios: ver, crear, editar, eliminar, importar, exportar
+- **2 Roles** configurados:
+  - **Admin**: Todos los permisos
+  - **User**: Permisos limitados (legajo:ver, usuarios:ver, roles:ver)
+- **Usuario Admin** por defecto:
+  - Email: `admin@admin.com`
+  - Password: `admin123`
+
+### Gestión de Usuarios y Legajos
+- Creación, edición y eliminación de usuarios
+- Gestión de legajos de empleados
+- Importación/exportación de usuarios
+- Autenticación JWT
+- Cambio de contraseña obligatorio
+
+### Base de Datos
+- PostgreSQL con Supabase
+- Prisma ORM para migraciones y queries
+- Seed automático de roles y permisos
+
+### Otras Funcionalidades
+- Dashboard administrativo
+- Sistema de soporte con asistente IA
+- Interfaz responsive con Tailwind CSS
+- Componentes UI con Radix UI
+
+## 🛠️ Tecnologías Utilizadas
+
+- **Frontend:** Next.js 15, React, TypeScript
+- **Backend:** Next.js API Routes
+- **Base de Datos:** PostgreSQL (Supabase)
+- **ORM:** Prisma
+- **Autenticación:** JWT, bcryptjs
+- **UI:** Tailwind CSS, Radix UI, Lucide Icons
+- **Estado:** Zustand
+- **Formularios:** React Hook Form, Zod
+- **IA:** OpenAI API (para asistente de soporte)
+
+## 📋 Prerrequisitos
+
+- Node.js 18+
+- npm, yarn o pnpm
+- PostgreSQL (local o Supabase)
+- Git
+
+## 🚀 Instalación y Configuración
+
+### 1. Clonar el Repositorio
+
+```bash
+git clone https://github.com/baryari2005/sm_prode_fifa2026.git
+cd sistema_prode_sm
+```
+
+### 2. Instalar Dependencias
+
+```bash
+npm install
+# o
+yarn install
+# o
+pnpm install
+```
+
+### 3. Configurar Variables de Entorno
+
+Crea un archivo `.env.local` en la raíz del proyecto:
+
+```env
+# Base de Datos
+DATABASE_URL="postgresql://username:password@localhost:5432/dbname"
+DIRECT_URL="postgresql://username:password@localhost:5432/dbname"
+
+# JWT
+JWT_SECRET="tu_jwt_secret_muy_seguro"
+
+# Supabase (si usas Supabase)
+NEXT_PUBLIC_SUPABASE_URL="https://tu-proyecto.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="tu_anon_key"
+
+# OpenAI (para asistente IA)
+OPENAI_API_KEY="tu_openai_api_key"
+OPENAI_ASSISTANT_MODEL="gpt-4o-mini"
+```
+
+### 4. Configurar Base de Datos
+
+#### Opción A: Usar Supabase (Recomendado)
+
+1. Crea un proyecto en [Supabase](https://supabase.com)
+2. Obtén la URL de conexión y las claves
+3. Actualiza las variables de entorno
+
+#### Opción B: PostgreSQL Local
+
+1. Instala PostgreSQL localmente
+2. Crea una base de datos
+3. Actualiza `DATABASE_URL` y `DIRECT_URL`
+
+### 5. Ejecutar Migraciones
+
+```bash
+npx prisma migrate deploy
+```
+
+### 6. Ejecutar Seed
+
+```bash
+npm run db:seed
+```
+
+Esto creará:
+- Roles: Admin y User
+- Permisos: 12 permisos definidos
+- Usuario admin: admin@admin.com / admin123
+
+## ▶️ Ejecutar la Aplicación
+
+### Desarrollo
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Asistente de ayuda IA
-
-El proyecto ahora incluye un MVP de asistente en `/soporte` que responde en base
-a las guias visibles para el usuario actual.
-
-Variables de entorno necesarias:
+### Producción
 
 ```bash
-OPENAI_API_KEY=tu_api_key
-OPENAI_ASSISTANT_MODEL=gpt-4.1-mini
+npm run build
+npm start
 ```
 
-Notas:
+## 🔄 Migración a Otra PC
 
-- El endpoint es `POST /api/assistant`.
-- El asistente reutiliza las guias de `src/features/support/lib/help-guides.ts`.
-- En esta primera version no usa chunks, embeddings ni base vectorial. El contexto
-  se construye en cada consulta con las guias permitidas para ese usuario.
+Para migrar el sistema completo a otra computadora:
 
-
-
-
-# Restablecer prisma y supabase cuando hay inconcistencias
-
-1. Borrar carpeta prisma
-```powershell
-rm -Recurse -Force .\prisma\migrations\
-```
-2. Paso 1 — Asegurar que el schema refleja EXACTAMENTE la DB
+### Paso 1: Clonar el Repositorio
 
 ```bash
-npx prisma db pull
+git clone https://github.com/baryari2005/sm_prode_fifa2026.git
+cd sistema_prode_sm
 ```
 
-3. Paso 2 — Eliminar tabla _prisma_migrations en Supabase
+### Paso 2: Instalar Dependencias
 
-⚠️ Esto NO borra datos de negocio.
-Solo borra el historial de migraciones.
-
-En Supabase SQL Editor ejecuta:
-
-```
-DROP TABLE IF EXISTS "_prisma_migrations";
+```bash
+npm install
 ```
 
-Perfecto, este es un caso clásico de drift + migraciones editadas en una DB ya productiva (Supabase).
-Y como bien dices: no puedes borrar la base ni perder datos.
+### Paso 3: Configurar Variables de Entorno
 
-Vamos por partes 👇
+Copia el archivo `.env.local` de la PC original o configura uno nuevo con las mismas variables.
 
-🔥 Qué está pasando realmente
+### Paso 4: Configurar Base de Datos
 
-Tienes dos problemas distintos:
+#### Si usas Supabase:
+- Solo necesitas las variables de entorno correctas
+- La base de datos ya está en la nube
 
-1️⃣ Migración modificada después de aplicada
-The migration `20251201214457_fecha_nacimiento_date` was modified after it was applied.
+#### Si usas PostgreSQL local:
+- Instala PostgreSQL en la nueva PC
+- Crea la base de datos con el mismo nombre
+- Restaura desde un backup si tienes datos
 
-Eso significa:
+### Paso 5: Ejecutar Migraciones y Seed
 
-Prisma guardó el checksum de esa migración en _prisma_migrations
-
-Luego tú cambiaste el archivo .sql
-
-Ahora Prisma detecta que el archivo ya no coincide con lo que ejecutó
-
-👉 Prisma no permite eso, porque rompe la historia de migraciones.
-
-2️⃣ Drift (la DB no coincide con las migraciones)
-Drift detected: Your database schema is not in sync with your migration history.
-
-Eso significa que:
-Alguien modificó la DB manualmente
-O hiciste prisma db push
-O Supabase generó cambios
-O cambiaste el schema.prisma y no migraste correctamente
-
-🚨 Lo que NO debes hacer
-
-No ejecutes:
-
-npx prisma migrate reset
-
-Eso borra todo.
-
-✅ Solución correcta (DB con datos que no se pueden perder)
-
-Como estás en Supabase (entorno persistente), el flujo correcto es:
-
-🟢 Paso 1 — Congelar estado actual de la DB
-
-Ejecuta:
-
-npx prisma db pull
-
-Esto hace:
-
-Lee el schema REAL de la base
-
-Actualiza schema.prisma para que refleje exactamente lo que existe
-
-🟢 Paso 2 — Generar migración BASE desde estado actual
-
-Después:
-
-npx prisma migrate dev --name baseline --create-only
-
-⚠️ Si sigue quejándose por drift, entonces hacemos la forma correcta:
-
-💎 Método Profesional: Baseline en producción
-
-Este es el patrón correcto cuando:
-
-La DB ya existe
-
-Tiene datos
-
-Las migraciones están rotas
-
-🟢 Paso A — Eliminar carpeta migrations local
-
-⚠️ Solo local, NO toca la DB
-
-rm -rf prisma/migrations
-
-En Windows:
-
-rmdir /s prisma\migrations
-🟢 Paso B — Crear migración baseline vacía
-npx prisma migrate dev --name baseline --create-only
-
-Esto crea una migración basada en el schema actual.
-
-🟢 Paso C — Marcarla como aplicada SIN ejecutarla
-npx prisma migrate resolve --applied <timestamp_baseline>
-
-Ejemplo:
-
-npx prisma migrate resolve --applied 20260314193000_baseline
-
-Esto solo inserta el registro en _prisma_migrations
-No toca tablas.
-
-🎯 Resultado
-
-Prisma deja de detectar drift
-
-Tu DB no se borra
-
-Tus datos quedan intactos
-
-A partir de ahora puedes migrar normalmente
-
-🧠 Por qué está pasando en tu caso
-
-Veo en el log cosas como:
-
-Column `id` would be dropped and recreated (default changed to gen_random_uuid())
-
-Eso significa que:
-
-Probablemente:
-
-Cambiaste @id de String a @db.Uuid
-
-O agregaste @default(dbgenerated("gen_random_uuid()"))
-
-O cambiaste tipos Date → DateTime
-
-Y Prisma interpreta eso como:
-
-Drop + recreate column
-
-En producción eso es peligroso porque:
-
-Puede borrar datos
-
-Puede romper FK
-
-🔥 Recomendación profesional para Supabase
-
-Cuando uses Supabase:
-
-Nunca uses migrate dev contra producción
-
-Usa:
-
+```bash
 npx prisma migrate deploy
+npm run db:seed
+```
 
-En CI/CD
+### Paso 6: Verificar
 
-Y en desarrollo usa otra base local.
+```bash
+npm run dev
+```
 
-📌 Patrón correcto de entornos
-Local DB (Docker Postgres)
-    ↓
-migrate dev
+Accede a la aplicación y verifica que funcione correctamente.
 
-Staging / Prod (Supabase)
-    ↓
-migrate deploy
+## 📁 Estructura del Proyecto
 
-Nunca migrate dev contra Supabase.
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Páginas de autenticación
+│   ├── (dashboard)/       # Dashboard protegido
+│   ├── api/               # API Routes
+│   └── globals.css        # Estilos globales
+├── components/            # Componentes reutilizables
+│   ├── ui/               # Componentes UI (Radix)
+│   ├── forms/            # Formularios
+│   └── layout/           # Layout components
+├── features/             # Funcionalidades por dominio
+│   ├── auth/             # Autenticación
+│   ├── users/            # Gestión de usuarios
+│   ├── roles/            # Gestión de roles
+│   └── support/          # Sistema de soporte IA
+├── lib/                  # Utilidades y configuraciones
+│   ├── db.ts             # Conexión Prisma
+│   ├── jwt.ts            # Utilidades JWT
+│   └── rbac.ts           # Lógica RBAC
+├── stores/               # Estado global (Zustand)
+├── types/                # Tipos TypeScript
+└── utils/                # Utilidades generales
 
-🚑 Si quieres la solución más segura posible
+prisma/
+├── schema.prisma         # Esquema de base de datos
+├── seed.ts              # Seed de datos
+└── migrations/          # Migraciones de DB
+```
 
-Dime:
+## 🐛 Solución de Problemas
 
-¿Esa base es producción real?
+### Problemas con Prisma/Migraciones
 
-¿O es solo entorno de desarrollo remoto?
+Si hay inconsistencias entre migraciones y base de datos:
 
-¿Tienes backups en Supabase habilitados?
+1. **Eliminar carpeta de migraciones local** (NO borra datos):
+   ```bash
+   rm -rf prisma/migrations
+   ```
 
-Y te doy el flujo exacto sin riesgo de pérdida.
+2. **Actualizar schema desde DB**:
+   ```bash
+   npx prisma db pull
+   ```
 
-Si quieres, puedo explicarte también:
+3. **Crear migración baseline**:
+   ```bash
+   npx prisma migrate dev --name baseline --create-only
+   ```
 
-Cómo hacer migraciones seguras cuando cambias UUID
+4. **Marcar como aplicada** (sin ejecutar):
+   ```bash
+   npx prisma migrate resolve --applied <timestamp>
+   ```
 
-Cómo migrar columnas Date sin perder datos
+### Usuario Admin no funciona
 
-Cómo arreglar migraciones modificadas sin borrar historial
+Si el usuario admin no existe o no funciona:
 
-Solo dime cuál prefieres.
+```bash
+npm run db:seed
+```
 
-ya borrre migrations
-PS C:\Users\Gejol\Desktop\Next\dashboard-rbac> npx prisma migrate dev --name baseline --create-only
-warn The configuration property package.json#prisma is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., prisma.config.ts).
-For more information, see: https://pris.ly/prisma-config
+Esto recreará los roles y el usuario admin.
 
-Environment variables loaded from .env
-Prisma schema loaded from prisma\schema.prisma
-Datasource "db": PostgreSQL database "postgres", schema "public" at "db.cruhgyamzwrwslaevzkx.supabase.co:5432"
+### Errores de Compilación
 
-- Drift detected: Your database schema is not in sync with your migration history.
+```bash
+npm run clean
+npm install
+npm run build
+```
 
-The following is a summary of the differences between the expected database schema given your migrations files, and the actual schema of the database.
+### Problemas con Dependencias
 
-It should be understood as the set of changes to get from the expected schema to the actual schema.
+```bash
+npm run reset:hard
+```
 
-[+] Added enums
-  - EstadoCivil
-  - EstadoLaboral
-  - Genero
-  - LeaveStatus
-  - LeaveType
-  - Nacionalidad
-  - TipoContrato
-  - TipoDocumento
-  - TipoTelefono
+## 📜 Scripts Disponibles
 
-[+] Added tables
-  - LeaveRequest
-  - LeaveTypeCatalog
-  - Legajo
-  - PasswordResetToken
-  - Rol
-  - Usuario
-  - VacationBalance
-  - payroll_receipts
+- `npm run dev` - Servidor de desarrollo
+- `npm run build` - Build de producción
+- `npm run start` - Servidor de producción
+- `npm run lint` - Linting
+- `npm run typecheck` - Verificación de tipos
+- `npm run db:seed` - Ejecutar seed
+- `npm run clean` - Limpiar archivos temporales
+- `npm run reset:hard` - Reset completo
 
-[*] Changed the LeaveRequest table
-  [+] Added index on columns (status, createdAt)
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit tus cambios (`git commit -am 'Agrega nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto es privado y confidencial.
+
+## 📞 Soporte
+
+Para soporte técnico, contacta al equipo de desarrollo o usa el sistema de soporte integrado en la aplicación.
   [+] Added index on columns (userId, createdAt)
   [+] Added foreign key on columns (typeCatalogId)
 
