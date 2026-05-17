@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
-import { RoleStatusBadge } from "@/features/roles/components/RoleStatusBadge";
+import { buildActionsColumn } from "@/components/data-display/table/BuildActionsColumn";
+import { Badge } from "@/components/ui/badge";
 import type { Role } from "@/features/roles/types/types";
-import { Edit3 } from "lucide-react";
 
 export function getRoleColumns(canEdit: boolean): ColumnDef<Role>[] {
   return [
@@ -28,7 +27,9 @@ export function getRoleColumns(canEdit: boolean): ColumnDef<Role>[] {
       accessorKey: "activo",
       header: "Estado",
       cell: ({ row }) => (
-        <RoleStatusBadge activo={row.original.activo} />
+        <Badge variant={row.original.activo ? "default" : "destructive"}>
+          {row.original.activo ? "Activo" : "Inactivo"}
+        </Badge>
       ),
     },
     {
@@ -41,24 +42,12 @@ export function getRoleColumns(canEdit: boolean): ColumnDef<Role>[] {
       header: "Usuarios",
       cell: ({ row }) => row.original._count?.usuarios ?? 0,
     },
-    {
-      id: "acciones",
-      header: () => <div className="text-right">Acciones</div>,
-      cell: ({ row }) => (
-        <div className="text-left">
-          {canEdit ? (
-            <Link
-              href={`/roles/${row.original.id}`}
-              className="text-primary hover:underline flex"
-            >
-              <Edit3 className="w-4 h-4 mr-2 items-center justify-center" />
-              Editar
-            </Link>
-          ) : (
-            <span className="text-muted-foreground">-</span>
-          )}
-        </div>
-      ),
-    },
+    buildActionsColumn<Role>({
+      component: "roles",
+      label: "rol",
+      canEdit,
+      canDelete: false,
+      showLegajo: false,
+    }),
   ];
 }

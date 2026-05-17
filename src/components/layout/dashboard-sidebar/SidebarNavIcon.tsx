@@ -37,7 +37,7 @@ export function SidebarNavIcon({
   const content = (
     <div
       className={`
-        relative flex items-center w-full
+        relative flex items-center w-full rounded-none
         ${collapsed ? "justify-center" : "gap-3"}
       `}
     >
@@ -62,7 +62,7 @@ export function SidebarNavIcon({
             text-[10px]
             px-1.5
             py-0.5
-            rounded-full
+            rounded-none
             font-semibold
           `}
         >
@@ -80,13 +80,14 @@ export function SidebarNavIcon({
       className={`
         relative w-full text-white
         transition-all duration-200
+        rounded-none
         ${collapsed
           ? "flex items-center justify-center h-12 px-0"
           : "flex items-center justify-start px-3 h-11"}
         ${active ? "bg-white/15" : ""}
         ${highlight
           ? "bg-red-500/20 hover:bg-red-500/30"
-          : "hover:bg-white/10"}
+          : "hover:bg-white/10 hover:text-[#FDBB30]"}
       `}
     >
       {href ? <Link href={href}>{content}</Link> : content}

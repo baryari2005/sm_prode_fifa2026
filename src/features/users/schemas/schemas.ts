@@ -101,6 +101,11 @@ const BaseFields = z.object({
     .max(200, "Máximo 200 caracteres")
     .transform((v) => titleCaseEs(v))
     .optional(),
+  localidad: z
+    .string()
+    .max(100, "Máximo 100 caracteres")
+    .transform((v) => titleCaseEs(v))
+    .optional(),
   codigoPostal: z.string().max(20, "Máximo 20 caracteres").optional(),
   fechaNacimiento: ymd.nullable().optional(),
   genero: z.enum(GENERO_OPCIONES).optional(),

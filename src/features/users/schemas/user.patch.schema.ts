@@ -11,12 +11,14 @@ export const patchUserSchema = z.object({
   email: z.string().email().optional(),
   password: z.string().min(6).optional(),
   rolId: z.number().int().positive().optional(),
+  aprobado: z.boolean().optional(),
 
   nombre: z.string().nullable().optional(),
   apellido: z.string().nullable().optional(),
   avatarUrl: z.string().url().nullable().optional(),
   celular: z.string().nullable().optional(),
   domicilio: z.string().nullable().optional(),
+  localidad: z.string().nullable().optional(),
   codigoPostal: z.string().nullable().optional(),
 
   tipoDocumento: z.nativeEnum(TipoDocumento).nullable().optional(),

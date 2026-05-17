@@ -4,7 +4,7 @@
 // import { useEffect, useMemo } from "react";
 // import { useRouter } from "next/navigation";
 // import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-// import { Loader2 } from "lucide-react";
+// import { RefreshCw } from "lucide-react";
 
 // type Mode = "render" | "redirect";
 
@@ -50,7 +50,7 @@
 //   return (
 //     <div className="flex min-h-[40vh] items-center justify-center">
 //       <div className="flex items-center gap-3 text-muted-foreground">
-//         <Loader2 className="h-6 w-6 animate-spin" />
+//         <RefreshCw className="h-6 w-6 animate-spin" />
 //         <span className="text-xl">{label}</span>
 //       </div>
 //     </div>

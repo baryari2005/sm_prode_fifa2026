@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-import { Loader2, Mail } from "lucide-react";
+import { RefreshCw, Mail } from "lucide-react";
 import { IconInput } from "../../../components/forms/IconInput";
 import { formatMessage } from "@/utils/formatters";
 import { forgotPasswordSchema, ForgotPasswordValues } from "../schemas/schemas";
@@ -96,7 +96,7 @@ export function ForgotPasswordDialog(props: ForgotPasswordDialogProps) {
           >
             {isSubmitting ? (
               <span className="inline-flex items-center gap-2">
-                <Loader2 className="animate-spin" size={18} />
+                <RefreshCw className="animate-spin" size={18} />
                 {formatMessage("Enviando...")}
               </span>
             ) : ("Enviar enlace")}

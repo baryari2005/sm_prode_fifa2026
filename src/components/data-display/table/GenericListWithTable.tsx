@@ -2,10 +2,11 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { axiosInstance } from "@/lib/axios";
 
 type UnknownRecord = Record<string, unknown>;
+const inFlightTableRequests = new Map<string, Promise<AxiosResponse>>();
 
 export interface DataTableProps<T> {
   data: T[];
@@ -45,6 +46,11 @@ interface GenericListWithTableProps<T> {
     total: number;
     pageCount?: number;
   };
+  onDataResolved?: (payload: {
+    items: T[];
+    total: number;
+    pageCount: number;
+  }) => void;
 }
 
 function useDebounce<T>(value: T, delay = 300) {
@@ -90,6 +96,7 @@ export function GenericListWithTable<T>({
   clientData,
   paramNames,
   responseAdapter,
+  onDataResolved,
 }: GenericListWithTableProps<T>) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -148,6 +155,11 @@ export function GenericListWithTable<T>({
       if (clientData) {
         setData(clientData);
         setTotalPages(1);
+        onDataResolved?.({
+          items: clientData,
+          total: clientData.length,
+          pageCount: 1,
+        });
         setLoading(false);
         return;
       }
@@ -157,7 +169,22 @@ export function GenericListWithTable<T>({
       setLoading(true);
 
       try {
-        const res = await axiosInstance.get(endpoint, { params, signal });
+        const cacheKey = `${endpoint}?${requestKey}`;
+        let requestPromise = inFlightTableRequests.get(cacheKey);
+
+        if (!requestPromise) {
+          requestPromise = axiosInstance
+            .get(endpoint, { params })
+            .finally(() => inFlightTableRequests.delete(cacheKey));
+          inFlightTableRequests.set(cacheKey, requestPromise);
+        }
+
+        const res = await requestPromise;
+
+        if (signal.aborted) {
+          return;
+        }
+
         const raw = res.data as unknown;
 
         let items: T[] = [];
@@ -220,6 +247,11 @@ export function GenericListWithTable<T>({
         );
 
         setTotalPages(pages);
+        onDataResolved?.({
+          items,
+          total,
+          pageCount: pages,
+        });
       } catch (error: unknown) {
         if (
           axios.isCancel(error) ||
@@ -234,7 +266,15 @@ export function GenericListWithTable<T>({
         setLoading(false);
       }
     },
-    [clientData, endpoint, pageSize, params, responseAdapter]
+    [
+      clientData,
+      endpoint,
+      onDataResolved,
+      pageSize,
+      params,
+      requestKey,
+      responseAdapter,
+    ]
   );
 
   useEffect(() => {

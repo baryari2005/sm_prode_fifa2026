@@ -1,18 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { useCan } from "@/hooks/useCan";
-import { UserPlus, Users } from "lucide-react";
 import AccessDenied403Page from "../403/page";
 import { UserList } from "@/features/users/components/UserList";
+import { UserHeader } from "@/features/users/components/UserHeader";
 
 export default function UsersPage() {
   const [search] = useState("");
-
   const canView = useCan("usuarios", "ver");
   const canInsert = useCan("usuarios", "crear");
 
@@ -22,27 +19,9 @@ export default function UsersPage() {
 
   return (
     <div className="grid gap-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-2xl flex items-center gap-2">
-            <Users className="w-6 h-6" />
-            Usuarios
-          </CardTitle>
-
-          {canInsert && (
-            <Link href="/users/new">
-              <Button
-                size="lg"
-                className="h-11 rounded bg-[#008C93] hover:bg-[#007381] cursor-pointer"
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Nuevo usuario
-              </Button>
-            </Link>
-          )}
-        </CardHeader>
-
-        <CardContent>
+      <Card className="border-white/70 bg-white shadow-sm">
+        <CardContent className="space-y-6 p-4 md:p-6">
+          <UserHeader cantCreate={!canInsert} />
           <UserList search={search} />
         </CardContent>
       </Card>

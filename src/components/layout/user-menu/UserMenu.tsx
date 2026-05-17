@@ -46,7 +46,7 @@ export function UserMenu() {
         <DropdownMenuContent
           align="end"
           sideOffset={8}
-          className="w-72 rounded border p-0 shadow-xl"
+           className="w-[320px] overflow-hidden rounded border border-[#E5EAF0] bg-white p-0 shadow-[0_20px_60px_rgba(15,23,42,0.18)]"
         >
           <UserMenuHeader
             avatarUrl={avatarUrl}
@@ -79,7 +79,7 @@ export function UserMenu() {
 
           <DropdownMenuItem
             onClick={() => logout()}
-            className="cursor-pointer py-3"
+            className="cursor-pointer py-3 rounded-none"
           >
             <LogOut className="mr-2 h-4 w-4" />
             <span>Salir</span>

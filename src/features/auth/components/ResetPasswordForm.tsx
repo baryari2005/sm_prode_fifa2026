@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPassword } from "@/lib/api/password";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { formatMessage } from "@/utils/formatters";
 import { PasswordField } from "./PasswordField";
@@ -89,7 +89,7 @@ export function ResetPasswordForm({ token }: Props) {
       >
         {isSubmitting ? (
           <span className="inline-flex items-center gap-2">
-            <Loader2 className="animate-spin" size={18} />
+            <RefreshCw className="animate-spin" size={18} />
             {formatMessage("Guardando...")}
           </span>
         ) : (

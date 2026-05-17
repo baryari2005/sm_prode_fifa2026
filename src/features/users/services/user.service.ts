@@ -97,6 +97,7 @@ export async function createOrReviveUser(dto: CreateUserDto) {
 
     celular: dto.celular ?? null,
     domicilio: dto.domicilio ?? null,
+    localidad: dto.localidad ?? null,
     codigoPostal: dto.codigoPostal ?? null,
 
     fechaNacimiento: dto.fechaNacimiento ?? null,

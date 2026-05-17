@@ -16,6 +16,7 @@ export type UserFormValues = {
 
   celular?: string;
   domicilio?: string;
+  localidad?: string;
   codigoPostal?: string;
 
   fechaNacimiento?: string | null;
@@ -33,8 +34,10 @@ export type UserDTO = {
   nombre?: string | null;
   apellido?: string | null;
   avatarUrl?: string | null;
+  aprobado?: boolean;
   rolId: number;
   rol?: Role | null;
+  localidad?: string | null;
 };
 
 export type UserRow = {
@@ -44,5 +47,7 @@ export type UserRow = {
   nombre?: string | null;
   apellido?: string | null;
   avatarUrl?: string | null;
+  aprobado?: boolean | null;
   rol?: { id: number; nombre: string } | null;
+  localidad?: string | null;
 };

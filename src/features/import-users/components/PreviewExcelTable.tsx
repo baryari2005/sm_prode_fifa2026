@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Loader2, Save } from "lucide-react";
+import { RefreshCw, Save } from "lucide-react";
 import { ExcelRow } from "../types/types";
 
 export default function PreviewExcelTable({
@@ -51,7 +51,7 @@ export default function PreviewExcelTable({
       >
         {loading ? (
           <>
-            <Loader2 className="h-5 w-5 animate-spin" /> Procesando…
+            <RefreshCw className="h-5 w-5 animate-spin" /> Procesando…
           </>
         ) : (
           <span className="inline-flex items-center gap-2">

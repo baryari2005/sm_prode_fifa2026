@@ -1,15 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef } from "react";
-import { ErrorBannerInput } from "../ErrorBannerInput";
-import { ForgotPasswordDialog } from "../ForgotPasswordDialog";
-import { formatMessage } from "@/utils/formatters";
-import { Logo } from "@/components/ui/logo";
-import { LoginFields } from "./LoginFields";
+import { useState } from "react";
+import { toast } from "sonner";
+
 import { useLogin } from "../../hooks/useLogin";
+import { useRegister } from "../../hooks/useRegister";
+import { useAuthRedirect } from "../../hooks/useAuthRedirect";
+
+import { AccessRequestDialog } from "./AccessRequestDialog";
+import { AuthCard } from "./AuthCard";
+import { LoginHeroSection } from "./LoginHeroSection";
+import { LoginMascotSection } from "./LoginMascotSection";
+import { LoginPageLayout } from "./LoginPageLayout";
 
 type Props = {
   nextParam?: string;
@@ -17,7 +19,7 @@ type Props = {
 
 export default function LoginForm({ nextParam }: Props) {
   const {
-    form,
+    form: loginForm,
     onSubmit,
     topError,
     dismissTopError,
@@ -27,67 +29,70 @@ export default function LoginForm({ nextParam }: Props) {
     user,
   } = useLogin();
 
-  const { handleSubmit, formState } = form;
-  const { isSubmitting } = formState;
-  const router = useRouter();
+  const {
+    form: registerForm,
+    onSubmit: onRegisterSubmit,
+    topError: registerTopError,
+    dismissRegisterError,
+    netSubmittingRef: registerNetSubmittingRef,
+  } = useRegister();
 
-  const next = useMemo(
-    () => (nextParam && nextParam !== "/login" ? nextParam : "/"),
-    [nextParam]
-  );
+  const [isAccessDialogOpen, setIsAccessDialogOpen] = useState(false);
 
-  const lastReplaceRef = useRef<string | null>(null);
+  useAuthRedirect({
+    triedMe,
+    token,
+    user,
+    nextParam,
+  });
 
-  useEffect(() => {
-    if (!triedMe || !token || !user) {
-      return;
+  type RegisterSubmitValues = Parameters<typeof onRegisterSubmit>[0];
+
+  const handleRegisterSubmit = async (values: RegisterSubmitValues) => {
+    const result = await onRegisterSubmit(values);
+
+    if (result?.success) {
+      toast.success(
+        result.message ??
+          "Solicitud enviada. Un administrador deberá aprobar tu usuario."
+      );
+
+      setIsAccessDialogOpen(false);
     }
+  };
 
-    const destination = next || "/";
+  const isLoginLoading =
+    loginForm.formState.isSubmitting || netSubmittingRef.current;
 
-    if (lastReplaceRef.current === destination) {
-      return;
-    }
-
-    lastReplaceRef.current = destination;
-    router.replace(destination);
-  }, [triedMe, token, user, next, router]);
+  const isRegisterLoading =
+    registerForm.formState.isSubmitting || registerNetSubmittingRef.current;
 
   return (
-    <div className="grid min-h-screen place-items-center bg-[#ebe9fb] p-4">
-      <div className="w-full max-w-md space-y-5 rounded-3xl bg-white p-8 shadow-xl">
-        <Logo />
-
-        {topError && (
-          <ErrorBannerInput
-            message={topError}
-            onClose={dismissTopError}
+    <LoginPageLayout
+      hero={<LoginHeroSection />}
+      mascot={<LoginMascotSection />}
+      auth={
+        <>
+          <AuthCard
+            loginForm={loginForm}
+            onLoginSubmit={onSubmit}
+            topError={topError}
+            onDismissTopError={dismissTopError}
+            isLoading={isLoginLoading}
+            onOpenAccessRequest={() => setIsAccessDialogOpen(true)}
           />
-        )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <LoginFields form={form} />
-
-          <div className="mt-2 text-right">
-            <ForgotPasswordDialog />
-          </div>
-
-          <Button
-            type="submit"
-            className="h-11 w-full rounded bg-[#008C93] hover:bg-[#007381]"
-            disabled={isSubmitting || netSubmittingRef.current}
-          >
-            {isSubmitting || netSubmittingRef.current ? (
-              <span className="inline-flex items-center gap-2">
-                <Loader2 className="animate-spin" size={18} />
-                {formatMessage("Ingresando...")}
-              </span>
-            ) : (
-              "Iniciar sesión"
-            )}
-          </Button>
-        </form>
-      </div>
-    </div>
+          <AccessRequestDialog
+            open={isAccessDialogOpen}
+            onOpenChange={setIsAccessDialogOpen}
+            registerForm={registerForm}
+            onRegisterSubmit={handleRegisterSubmit}
+            registerTopError={registerTopError}
+            onDismissRegisterError={dismissRegisterError}
+            isLoading={isRegisterLoading}
+          />
+        </>
+      }
+    />
   );
 }

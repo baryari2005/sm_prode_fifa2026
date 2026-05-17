@@ -6,7 +6,6 @@ import { Asterisk, FileUser } from "lucide-react";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CenteredSpinner } from "@/components/feedback/CenteredSpinner";
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
 
 import {
@@ -23,6 +22,7 @@ import {
   EMPLOYMENT_STATUS,
   CONTRACT_TYPES,
 } from "@/features/users/schemas/legajo.schema";
+import Loading from "@/app/(dashboard)/loading";
 
 type PersonnelFileDTO = {
   employeeNumber?: string | null;
@@ -147,7 +147,7 @@ function LegajoContent({ id }: { id: string }) {
   }, [id]);
 
   if (loading || !initial) {
-    return <CenteredSpinner label="Cargando..." />;
+    return <Loading />;
   }
 
   return (

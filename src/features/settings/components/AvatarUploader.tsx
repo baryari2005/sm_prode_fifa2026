@@ -1,7 +1,7 @@
 // src/components/Settings/AvatarUploader.tsx
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type DragEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -81,6 +81,7 @@ export function AvatarUploader({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | undefined>(currentUrl ?? undefined);
   const [uploading, setUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   const pick = () => inputRef.current?.click();
 
@@ -110,38 +111,75 @@ export function AvatarUploader({
       const json = await resp.json();
 
       if (!resp.ok) throw new Error(json.error || "Error al subir");
+      const tmpPath = json.tmpPath ?? json.path;
       setPreview(json.publicUrl);
-      onTempUploaded({ tmpPath: json.tmpPath, publicUrl: json.publicUrl });
+      onTempUploaded({ tmpPath, publicUrl: json.publicUrl });
       toast.success("Imagen subida");
     } catch (e: unknown) {
       toast.error(getAxiosMessage(e, "Error al subir"));
     } finally {
       setUploading(false);
+      setDragActive(false);
     }
   };
 
-  return (
-    <div className="flex items-center gap-3">
-      <Avatar className="h-12 w-12">
-        <AvatarImage src={preview} />
-        <AvatarFallback>?</AvatarFallback>
-      </Avatar>
+  const handleDrop = async (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragActive(false);
+    const file = event.dataTransfer.files?.[0] ?? null;
+    await handleFile(file);
+  };
 
-      <div className="space-y-1">
-        <div className="text-sm text-muted-foreground">Cambiar avatar</div>
-        <div className="flex items-center gap-2">
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/png,image/jpeg"
-            className="hidden"
-            onChange={(e) => handleFile(e.target.files?.[0])}
-          />
-          <Button type="button" variant="secondary" className="h-11 rounded" onClick={pick} disabled={uploading}>
-            {uploading ? "Subiendo…" : "Seleccionar imagen"}
-          </Button>
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragActive(false);
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <Avatar className="h-12 w-12">
+          <AvatarImage src={preview} />
+          <AvatarFallback>?</AvatarFallback>
+        </Avatar>
+
+        <div className="space-y-1">
+          <div className="text-sm text-muted-foreground">Cambiar avatar</div>
+          <div className="flex items-center gap-2">
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/png,image/jpeg"
+              className="hidden"
+              onChange={(e) => handleFile(e.target.files?.[0])}
+            />
+            <Button type="button" variant="secondary" className="h-11 rounded" onClick={pick} disabled={uploading}>
+              {uploading ? "Subiendo…" : "Seleccionar imagen"}
+            </Button>
+          </div>
+          <div className="text-xs text-muted-foreground">JPG/PNG • máx. {maxKB}KB • mín. {minSize}×{minSize}px</div>
         </div>
-        <div className="text-xs text-muted-foreground">JPG/PNG • máx. {maxKB}KB • mín. {minSize}×{minSize}px</div>
+      </div>
+
+      <div
+        className={`rounded-2xl border-2 border-dashed p-4 text-center transition cursor-pointer ${
+          dragActive ? "border-blue-500 bg-blue-50" : "border-slate-500 bg-background"
+        }`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+      >
+        <p className="text-sm font-medium">
+          Arrastrá y soltá una imagen aquí para cambiar tu avatar
+        </p>
+        <p className="text-xs text-muted-foreground">
+          También podés usar el botón de seleccionar imagen.
+        </p>
       </div>
     </div>
   );

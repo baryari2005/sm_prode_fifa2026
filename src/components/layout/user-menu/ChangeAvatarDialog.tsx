@@ -9,7 +9,7 @@ import { useAvatarStaging } from "@/features/users/hooks/useAvatarStaging";
 import { pathFromPublicUrl } from "@/features/users/lib/utils";
 import { useAuth } from "@/stores/auth"; // donde tengas user + logout
 import { Separator } from "@/components/ui/separator";
-import { FileImage, Loader2 } from "lucide-react";
+import { FileImage, RefreshCw, Save } from "lucide-react";
 import { formatMessage } from "@/utils/formatters";
 import { changeMyAvatar } from "@/lib/api/account";
 import axios from "axios";
@@ -83,17 +83,26 @@ export function ChangeAvatarDialog({ open, onOpenChange }: Props) {
 
         <DialogFooter className="px-5 py-3 bg-muted/40 border-t rounded-none">
           <DialogClose asChild>
-            <Button className="h-11 rounded bg-[#008C93] hover:bg-[#007381] cursor-pointer" >Cancelar</Button>
+            <Button
+              className="h-11 rounded-2xl"
+              variant="outline">
+              Cancelar
+            </Button>
           </DialogClose>
           <Button onClick={onSave}
             disabled={saving || !tmpPath}
-            className="h-11 rounded  bg-[#008C93] hover:bg-[#007381] cursor-pointer">
+            className="h-11 rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]">
             {saving ? (
               <span className="inline-flex items-center gap-2">
-                <Loader2 className="animate-spin" size={18} />
+                <RefreshCw className="animate-spin" size={18} />
                 {formatMessage("Guardando...")}
               </span>
-            ) : ("Guardar")}
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                <Save className="mr-2" />
+                Guardar
+              </span>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

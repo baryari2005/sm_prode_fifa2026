@@ -1,29 +1,40 @@
 "use client";
 
-import { Controller, type UseFormReturn } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RoleSelect } from "./RoleSelect";
-import { CalendarIcon, Eye, EyeOff, Lock } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { Controller, type UseFormReturn } from "react-hook-form";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { NACIONALIDAD_VALUES } from "@/constants/nacionalidad";
-import { GENERO_OPCIONES } from "@/constants/genero";
-import { ESTADO_CIVIL_OPCIONES } from "@/constants/estadocivil";
-import { TIPOS_DOCUMENTO_OPCIONES } from "@/constants/tiposDocumento";
-import { UserFormValues } from "../types/types";
+import { CalendarIcon, Eye, EyeOff, Lock } from "lucide-react";
+
 import { IconInput } from "@/components/forms/IconInput";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CuilInput } from "@/components/forms/CuilInput";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ESTADO_CIVIL_OPCIONES } from "@/constants/estadocivil";
+import { GENERO_OPCIONES } from "@/constants/genero";
+import { LOCALIDAD_OPCIONES } from "@/constants/localidades";
+import { NACIONALIDAD_VALUES } from "@/constants/nacionalidad";
+import { TIPOS_DOCUMENTO_OPCIONES } from "@/constants/tiposDocumento";
+import { cn } from "@/lib/utils";
+
+import { UserFormValues } from "../types/types";
+import { RoleSelect } from "./RoleSelect";
 
 type Mode = "create" | "edit";
-
-/* ================= Helpers ================= */
 
 const onlyDigits = (s: string) => s.replace(/\D+/g, "");
 
@@ -66,10 +77,9 @@ const isValidPhone = (s?: string) => {
   return ds.length >= 8 && ds.length <= 15;
 };
 
-// Para la UI (Date local, solo para el Calendar/format)
 function fromYmdLocal(s: string): Date {
   const [y, m, d] = s.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1); // local midnight
+  return new Date(y, (m ?? 1) - 1, d ?? 1);
 }
 
 function toYmdLocal(d: Date): string {
@@ -79,8 +89,6 @@ function toYmdLocal(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-/* =============================================================== */
-
 export function UserFormFields({
   mode,
   form,
@@ -88,7 +96,7 @@ export function UserFormFields({
   loadingRoles,
 }: {
   mode: Mode;
-  form: UseFormReturn<UserFormValues>; // asegurate que fechaNacimiento sea string | null
+  form: UseFormReturn<UserFormValues>;
   roles: Array<{ id: number; nombre: string }>;
   loadingRoles: boolean;
   currentAvatarUrl?: string | null;
@@ -106,8 +114,7 @@ export function UserFormFields({
   const rolValue = watch("rolId");
 
   return (
-    <div className="grid gap-4 md:grid-cols-12">
-      {/* 1) USUARIO / CONTRASEÑA / ROL */}
+    <div className="grid gap-5 md:grid-cols-12">
       <div className="space-y-1 md:col-span-4">
         <Label>
           Usuario{" "}
@@ -120,9 +127,9 @@ export function UserFormFields({
           readOnly={mode === "edit"}
           aria-readonly={mode === "edit"}
           className={cn(
-            "h-11 rounded border pr-3",
+            "h-11 rounded-2xl border-slate-200 pr-3",
             mode === "edit" &&
-            "bg-muted/50 cursor-not-allowed text-muted-foreground"
+              "bg-muted/50 cursor-not-allowed text-muted-foreground"
           )}
           onKeyDown={(e) => {
             if (mode === "edit") e.preventDefault();
@@ -132,9 +139,7 @@ export function UserFormFields({
           }}
         />
         {errors.userId && (
-          <p className="text-xs text-red-600">
-            {String(errors.userId.message)}
-          </p>
+          <p className="text-xs text-red-600">{String(errors.userId.message)}</p>
         )}
       </div>
 
@@ -173,7 +178,7 @@ export function UserFormFields({
               autoComplete="current-password"
               {...register("password")}
               aria-invalid={!!errors.password}
-              className="h-11 rounded border pl-9 pr-10"
+              className="h-11 rounded-2xl border-slate-200 pl-9 pr-10"
             />
           }
         />
@@ -195,16 +200,13 @@ export function UserFormFields({
             })
           }
           roles={roles}
-          disabled={loadingRoles || isSubmitting}
+          disabled={loadingRoles || isSubmitting}          
         />
         {errors.rolId && (
-          <p className="text-xs text-red-600">
-            {String(errors.rolId.message)}
-          </p>
+          <p className="text-xs text-red-600">{String(errors.rolId.message)}</p>
         )}
       </div>
 
-      {/* 2) NOMBRE / APELLIDO */}
       <div className="space-y-1 md:col-span-6">
         <Label>Nombre</Label>
         <Input
@@ -215,12 +217,10 @@ export function UserFormFields({
                 shouldValidate: true,
               }),
           })}
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
         />
         {errors.nombre && (
-          <p className="text-xs text-red-600">
-            {String(errors.nombre.message)}
-          </p>
+          <p className="text-xs text-red-600">{String(errors.nombre.message)}</p>
         )}
       </div>
 
@@ -234,7 +234,7 @@ export function UserFormFields({
                 shouldValidate: true,
               }),
           })}
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
         />
         {errors.apellido && (
           <p className="text-xs text-red-600">
@@ -243,10 +243,8 @@ export function UserFormFields({
         )}
       </div>
 
-      {/* 3) SEPARADOR */}
-      <div className="md:col-span-12 h-px bg-border/60" />
+      <div className="md:col-span-12 h-px bg-slate-200/80" />
 
-      {/* 4) TIPO DOCUMENTO / NÚMERO / CUIL */}
       <div className="space-y-1 md:col-span-3">
         <Label>Tipo de documento</Label>
         <Controller
@@ -257,7 +255,7 @@ export function UserFormFields({
               value={field.value ?? ""}
               onValueChange={(v) => field.onChange(v || undefined)}
             >
-              <SelectTrigger className="h-11 rounded border w-full">
+              <SelectTrigger className="h-11 w-full pl-5 pr-10 rounded-2xl border-slate-200">
                 <SelectValue placeholder="Seleccionar" />
               </SelectTrigger>
               <SelectContent>
@@ -288,7 +286,7 @@ export function UserFormFields({
                 shouldValidate: true,
               }),
           })}
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           inputMode="numeric"
           placeholder="Ej: 30111222"
         />
@@ -311,7 +309,7 @@ export function UserFormFields({
           render={({ field, fieldState }) => (
             <>
               <CuilInput
-                className="h-11 rounded border pr-3"
+                className="h-11 rounded-2xl border-slate-200 pr-3"
                 value={field.value ?? ""}
                 name={field.name}
                 onBlur={field.onBlur}
@@ -328,11 +326,9 @@ export function UserFormFields({
         />
       </div>
 
-      {/* 5) SEPARADOR */}
-      <div className="md:col-span-12 h-px bg-border/60" />
+      <div className="md:col-span-12 h-px bg-slate-200/80" />
 
-      {/* 6) DOMICILIO / CÓDIGO POSTAL */}
-      <div className="space-y-1 md:col-span-8">
+      <div className="space-y-1 md:col-span-6">
         <Label>Domicilio</Label>
         <Input
           {...register("domicilio", {
@@ -342,7 +338,7 @@ export function UserFormFields({
                 shouldValidate: true,
               }),
           })}
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           placeholder="Calle 123, Piso/Dto"
         />
         {errors.domicilio && (
@@ -352,11 +348,41 @@ export function UserFormFields({
         )}
       </div>
 
-      <div className="space-y-1 md:col-span-4">
+      <div className="space-y-1 md:col-span-3">
+        <Label>Partido</Label>
+        <Controller
+          control={control}
+          name="localidad"
+          render={({ field }) => (
+            <Select
+              value={field.value ?? ""}
+              onValueChange={(v) => field.onChange(v || undefined)}
+            >
+              <SelectTrigger className="h-11 w-full rounded-2xl border-slate-200">
+                <SelectValue placeholder="Seleccionar localidad" />
+              </SelectTrigger>
+              <SelectContent>
+                {LOCALIDAD_OPCIONES.map((localidad) => (
+                  <SelectItem key={localidad} value={localidad}>
+                    {localidad}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.localidad && (
+          <p className="text-xs text-red-600">
+            {String(errors.localidad.message)}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-1 md:col-span-3">
         <Label>Código postal</Label>
         <Input
           {...register("codigoPostal")}
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           placeholder="Ej: C1000 / 2000"
         />
         {errors.codigoPostal && (
@@ -366,17 +392,15 @@ export function UserFormFields({
         )}
       </div>
 
-      {/* 7) SEPARADOR */}
-      <div className="md:col-span-12 h-px bg-border/60" />
+      <div className="md:col-span-12 h-px bg-slate-200/80" />
 
-      {/* 8) CELULAR / EMAIL */}
       <div className="space-y-1 md:col-span-6">
         <Label>Celular</Label>
         <Input
           {...register("celular", {
             validate: (v) => isValidPhone(v) || "Celular inválido",
           })}
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           placeholder="Ej: +54 9 11 1234-5678"
         />
         {errors.celular && (
@@ -391,17 +415,14 @@ export function UserFormFields({
         <Input
           type="email"
           {...register("email")}
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           autoComplete="email"
         />
         {errors.email && (
-          <p className="text-xs text-red-600">
-            {String(errors.email.message)}
-          </p>
+          <p className="text-xs text-red-600">{String(errors.email.message)}</p>
         )}
       </div>
 
-      {/* 9) GÉNERO / NACIONALIDAD / FECHA NAC / ESTADO CIVIL */}
       <div className="space-y-1 md:col-span-3">
         <Label>Género</Label>
         <Controller
@@ -412,7 +433,7 @@ export function UserFormFields({
               value={field.value ?? ""}
               onValueChange={(v) => field.onChange(v || undefined)}
             >
-              <SelectTrigger className="h-11 rounded border w-full">
+              <SelectTrigger className="h-11 w-full rounded-2xl border-slate-200">
                 <SelectValue placeholder="Seleccionar" />
               </SelectTrigger>
               <SelectContent>
@@ -445,7 +466,7 @@ export function UserFormFields({
               value={field.value ?? ""}
               onValueChange={(v) => field.onChange(v || undefined)}
             >
-              <SelectTrigger className="h-11 rounded border w-full">
+              <SelectTrigger className="h-11 w-full rounded-2xl border-slate-200">
                 <SelectValue placeholder="Seleccionar" />
               </SelectTrigger>
               <SelectContent>
@@ -472,19 +493,27 @@ export function UserFormFields({
         <Label>Fecha de nacimiento</Label>
         <Controller
           control={form.control}
-          name="fechaNacimiento" // string | null "yyyy-MM-dd"
+          name="fechaNacimiento"
           render={({ field }) => {
             const raw = field.value as string | null | undefined;
-            const ymd = typeof raw === "string" ? raw : null; // el form guarda string
+            const ymd = typeof raw === "string" ? raw : null;
             const dateValue = ymd ? fromYmdLocal(ymd) : undefined;
 
             return (
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" type="button" className="w-full justify-start h-11 rounded border">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="h-11 w-full justify-start rounded-2xl border-slate-200"
+                  >
                     <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    {dateValue ? format(dateValue, "dd/MM/yyyy", { locale: es }) : (
-                      <span className="text-muted-foreground">Seleccionar fecha</span>
+                    {dateValue ? (
+                      format(dateValue, "dd/MM/yyyy", { locale: es })
+                    ) : (
+                      <span className="text-muted-foreground">
+                        Seleccionar fecha
+                      </span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -519,7 +548,7 @@ export function UserFormFields({
               value={field.value ?? ""}
               onValueChange={(v) => field.onChange(v || undefined)}
             >
-              <SelectTrigger className="h-11 rounded border w-full">
+              <SelectTrigger className="h-11 w-full rounded-2xl border-slate-200">
                 <SelectValue placeholder="Seleccionar" />
               </SelectTrigger>
               <SelectContent>
@@ -538,11 +567,6 @@ export function UserFormFields({
           </p>
         )}
       </div>
-
-      {/* opcional: avatar al final */}
-      {/* <div className="md:col-span-12 space-y-1">
-        ...
-      </div> */}
     </div>
   );
 }

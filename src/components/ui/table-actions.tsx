@@ -14,24 +14,24 @@ import { ConfirmDialog } from "./ConfirmDialog";
 
 export type TableAction =
   | {
-    label: string;
-    icon: React.ReactNode;
-    href: string;
-  }
+      label: string;
+      icon: React.ReactNode;
+      href: string;
+    }
   | {
-    label: string;
-    icon: React.ReactNode;
-    onClick: () => void;
-  }
+      label: string;
+      icon: React.ReactNode;
+      onClick: () => void;
+    }
   | {
-    label: string;
-    icon: React.ReactNode;
-    onConfirm: () => Promise<void> | void;
-    confirmTitle?: string;
-    confirmDescription?: string;
-    confirmActionLabel?: string;
-    confirmIcon?: React.ReactNode;
-  };
+      label: string;
+      icon: React.ReactNode;
+      onConfirm: () => Promise<void> | void;
+      confirmTitle?: string;
+      confirmDescription?: string;
+      confirmActionLabel?: string;
+      confirmIcon?: React.ReactNode;
+    };
 
 interface TableActionsProps {
   id: string;
@@ -42,8 +42,10 @@ export const TableActions = ({ actions }: TableActionsProps) => {
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const action =
-    confirmIndex !== null ? actions[confirmIndex] : null;
+  const action = confirmIndex !== null ? actions[confirmIndex] : null;
+
+  const itemClassName =
+    "rounded-none cursor-pointer focus:bg-[#FDBB30] focus:text-slate-900 data-[highlighted]:bg-[#FDBB30] data-[highlighted]:text-slate-900";
 
   async function handleConfirm() {
     if (!action || !("onConfirm" in action)) return;
@@ -59,7 +61,6 @@ export const TableActions = ({ actions }: TableActionsProps) => {
 
   return (
     <>
-      {/* CONFIRM DIALOG */}
       {action && "onConfirm" in action && (
         <ConfirmDialog
           open={confirmIndex !== null}
@@ -73,24 +74,27 @@ export const TableActions = ({ actions }: TableActionsProps) => {
         />
       )}
 
-      {/* ACTION MENU */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-8 h-8 p-0">
-            <MoreHorizontal className="w-4 h-4" />
+          <Button variant="ghost" className="h-8 w-8 rounded-2xl p-0">
+            <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="rounded-none p-1">
           {actions.map((action, index) => {
             if ("href" in action) {
               return (
-                <Link href={action.href} key={index}>
-                  <DropdownMenuItem>
+                <DropdownMenuItem
+                  key={index}
+                  asChild
+                  className={itemClassName}
+                >
+                  <Link href={action.href}>
                     {action.icon}
                     <span className="ml-2">{action.label}</span>
-                  </DropdownMenuItem>
-                </Link>
+                  </Link>
+                </DropdownMenuItem>
               );
             }
 
@@ -99,6 +103,7 @@ export const TableActions = ({ actions }: TableActionsProps) => {
                 <DropdownMenuItem
                   key={index}
                   onClick={action.onClick}
+                  className={itemClassName}
                 >
                   {action.icon}
                   <span className="ml-2">{action.label}</span>
@@ -110,6 +115,7 @@ export const TableActions = ({ actions }: TableActionsProps) => {
               <DropdownMenuItem
                 key={index}
                 onClick={() => setConfirmIndex(index)}
+                className={itemClassName}
               >
                 {action.icon}
                 <span className="ml-2">{action.label}</span>

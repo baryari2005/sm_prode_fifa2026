@@ -42,6 +42,10 @@ type JwtPayload = {
   rname?: string;
 };
 
+function normalizePermissionValue(value: string | null | undefined) {
+  return (value ?? "").trim().toLowerCase();
+}
+
 export async function getBearer(req: NextRequest) {
   const auth = req.headers.get("authorization") || "";
   const match = auth.match(/^Bearer\s+(.+)$/i);
@@ -53,9 +57,13 @@ export function requirePermission(
   modulo: string,
   accion: string
 ) {
+  const moduloNormalized = normalizePermissionValue(modulo);
+  const accionNormalized = normalizePermissionValue(accion);
+
   const has = user.permisos?.some(
     (permission: PermissionDTO) =>
-      permission.modulo === modulo && permission.accion === accion
+      normalizePermissionValue(permission.modulo) === moduloNormalized &&
+      normalizePermissionValue(permission.accion) === accionNormalized
   );
 
   if (!has) {

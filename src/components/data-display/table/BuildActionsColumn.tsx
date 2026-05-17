@@ -28,7 +28,7 @@ export const buildActionsColumn = <T extends RowWithId>({
   onDeleted,
   canEdit = true,
   canDelete = true,
-  showLegajo = true,
+  showLegajo = false,
   getExtraActions,
 }: BuildActionsColumnOptions<T>): ColumnDef<T> => ({
   id: "actions",

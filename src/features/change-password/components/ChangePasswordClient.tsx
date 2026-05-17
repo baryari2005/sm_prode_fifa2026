@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { axiosInstance } from "@/lib/axios";
 import { isAxiosError } from "axios";
-import { Eye, EyeOff, Loader2, KeyRound } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, KeyRound } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
 const MIN_LEN = 6;
@@ -174,7 +174,7 @@ export default function ChangePasswordClient() {
             >
               {loading ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={18} />
+                  <RefreshCw className="animate-spin" size={18} />
                   Guardando…
                 </span>
               ) : (

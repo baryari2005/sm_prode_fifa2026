@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, UserPen } from "lucide-react";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCan } from "@/hooks/useCan";
 import AccessDenied403Page from "../../403/page";
 import { UserForm } from "@/features/users/components/UserForm";
 import { UserFormValues } from "@/features/users/types/types";
 import Loading from "../../loading";
-
 
 type EditUserInitialValues = Partial<UserFormValues> & {
   id?: string;
@@ -57,6 +57,7 @@ function EditUserContent({ id }: { id: string }) {
         cuil: data.cuil ?? "",
         celular: data.celular ?? "",
         domicilio: data.domicilio ?? "",
+        localidad: data.localidad ?? "",
         codigoPostal: data.codigoPostal ?? "",
         fechaNacimiento: data.fechaNacimiento ?? null,
         genero: data.genero ?? undefined,
@@ -74,15 +75,24 @@ function EditUserContent({ id }: { id: string }) {
 
   return (
     <div className="grid gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl flex items-center">
-            <UserPen className="mr-2" />
-            Editar usuario <Star className="ml-4 w-4 h-4" />
-            Id: {initial.userId}
-          </CardTitle>
+      <Card className="border-white/70 bg-white shadow-sm">
+        <CardHeader className="border-b border-slate-100 px-5 py-5 md:px-6">
+          <div className="space-y-2">
+            <CardTitle className="flex flex-wrap items-center gap-2 text-2xl text-slate-950">
+              <UserPen className="h-6 w-6" />
+              Editar usuario
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                <Star className="h-3.5 w-3.5" />
+                {initial.userId}
+              </span>
+            </CardTitle>
+            <CardDescription className="text-sm text-slate-500">
+              Actualizá la información del usuario y conservá la consistencia de sus datos de acceso.
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
+
+        <CardContent className="p-5 md:p-6">
           <UserForm
             mode="edit"
             defaultValues={initial}

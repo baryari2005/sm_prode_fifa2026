@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { ReactNode } from "react"
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -38,14 +39,33 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+function CardDescription({
+  className,
+  icon,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  icon?: ReactNode;
+}) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn(
+        "text-muted-foreground text-sm",
+        icon && "flex items-start gap-2",
+        className
+      )}
       {...props}
-    />
-  )
+    >
+      {icon ? (
+        <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+          {icon}
+        </span>
+      ) : null}
+
+      {icon ? <div className="min-w-0 flex-1">{children}</div> : children}
+    </div>
+  );
 }
 
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {

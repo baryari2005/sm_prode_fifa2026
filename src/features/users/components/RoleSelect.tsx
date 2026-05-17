@@ -11,12 +11,13 @@ type Props = {
   triggerClassName?: string; // opcional
 };
 
+
 export function RoleSelect({ value, onChange, roles, disabled, triggerClassName }: Props) {
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger
         className={cn(
-          "w-full h-11 rounded border px-3 text-sm", // ⬅️ igual que el Input
+          "w-full h-11 border text-sm rounded-2xl border-slate-200", // ⬅️ igual que el Input
           triggerClassName
         )}
       >

@@ -19,6 +19,7 @@ export type UserExportRow = {
   cuil: string | null;
   celular: string | null;
   domicilio: string | null;
+  localidad: string | null;
   codigoPostal: string | null;
   rolId: number;
   createdAt: string;

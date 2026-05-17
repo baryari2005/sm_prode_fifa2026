@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import type { FieldError, FieldErrors } from "react-hook-form";
 import { toast } from "sonner";
-import { Loader2, Save, UserPlus } from "lucide-react";
+import { RefreshCw, Save, UserPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { formatMessage } from "@/utils/formatters";
@@ -104,13 +104,14 @@ export function UserForm({ mode, defaultValues, onSuccess }: Props) {
         <Button
           type="submit"
           size="lg"
-          className="h-11 w-full rounded bg-[#008C93] hover:bg-[#007381] cursor-pointer"
+          // className="h-11 w-full rounded bg-[#008C93] hover:bg-[#007381] cursor-pointer"
+          className="h-11 w-full rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
           disabled={submitting}
           aria-disabled={submitting}
         >
           {submitting ? (
             <span className="inline-flex items-center gap-2">
-              <Loader2 className="animate-spin" size={18} />
+              <RefreshCw className="animate-spin" size={18} />
               {formatMessage("Guardando...")}
             </span>
           ) : mode === "create" ? (

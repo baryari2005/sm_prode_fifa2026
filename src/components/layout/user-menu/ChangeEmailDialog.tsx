@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { changeEmail } from "@/lib/api/account";
 import { useAuth } from "@/stores/auth";
-import { Eye, EyeOff, Loader2, Mail } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, Mail } from "lucide-react";
 import { formatMessage } from "@/utils/formatters";
 import axios from "axios";
 
@@ -135,7 +135,7 @@ export function ChangeEmailDialog({ open, onOpenChange, currentEmail }: Props) {
             className="h-11 rounded  bg-[#008C93] hover:bg-[#007381] cursor-pointer">
             {submitting ? (
               <span className="inline-flex items-center gap-2">
-                <Loader2 className="animate-spin" size={18} />
+                <RefreshCw className="animate-spin" size={18} />
                 {formatMessage("Guardando...")}
               </span>
             ) : ("Guardar")}

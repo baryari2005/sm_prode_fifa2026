@@ -31,24 +31,6 @@ export function useDashboardStats() {
           }
         },
       },
-      vacations: {
-        canApprove: false,
-        canLoad: false,
-        canView: false,
-        loadingBalance: false,
-        availableDays: 0,
-        loadingVacationLeaves: false,
-        pendingVacationLeaves: 0,
-        onGoVacations: () => {},
-      },
-      licenses: {
-        canApprove: false,
-        canLoad: false,
-        canView: false,
-        loadingOtherLeaves: false,
-        pendingOtherLeaves: 0,
-        onGoLicenses: () => {},
-      },
       holiday: {
         loadingHoliday: false,
         nextHoliday: null,
@@ -59,6 +41,7 @@ export function useDashboardStats() {
     loadingDocs,
     pendingDocs,
     pathname,
+    router,
   ]);
 
   return { stats };

@@ -1,5 +1,5 @@
 "use client";
-import { Loader, Loader2 } from "lucide-react";
+import { Loader, RefreshCw } from "lucide-react";
 
 export function CenteredSpinner({ label = "Cargando…" }: { label?: string }) {
   return (
@@ -16,7 +16,7 @@ export function LoadingInTable({ label = "Cargando..." }: { label?: string }) {
   return (
     <div className="flex min-h-[10vh] items-center justify-center">
     <div className="text-xl text-muted-foreground flex items-center ">
-      <Loader2 className="h-6 w-6 mr-4 animate-spin" />{label}
+      <RefreshCw className="h-6 w-6 mr-4 animate-spin" />{label}
     </div>
     </div>
   );

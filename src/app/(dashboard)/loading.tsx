@@ -1,4 +1,5 @@
 // src/app/(dashboard)/loading.tsx
+import { RefreshCw } from "lucide-react";
 import Image from "next/image";
 
 export default function Loading() {
@@ -9,10 +10,10 @@ export default function Loading() {
         <div className="relative mx-auto w-fit">
           <div className="animate-float">
             <Image
-              src="/loading-robot.png"
+              src="/fifa2026.png"
               alt="Cargando..."
-              width={260}
-              height={260}
+              width={400}
+              height={400}
               priority
               className="select-none"
             />
@@ -38,10 +39,7 @@ export default function Loading() {
           </div>
 
           <div className="mt-3 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-            <span className="relative inline-flex h-5 w-5">
-              <span className="absolute inset-0 rounded-full border-2 border-[#008C93]/25" />
-              <span className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#008C93] animate-spin" />
-            </span>
+            <RefreshCw className="mr-2 h-4 w-4 animate-spin text-slate-500" />
             <span>Por favor esperá un momento…</span>
           </div>
         </div>

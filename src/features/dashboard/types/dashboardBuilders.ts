@@ -13,20 +13,6 @@ export type DocumentsStatParams = BuilderBaseParams & {
   onGoReceipts: () => void;
 };
 
-export type VacationsStatParams = BuilderBaseParams & {
-  loadingBalance: boolean;
-  availableDays: number;
-  loadingVacationLeaves: boolean;
-  pendingVacationLeaves: number;
-  onGoVacations: () => void;
-};
-
-export type LicensesStatParams = BuilderBaseParams & {
-  loadingOtherLeaves: boolean;
-  pendingOtherLeaves: number;
-  onGoLicenses: () => void;
-};
-
 export type HolidayStatParams = {
   loadingHoliday: boolean;
   nextHoliday?: {
@@ -47,15 +33,11 @@ export type HolidayStatParams = {
 
 export type DashboardStatsParams = {
   documents: DocumentsStatParams;
-  vacations: VacationsStatParams;
-  licenses: LicensesStatParams;
   holiday: HolidayStatParams;
 };
 
 export type StatBuilderParams =
   | DocumentsStatParams
-  | VacationsStatParams
-  | LicensesStatParams
   | HolidayStatParams;
 
 export type StatBuilder = (params: StatBuilderParams) => Stat;

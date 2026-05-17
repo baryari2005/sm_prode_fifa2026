@@ -7,6 +7,8 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 
 const MAX_BYTES = 200 * 1024; // 200 KB
+const BUCKET = "files";
+const FOLDER = "avatars";
 
 export async function POST(req: Request) {
   const form = await req.formData();
@@ -21,15 +23,16 @@ export async function POST(req: Request) {
   }
 
   const ext = file.type === "image/png" ? "png" : "jpg";
-  const tmpPath = `tmp/${crypto.randomUUID()}.${ext}`;
-  const buf = Buffer.from(await file.arrayBuffer());
+  const filename = `${crypto.randomUUID()}.${ext}`;
+  const path = `${FOLDER}/${filename}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
 
   const { error } = await supabaseAdmin
-    .storage.from("avatars")
-    .upload(tmpPath, buf, { contentType: file.type, upsert: false });
+    .storage.from(BUCKET)
+    .upload(path, buffer, { contentType: file.type, upsert: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  const { data } = supabaseAdmin.storage.from("avatars").getPublicUrl(tmpPath);
-  return NextResponse.json({ tmpPath, publicUrl: data.publicUrl });
+  const { data } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(path);
+  return NextResponse.json({ tmpPath: path, publicUrl: data.publicUrl });
 }

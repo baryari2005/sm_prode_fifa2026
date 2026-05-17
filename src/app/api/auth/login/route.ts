@@ -36,6 +36,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!user.aprobado) {
+      return NextResponse.json(
+        { error: "Su cuenta está pendiente de aprobación por un administrador." },
+        { status: 403 }
+      );
+    }
+
     const token = await signJwt({
       uid: user.id,
       rid: user.rol?.id,

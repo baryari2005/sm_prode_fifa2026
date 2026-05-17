@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 
@@ -80,6 +82,127 @@ const PERMISOS = [
     accion: "exportar",
     descripcion: "Permite exportar usuarios a un archivo.",
     icono: "download",
+  },
+
+  // Partidos
+  {
+    modulo: "partidos",
+    accion: "ver",
+    descripcion: "Permite visualizar partidos y sus detalles.",
+    icono: "eye",
+  },
+  {
+    modulo: "partidos",
+    accion: "crear",
+    descripcion: "Permite crear nuevos partidos.",
+    icono: "plus",
+  },
+  {
+    modulo: "partidos",
+    accion: "editar",
+    descripcion: "Permite modificar información de partidos.",
+    icono: "pencil",
+  },
+  {
+    modulo: "partidos",
+    accion: "importar",
+    descripcion: "Permite importar partidos desde archivos externos.",
+    icono: "upload",
+  },
+  {
+    modulo: "partidos",
+    accion: "resetear",
+    descripcion: "Permite resetear todos los partidos del fixture.",
+    icono: "refreshCcw",
+  },
+
+  // Resultados
+  {
+    modulo: "resultados",
+    accion: "ver",
+    descripcion: "Permite visualizar resultados de partidos.",
+    icono: "eye",
+  },
+  {
+    modulo: "resultados",
+    accion: "crear",
+    descripcion: "Permite crear resultados para partidos.",
+    icono: "plus",
+  },
+  {
+    modulo: "resultados",
+    accion: "editar",
+    descripcion: "Permite modificar resultados de partidos.",
+    icono: "pencil",
+  },
+  {
+    modulo: "resultados",
+    accion: "importar",
+    descripcion: "Permite importar resultados desde archivos externos.",
+    icono: "upload",
+  },
+
+
+  // Países
+  {
+    modulo: "paises",
+    accion: "ver",
+    descripcion: "Permite visualizar el listado de selecciones.",
+    icono: "eye",
+  },
+  {
+    modulo: "paises",
+    accion: "crear",
+    descripcion: "Permite crear nuevas selecciones.",
+    icono: "plus",
+  },
+  {
+    modulo: "paises",
+    accion: "editar",
+    descripcion: "Permite modificar información de selecciones (nombre, banderas, etc).",
+    icono: "pencil",
+  },
+  {
+    modulo: "paises",
+    accion: "eliminar",
+    descripcion: "Permite eliminar selecciones del sistema.",
+    icono: "trash",
+  },
+  {
+    modulo: "paises",
+    accion: "importar",
+    descripcion: "Permite importar selecciones desde archivos externos.",
+    icono: "upload",
+  },
+  {
+    modulo: "planteles",
+    accion: "ver",
+    descripcion: "Permite visualizar planteles y sus detalles.",
+    icono: "eye",
+  },
+  {
+    modulo: "planteles",
+    accion: "crear",
+    descripcion: "Permite crear nuevos planteles.",
+    icono: "plus",
+  },
+  {
+    modulo: "planteles",
+    accion: "editar",
+    descripcion: "Permite modificar información de planteles.",
+    icono: "pencil",
+  },
+  {
+    modulo: "planteles",
+    accion: "eliminar",
+    descripcion: "Permite eliminar planteles del sistema.",
+    icono: "trash",
+  },
+   {
+    modulo: "planteles",
+    accion: "importar",
+    descripcion: "Permite importar planteles desde archivos externos.",
+    icono: "upload",
   },
 ];
 
@@ -193,6 +316,7 @@ async function main() {
         apellido: "Sistema",
         rolId: adminRole.id,
         mustChangePassword: false,
+        aprobado: true,
       },
     });
     console.log("✅ Usuario admin creado (userId: admin, password: admin123)");

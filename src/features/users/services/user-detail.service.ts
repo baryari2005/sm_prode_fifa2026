@@ -44,6 +44,7 @@ export async function updateUserById(id: string, dto: PatchUserDto) {
   if ("userId" in dto) data.userId = dto.userId?.trim();
   if ("email" in dto) data.email = dto.email?.toLowerCase().trim();
   if ("rolId" in dto) data.rolId = dto.rolId;
+  if ("aprobado" in dto) data.aprobado = dto.aprobado;
   if ("password" in dto && dto.password) {
     data.password = await bcrypt.hash(dto.password, 12);
   }
@@ -53,6 +54,7 @@ export async function updateUserById(id: string, dto: PatchUserDto) {
   if ("avatarUrl" in dto) data.avatarUrl = toNull(dto.avatarUrl);
   if ("celular" in dto) data.celular = toNull(dto.celular);
   if ("domicilio" in dto) data.domicilio = toNull(dto.domicilio);
+  if ("localidad" in dto) data.localidad = toNull(dto.localidad);
   if ("codigoPostal" in dto) data.codigoPostal = toNull(dto.codigoPostal);
 
   if ("tipoDocumento" in dto) data.tipoDocumento = dto.tipoDocumento ?? null;

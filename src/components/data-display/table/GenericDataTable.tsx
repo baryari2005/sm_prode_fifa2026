@@ -12,10 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Search,
-  Loader2,
+  RefreshCw,
   ArrowBigLeft,
   ArrowBigRight,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export type DataTableProps<T> = {
   data: T[];
@@ -58,23 +59,20 @@ export function GenericDataTable<T>({
   const hasResults = data.length > 0;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-3">
-        <div className="relative w-full">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden="true"
-          />
-
+    <div className="space-y-10">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-4 top-1/2 
+                              h-5 w-5 -translate-y-1/2 text-slate-400" />
           <Input
             placeholder={searchPlaceholder}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="h-11 rounded border pl-9 pr-10"
+            className="h-11 rounded-xl border-slate-200 bg-white pl-12 text-sm shadow-none focus-visible:ring-[#008C93]/30"
             aria-busy={loading}
           />
 
           {loading && (
-            <Loader2
+            <RefreshCw
               className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground"
               aria-label="Buscando..."
             />
@@ -82,36 +80,19 @@ export function GenericDataTable<T>({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-md border">
-        <table className="w-full text-sm">
+      <div className="mt-6 overflow-x-auto rounded-md border">
+        <table className="min-w-full text-sm">
           <thead className="bg-muted/50">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
                 {hg.headers.map((h) => {
-                  const canSort = h.column.getCanSort();
-                  const dir = h.column.getIsSorted();
-
                   return (
                     <th key={h.id} className="select-none p-3 text-left">
-                      <button
-                        type="button"
-                        onClick={h.column.getToggleSortingHandler()}
-                        className={`inline-flex items-center gap-1 ${
-                          canSort ? "hover:underline" : ""
-                        }`}
-                        disabled={!canSort}
-                        aria-label="Ordenar"
-                      >
-                        {flexRender(
-                          h.column.columnDef.header,
-                          h.getContext()
-                        )}
-                        {canSort && (
-                          <span className="text-xs text-muted-foreground">
-                            {dir === "asc" ? "▲" : dir === "desc" ? "▼" : ""}
-                          </span>
-                        )}
-                      </button>
+                      {h.isPlaceholder ? null : (
+                        <div className="inline-flex items-center gap-1">
+                          {flexRender(h.column.columnDef.header, h.getContext())}
+                        </div>
+                      )}
                     </th>
                   );
                 })}
@@ -126,7 +107,7 @@ export function GenericDataTable<T>({
                   className="flex items-center p-3 text-muted-foreground"
                   colSpan={columns.length}
                 >
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                   Cargando...
                 </td>
               </tr>
@@ -155,31 +136,32 @@ export function GenericDataTable<T>({
       </div>
 
       <div className="mt-1 flex items-center justify-between text-sm">
-        <div>
-          {loading || hasResults
-            ? `Página ${safePage} de ${safeTotalPages}`
-            : "Sin resultados"}
-        </div>
+        <div className="flex w-full flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <Badge className="rounded-full bg-blue-50 px-6 py-1 text-sm font-medium text-blue-700 hover:bg-blue-50">
+            Página {safePage} de {safeTotalPages}
+          </Badge>
 
-        <div className="flex items-center gap-2">
-          <Button
-            className="h-11 cursor-pointer rounded bg-[#008C93] hover:bg-[#007381]"
-            size="sm"
-            onClick={() => onPageChange(Math.max(1, safePage - 1))}
-            disabled={safePage <= 1 || loading || !hasResults}
-          >
-            <ArrowBigLeft className="h-4 w-4" />
-            Anterior
-          </Button>
+          <div className="grid w-full grid-cols-2 gap-2 lg:w-auto lg:min-w-[320px]">
+            <Button
+              className="h-11 w-full rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28] disabled:opacity-60"
+              size="sm"
+              onClick={() => onPageChange(Math.max(1, safePage - 1))}
+              disabled={safePage <= 1 || loading || !hasResults}
+            >
+              <ArrowBigLeft className="h-4 w-4" />
+              Anterior
+            </Button>
 
-          <Button
-            className="h-11 cursor-pointer rounded bg-[#008C93] hover:bg-[#007381]"
-            onClick={() => onPageChange(Math.min(safeTotalPages, safePage + 1))}
-            disabled={safePage >= safeTotalPages || loading || !hasResults}
-          >
-            Siguiente
-            <ArrowBigRight className="h-4 w-4" />
-          </Button>
+            <Button
+              className="h-11 w-full rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28] disabled:opacity-60"
+              size="sm"
+              onClick={() => onPageChange(Math.min(safeTotalPages, safePage + 1))}
+              disabled={safePage >= safeTotalPages || loading || !hasResults}
+            >
+              Siguiente
+              <ArrowBigRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

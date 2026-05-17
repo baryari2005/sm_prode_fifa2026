@@ -1,0 +1,28 @@
+[
+  {
+    "equipo": "local",
+    "remates": 21,
+    "rematesAlArco": 10,
+    "posesion": 53,
+    "pases": 562,
+    "precisionPases": 89,
+    "faltas": 23,
+    "amarillas": 5,
+    "rojas": 0,
+    "posicionAdelantada": 5,
+    "tirosDeEsquina": 6
+  },
+  {
+    "equipo": "visitante",
+    "remates": 8,
+    "rematesAlArco": 4,
+    "posesion": 47,
+    "pases": 457,
+    "precisionPases": 88,
+    "faltas": 16,
+    "amarillas": 3,
+    "rojas": 0,
+    "posicionAdelantada": 4,
+    "tirosDeEsquina": 5
+  }
+]

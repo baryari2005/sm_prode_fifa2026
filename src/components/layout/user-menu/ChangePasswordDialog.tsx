@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { changePassword } from "@/lib/api/account";
-import { Eye, EyeOff, KeyRoundIcon, Loader2 } from "lucide-react";
+import { Eye, EyeOff, KeyRoundIcon, RefreshCw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { formatMessage } from "@/utils/formatters";
 import { useAuth } from "@/stores/auth";
@@ -137,7 +137,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
             className="h-11 rounded  bg-[#008C93] hover:bg-[#007381] cursor-pointer" >
             {submitting ? (
               <span className="inline-flex items-center gap-2">
-                <Loader2 className="animate-spin" size={18} />
+                <RefreshCw className="animate-spin" size={18} />
                 {formatMessage("Guardando...")}
               </span>
             ) : ("Guardar")}

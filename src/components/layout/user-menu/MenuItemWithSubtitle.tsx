@@ -21,7 +21,7 @@ export function MenuItemWithSubtitle({
     <DropdownMenuItem
       onClick={onClick}
       className={cn(
-        "py-3 px-3 focus:bg-accent/60 focus:text-foreground",
+        "py-3 px-3 focus:bg-accent/60 focus:text-foreground rounded-none",
         "gap-3 items-start",
         className
       )}

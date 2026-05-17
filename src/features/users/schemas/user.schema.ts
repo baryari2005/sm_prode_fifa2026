@@ -18,6 +18,7 @@ export const createUserSchema = z.object({
   avatarUrl: z.string().url().optional().nullable(),
   celular: z.string().optional().nullable(),
   domicilio: z.string().optional().nullable(),
+  localidad: z.string().optional().nullable(),
   codigoPostal: z.string().optional().nullable(),
 
   // Identidad

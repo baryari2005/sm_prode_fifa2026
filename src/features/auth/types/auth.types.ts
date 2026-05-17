@@ -9,6 +9,10 @@ export type UserDTO = {
   email?: string;
   nombre?: string;
   apellido?: string;
+  rol?: {
+    id?: number | string | null;
+    nombre?: string | null;
+  } | null;
   mustChangePassword?: boolean;
   avatarUrl?: string | null;
   permisos?: PermissionDTO[];
@@ -28,3 +32,12 @@ export type AuthLoginResponse = {
   token?: string;
   accessToken?: string;
 };
+
+export type LoginResult =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      error?: string;
+    };

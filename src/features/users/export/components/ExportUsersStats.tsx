@@ -13,7 +13,7 @@ export function ExportUsersStats({ stats }: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="rounded border p-4">
-        <div className="text-sm text-muted-foreground">Exported users</div>
+        <div className="text-sm text-muted-foreground">Usuarios exportados</div>
         <div className="mt-1 flex items-center gap-2 text-2xl font-semibold">
           <Users className="h-6 w-6" />
           {stats.users}
@@ -21,12 +21,12 @@ export function ExportUsersStats({ stats }: Props) {
       </div>
 
       <div className="rounded border p-4">
-        <div className="text-sm text-muted-foreground">Exported employee records</div>
+        <div className="text-sm text-muted-foreground">Legajos de empleados exportados</div>
         <div className="mt-1 text-2xl font-semibold">{stats.legajos}</div>
       </div>
 
       <div className="rounded border p-4">
-        <div className="text-sm text-muted-foreground">Elapsed time</div>
+        <div className="text-sm text-muted-foreground">Tiempo transcurrido</div>
         <div className="mt-1 flex items-center gap-2 text-2xl font-semibold">
           <Timer className="h-6 w-6" />
           {(stats.elapsedMs / 1000).toFixed(2)}s

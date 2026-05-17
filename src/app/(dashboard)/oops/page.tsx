@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Home, ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardNotFoundPage() {
   return (
@@ -12,10 +13,10 @@ export default function DashboardNotFoundPage() {
         <div className="relative mx-auto w-fit">
           <div className="animate-float">
             <Image
-              src="/robot-sobrio-404.png"
+              src="/robot-404.png"
               alt="Pagina no encontrada."
-              width={200}
-              height={200}
+              width={600}
+              height={600}
               priority
               className="select-none"
             />
@@ -45,19 +46,23 @@ export default function DashboardNotFoundPage() {
         <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded px-4 py-2 text-sm font-semibold bg-[#008C93] text-white hover:opacity-95"
+            //className="h-12 w-full rounded-2xl bg-[#39A935] font-bold text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
+            className="inline-flex items-center 
+            justify-center rounded-2xl px-4 py-2 
+            text-sm font-semibold bg-[#39A935] 
+             text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
           >
-            <Home className="w-4 h-4 mr-2"/>
+            <Home className="w-4 h-4 mr-2" />
             Volver al inicio
           </Link>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={() => history.back()}
-            className="inline-flex items-center justify-center rounded px-4 py-2 text-sm font-semibold border text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900"
           >
             Volver atrás
-          </button>
+          </Button>
         </div>
 
         {/* Opcional: link “Solicitar acceso” */}

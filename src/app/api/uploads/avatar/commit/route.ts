@@ -8,7 +8,7 @@ import { getServerMe } from "@/lib/server-auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const BUCKET = process.env.SUPABASE_BUCKET || "avatars";
+const BUCKET = process.env.SUPABASE_BUCKET || "files";
 
 const clean = (p: string) => p.replace(/^\/+/, "");
 const toBucketPath = (p: string) => clean(p).replace(/^avatars\//, "");
@@ -100,17 +100,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const tmp = toBucketPath(tmpPath);
-  const oldNorm = oldPath ? toBucketPath(oldPath) : null;
+  const tmp = clean(tmpPath);
+  const oldNorm = oldPath ? clean(oldPath) : null;
   const ext = path.extname(tmp) || ".png";
 
   const basePrefix = isAdmin
     ? finalPrefix
-      ? toBucketPath(finalPrefix)
+      ? `avatars/${toBucketPath(finalPrefix)}`
       : meId
-        ? `users/${meId}`
-        : "users/unknown"
-    : `users/${meId}`;
+        ? `avatars/users/${meId}`
+        : "avatars/users/unknown"
+    : `avatars/users/${meId}`;
 
   const uniqueName = crypto.randomUUID();
   const dest = clean(`${basePrefix}/${uniqueName}${ext}`);

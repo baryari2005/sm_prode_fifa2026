@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Loader2 } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 type ConfirmDialogProps = {
     open: boolean;
@@ -56,7 +56,8 @@ export function ConfirmDialog({
                     <DialogClose asChild>
                         <Button
                             variant="outline"
-                            className="h-11 rounded"
+                            //className="h-11 rounded"
+                            className="h-11 rounded-2xl"
                             disabled={loading}
                         >
                             {cancelLabel}
@@ -66,11 +67,12 @@ export function ConfirmDialog({
                     <Button
                         onClick={onConfirm}
                         disabled={loading}
-                        className="h-11 rounded bg-[#008C93] hover:bg-[#007381]"
+                        className="h-11 rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
+                        //className="h-11 rounded bg-[#008C93] hover:bg-[#007381]"
                     >
                         {loading ? (
                             <span className="inline-flex items-center gap-2">
-                                <Loader2 className="animate-spin" size={16} />
+                                <RefreshCw className="animate-spin" size={16} />
                                 Procesando...
                             </span>
                         ) : (

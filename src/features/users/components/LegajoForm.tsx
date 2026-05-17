@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, RefreshCw, Save } from "lucide-react";
 import { formatMessage } from "@/utils/formatters";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -131,7 +131,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
         console.log("🟢 Form SUBMIT event triggered");
         handleSubmitWithLogs(e);
       }}
-      className="grid gap-4 md:grid-cols-2"
+      className="grid gap-5 md:grid-cols-2"
     >
 
       {/* N° Legajo */}
@@ -139,7 +139,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
         <Label>Legajo</Label>
         <Input
           type="number"
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           {...register("employeeNumber", {
             setValueAs: (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
           })}
@@ -161,7 +161,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
             return (
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" type="button" className="w-full justify-start h-11 rounded border">
+                  <Button variant="outline" type="button" className="h-11 w-full justify-start rounded-2xl border-slate-200">
                     <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                     {selected ? format(selected, "dd/MM/yyyy", { locale: es }) : (
                       <span className="text-muted-foreground">Seleccionar fecha</span>
@@ -198,7 +198,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
             return (
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" type="button" className="w-full justify-start h-11 rounded border">
+                  <Button variant="outline" type="button" className="h-11 w-full justify-start rounded-2xl border-slate-200">
                     <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                     {selected ? format(selected, "dd/MM/yyyy", { locale: es }) : (
                       <span className="text-muted-foreground">Seleccionar fecha</span>
@@ -234,7 +234,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
             })
           }
         >
-          <SelectTrigger className="w-full h-11 rounded border px-3 text-sm">
+          <SelectTrigger className="h-11 w-full rounded-2xl border-slate-200 px-3 text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -261,7 +261,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
             })
           }
         >
-          <SelectTrigger className="w-full h-11 rounded border px-3 text-sm">
+          <SelectTrigger className="h-11 w-full rounded-2xl border-slate-200 px-3 text-sm">
             <SelectValue placeholder="Seleccionar" />
           </SelectTrigger>
           <SelectContent>
@@ -281,7 +281,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
       <div className="space-y-1">
         <Label>Cargo / Puesto</Label>
         <Input
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           {...register("position", { setValueAs: (v) => smartTitleCase(String(v ?? "")) })}
           onBlur={(e) => setValue("position", smartTitleCase(e.target.value), { shouldDirty: true, shouldValidate: true })}
         />
@@ -290,7 +290,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
       <div className="space-y-1">
         <Label>Área</Label>
         <Input
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           {...register("area", { setValueAs: (v) => smartTitleCase(String(v ?? "")) })}
           onBlur={(e) => setValue("area", smartTitleCase(e.target.value), { shouldDirty: true, shouldValidate: true })}
         />
@@ -299,7 +299,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
       <div className="space-y-1">
         <Label>Departamento</Label>
         <Input
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           {...register("department", { setValueAs: (v) => smartTitleCase(String(v ?? "")) })}
           onBlur={(e) => setValue("department", smartTitleCase(e.target.value), { shouldDirty: true, shouldValidate: true })}
         />
@@ -308,7 +308,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
       <div className="space-y-1">
         <Label>Categoría</Label>
         <Input
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           {...register("category", { setValueAs: (v) => smartTitleCase(String(v ?? "")) })}
           onBlur={(e) => setValue("category", smartTitleCase(e.target.value), { shouldDirty: true, shouldValidate: true })}
         />
@@ -318,7 +318,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
       <div className="space-y-1">
         <Label>Matrícula provincial</Label>
         <Input
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           {...register("matriculaProvincial", { setValueAs: (v) => toUpper(String(v ?? "")) })}
           onBlur={(e) =>
             setValue("matriculaProvincial", toUpper(e.target.value), { shouldDirty: true, shouldValidate: true })
@@ -333,7 +333,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
       <div className="space-y-1">
         <Label>Matrícula nacional</Label>
         <Input
-          className="h-11 rounded border pr-3"
+          className="h-11 rounded-2xl border-slate-200 pr-3"
           {...register("matriculaNacional", { setValueAs: (v) => toUpper(String(v ?? "")) })}
           onBlur={(e) =>
             setValue("matriculaNacional", toUpper(e.target.value), { shouldDirty: true, shouldValidate: true })
@@ -347,7 +347,7 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
 
       <div className="md:col-span-2 space-y-1">
         <Label>Observaciones</Label>
-        <Textarea rows={4} className="rounded border pr-3" {...register("notes")} />
+        <Textarea rows={4} className="rounded-2xl border-slate-200 pr-3" {...register("notes")} />
       </div>
 
       {
@@ -355,16 +355,20 @@ export function LegajoForm({ defaultValues, onSubmit }: Props) {
           <div className="md:col-span-2">
             <Button
               type="submit"
-              className="w-full h-11 rounded bg-[#008C93] hover:bg-[#007381] cursor-pointer"
+              //className="w-full h-11 rounded bg-[#008C93] hover:bg-[#007381] cursor-pointer"
+              className="h-11 w-full rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={18} />
+                  <RefreshCw className="animate-spin" size={18} />
                   {formatMessage("Guardando...")}
                 </span>
               ) : (
-                "Guardar cambios"
+                <span className="inline-flex items-center gap-2">
+                  <Save className="h-4 w-4" />
+                  Guardar cambios
+                </span>
               )}
             </Button>
           </div>

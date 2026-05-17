@@ -13,6 +13,7 @@ export function toUserListItem(u: UserWithRole) {
     nombre: u.nombre,
     apellido: u.apellido,
     avatarUrl: u.avatarUrl,
+    aprobado: u.aprobado,
     rol: u.rol ? { id: u.rol.id, nombre: u.rol.nombre } : null,
     createdAt: u.createdAt,
 
@@ -21,6 +22,7 @@ export function toUserListItem(u: UserWithRole) {
     cuil: u.cuil,
     celular: u.celular,
     domicilio: u.domicilio,
+    localidad: u.localidad,
     codigoPostal: u.codigoPostal,
     fechaNacimiento: u.fechaNacimiento,
     genero: u.genero,
@@ -36,12 +38,14 @@ export function toUserDetail(user: UserWithRole) {
     email: user.email,
     rolId: user.rolId,
     rol: user.rol ? { id: user.rol.id, nombre: user.rol.nombre } : null,
+    aprobado: user.aprobado,
 
     nombre: user.nombre,
     apellido: user.apellido,
     avatarUrl: user.avatarUrl,
     celular: user.celular,
     domicilio: user.domicilio,
+    localidad: user.localidad,
     codigoPostal: user.codigoPostal,
 
     tipoDocumento: user.tipoDocumento,

@@ -5,7 +5,7 @@ import { useCan } from "@/hooks/useCan";
 import { useRoles } from "../../../features/roles/hooks/useRoles";
 import { RolesHeader } from "../../../features/roles/components/RolesHeader";
 
-import { Loader2 } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { RolesList } from "../../../features/roles/components/RolesTable";
 import AccessDenied403Page from "../403/page";
 
@@ -20,13 +20,13 @@ export default function RolesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <RolesHeader canCreate={canCreate} />
-        <CardContent>
+    <div className="grid gap-6">
+      <Card className="border-white/70 bg-white shadow-sm">
+        <CardContent className="space-y-6 p-4 md:p-6">
+          <RolesHeader canCreate={canCreate} />
           {loading ? (
-            <div className="text-sm text-muted-foreground flex ">
-               <Loader2 className="h-4 w-4 mr-4 animate-spin" />Cargando roles...
+            <div className="flex text-sm text-muted-foreground">
+              <RefreshCw className="h-4 w-4 mr-4 animate-spin" />Cargando roles...
             </div>
           ) : roles.length === 0 ? (
             <div className="text-sm text-muted-foreground">

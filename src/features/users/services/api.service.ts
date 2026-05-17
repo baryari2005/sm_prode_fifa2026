@@ -17,6 +17,7 @@ type UpsertUserDto = {
 
   celular?: string | null;
   domicilio?: string | null;
+  localidad?: string | null;
   codigoPostal?: string | null;
 
   fechaNacimiento?: string | null;

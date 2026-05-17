@@ -20,6 +20,7 @@ export function toUserExportRow(u: UserWithLegajo): UserExportRow {
     cuil: formatCuil(u.cuil),
     celular: u.celular ?? null,
     domicilio: u.domicilio ?? null,
+    localidad: u.localidad ?? null,
     codigoPostal: u.codigoPostal ?? null,
     rolId: u.rolId,
     createdAt: u.createdAt.toISOString(),

@@ -1,9 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { PermisosGrupo, RoleUpdate } from "../types/types";
 import { RoleBasicFields } from "./RoleBasicFields";
-import { RoleStatusField } from "./RoleStatusField";
 import { RolePermissionsSection } from "./RolePermissionsSection";
 import { RoleFormActions } from "./RoleFormActions";
 import { ShieldUser } from "lucide-react";
@@ -41,44 +40,46 @@ export function EditRoleForm({
     handleSave,
     handleCancel,
 }: Props) {
-    return (
-        <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-2xl flex items-center">
-                        <ShieldUser className="mr-2" />
-                        Editar Rol
-                    </CardTitle>
-                </CardHeader>
+  return (
+    <div className="space-y-6">
+      <Card className="border-white/70 bg-white shadow-sm">
+        <CardHeader className="border-b border-slate-100 px-5 py-5 md:px-6">
+          <div className="space-y-2">
+            <CardTitle className="flex items-center gap-2 text-2xl text-slate-950">
+              <ShieldUser className="h-6 w-6" />
+              Editar rol
+            </CardTitle>
+            <CardDescription className="text-sm text-slate-500">
+              Ajustá la información del rol y sus permisos manteniendo una configuración consistente.
+            </CardDescription>
+          </div>
+        </CardHeader>
 
-                <CardContent className="space-y-6">
-                    <RoleBasicFields
-                        nombre={nombre}
-                        descripcion={descripcion}
-                        onNombreChange={setNombre}
-                        onDescripcionChange={setDescripcion}
-                    />
+        <CardContent className="space-y-6 p-5 md:p-6">
+          <RoleBasicFields
+            nombre={nombre}
+            descripcion={descripcion}
+            onNombreChange={setNombre}
+            onDescripcionChange={setDescripcion}
+            activo={activo}
+            setActivo={setActivo}
+          />        
 
-                    <RoleStatusField
-                        activo={activo}
-                        onActivoChange={setActivo}
-                    />
+          <Separator />
 
-                    <Separator />
-                    
-                    <RolePermissionsSection
-                        permisos={permisos}
-                        selectedPermisos={selectedPermisos}
-                        onTogglePermiso={togglePermiso}
-                    />
+          <RolePermissionsSection
+            permisos={permisos}
+            selectedPermisos={selectedPermisos}
+            onTogglePermiso={togglePermiso}
+          />
 
-                    <RoleFormActions
-                        saving={saving}
-                        onCancel={handleCancel}
-                        onSave={handleSave}
-                    />
-                </CardContent>
-            </Card>
-        </div>
-    );
+          <RoleFormActions
+            saving={saving}
+            onCancel={handleCancel}
+            onSave={handleSave}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

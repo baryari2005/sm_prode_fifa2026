@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Bot, Loader2, SendHorizontal, Sparkles } from "lucide-react";
+import { Bot, RefreshCw, SendHorizontal, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -173,7 +173,7 @@ export function SupportAssistant() {
 
             {loading ? (
               <div className="flex max-w-[85%] items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <RefreshCw className="h-4 w-4 animate-spin" />
                 Pensando una respuesta...
               </div>
             ) : null}
@@ -197,7 +197,7 @@ export function SupportAssistant() {
             >
               {loading ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <RefreshCw className="h-4 w-4 animate-spin" />
                   Consultando...
                 </span>
               ) : (

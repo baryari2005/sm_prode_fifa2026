@@ -11,17 +11,17 @@ export function ExportUsersAction({ loading, onExport }: Props) {
     <Button
       onClick={onExport}
       disabled={loading}
-      className="w-full h-11 rounded bg-[#008C93] hover:bg-[#007381]"
+      className="h-12 w-full rounded-2xl bg-[#008C93] font-semibold text-white hover:bg-[#007381]"
     >
       {loading ? (
         <>
           <FileDown className="h-5 w-5 mr-2 animate-bounce" />
-          Exporting...
+          Exportando...
         </>
       ) : (
         <>
           <FileDown className="h-5 w-5 mr-2" />
-          Export to Excel
+          Exportar en Excel
         </>
       )}
     </Button>

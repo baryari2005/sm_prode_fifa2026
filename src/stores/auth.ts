@@ -1,5 +1,6 @@
 "use client";
 
+import { AxiosError } from "axios";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { getMe, postLogin } from "@/features/auth/libs/auth-api";
@@ -10,6 +11,7 @@ import {
 } from "@/features/auth/libs/auth-session";
 import type {
   LoginBody,
+  LoginResult,
   UserDTO,
 } from "@/features/auth/types/auth.types";
 
@@ -26,7 +28,7 @@ type Actions = {
   setUser: (user: UserDTO | null) => void;
   setHasHydrated: (value: boolean) => void;
   fetchMe: (force?: boolean) => Promise<void>;
-  login: (body: LoginBody) => Promise<boolean>;
+  login: (body: LoginBody) => Promise<LoginResult>;
   logout: (redirectTo?: string) => void;
 };
 
@@ -127,7 +129,9 @@ export const useAuth = create<State & Actions>()(
               loading: false,
               triedMe: true,
             });
-            return false;
+            return {
+              success: false,
+            };
           }
 
           get().setToken(token);
@@ -137,7 +141,9 @@ export const useAuth = create<State & Actions>()(
 
           if (!user) {
             set({ loading: false });
-            return false;
+            return {
+              success: false,
+            };
           }
 
           if (user.mustChangePassword) {
@@ -147,12 +153,19 @@ export const useAuth = create<State & Actions>()(
               window.location.replace("/change-password?first=1");
             }
 
-            return true;
+            return {
+              success: true,
+            };
           }
 
           set({ loading: false });
-          return true;
-        } catch {
+          return {
+            success: true,
+          };
+        } catch (error) {
+          const axiosError = error as AxiosError<{ error?: string }>;
+          const message = axiosError.response?.data?.error;
+
           clearStoredToken();
           set({
             user: null,
@@ -160,7 +173,10 @@ export const useAuth = create<State & Actions>()(
             loading: false,
             triedMe: true,
           });
-          return false;
+          return {
+            success: false,
+            error: message,
+          };
         }
       },
 

@@ -114,13 +114,13 @@ export function useLogin() {
     clearTopError();
 
     try {
-      const ok = await login({
+      const result = await login({
         userId: values.userId,
         password: values.password,
       });
 
-      if (!ok) {
-        const message = messages.errors.loginError;
+      if (!result.success) {
+        const message = result.error || messages.errors.loginError;
         setAuthError(message);
         writeTopError(message);
         return;

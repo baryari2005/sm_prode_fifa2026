@@ -18,6 +18,7 @@ model Usuario {
   email         String         @unique
   celular       String?
   domicilio     String?
+  localidad     String?
   codigoPostal  String?
 
   nombre          String?
@@ -30,11 +31,14 @@ model Usuario {
 
   password           String
   mustChangePassword Boolean @default(false)
+  aprobado           Boolean @default(false)
 
   rolId Int
   rol   Rol @relation(fields: [rolId], references: [id])
 
   legajo Legajo?
+  prediccionesPartido PrediccionPartido[]
+  rankingProde        RankingUsuario?
 
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -215,4 +219,198 @@ enum TipoDocumento {
   LE
   LC
   CI
+}
+
+model Seleccion {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre      String   @unique
+  codigo      String   @unique // ej: "ARG", "BRA", "ESP"
+  footballDataTeamId Int? @unique
+  bandera     String?  // emoji de bandera
+  grupo       String?  // ej: "A", "B", "C"
+  confederacion String? // ej: "CONMEBOL", "UEFA", "CAF"
+
+  partidosLocal   Partido[] @relation("PartidoLocal")
+  partidosVisitante Partido[] @relation("PartidoVisitante")
+  jugadores      JugadorSeleccion[]
+
+  activo    Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([codigo])
+  @@index([footballDataTeamId])
+  @@index([grupo])
+}
+
+model Fase {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @unique // ej: "Fase de Grupos", "Octavos", "Cuartos"
+  orden       Int      @unique // para ordenar fases
+  descripcion String?
+
+  partidas   ReglaCruce[]
+  partidos   Partido[]
+
+  activo    Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orden])
+}
+
+model ReglaCruce {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre          String
+  faseId          Int
+  fase            Fase     @relation(fields: [faseId], references: [id])
+  partidoNumero   Int
+  localOrigen     String
+  visitanteOrigen String
+  estadio         String?
+  fecha           DateTime?
+  hora            String?
+  orden           Int      @default(0)
+  activo          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([faseId])
+  @@index([partidoNumero])
+  @@index([activo])
+}
+
+model Partido {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  footballDataId Int?     @unique
+  fecha         DateTime  @db.Timestamptz(6)
+  estadio       String?
+  ciudad        String?
+  faseId        Int
+  fase          Fase      @relation(fields: [faseId], references: [id])
+
+  seleccionLocalId   String
+  seleccionVisitanteId String
+  seleccionLocal     Seleccion @relation("PartidoLocal", fields: [seleccionLocalId], references: [id])
+  seleccionVisitante Seleccion @relation("PartidoVisitante", fields: [seleccionVisitanteId], references: [id])
+
+  resultado    Resultado?
+  predicciones PrediccionPartido[]
+
+  activo    Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fecha])
+  @@index([footballDataId])
+  @@index([faseId])
+  @@index([seleccionLocalId])
+  @@index([seleccionVisitanteId])
+}
+
+model Resultado {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  partidoId  String   @unique @db.Uuid
+  partido    Partido  @relation(fields: [partidoId], references: [id], onDelete: Cascade)
+
+  golesLocal     Int @default(0)
+  golesVisitante Int @default(0)
+  penalesLocal   Int?
+  penalesVisitante Int?
+
+  estado         EstadoPartido @default(PENDIENTE)
+  tiempoJuego    Int? // minutos jugados
+  observaciones  String?
+  estadisticasLocal Json?
+  estadisticasVisitante Json?
+  alineacionLocal Json?
+  alineacionVisitante Json?
+  detalleGolesLocal Json?
+  detalleGolesVisitante Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([partidoId])
+  @@index([estado])
+}
+
+model JugadorSeleccion {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  seleccionId   String    @db.Uuid
+  seleccion     Seleccion @relation(fields: [seleccionId], references: [id], onDelete: Cascade)
+  nombre        String
+  fotoUrl       String?
+  numero        Int?
+  posicion      String
+  edad          Int?
+  estatura      String?
+  peso          String?
+  nacionalidad  String?
+  apariciones   Int       @default(0)
+  suplencias    Int       @default(0)
+  goles         Int       @default(0)
+  asistencias   Int       @default(0)
+  tiros         Int       @default(0)
+  tirosAlArco   Int       @default(0)
+  faltasCometidas Int     @default(0)
+  faltasSufridas Int      @default(0)
+  amarillas     Int       @default(0)
+  rojas         Int       @default(0)
+  atajadas      Int       @default(0)
+  golesConcedidos Int     @default(0)
+  activo        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([seleccionId])
+  @@index([nombre])
+  @@index([posicion])
+}
+
+model PrediccionPartido {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuarioId      String       @db.Uuid
+  partidoId      String       @db.Uuid
+  usuario        Usuario      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  partido        Partido      @relation(fields: [partidoId], references: [id], onDelete: Cascade)
+  golesLocal     Int
+  golesVisitante Int
+  puntosOtorgados Int         @default(0)
+  aciertoTipo    AciertoTipo?
+  calculadoAt    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([usuarioId, partidoId])
+  @@index([partidoId])
+  @@index([usuarioId])
+  @@index([aciertoTipo])
+}
+
+model RankingUsuario {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuarioId         String   @unique @db.Uuid
+  usuario           Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  puntosTotales     Int      @default(0)
+  aciertosExactos   Int      @default(0)
+  aciertosTendencia Int      @default(0)
+  partidosPronosticados Int  @default(0)
+  partidosCalificados Int    @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+enum EstadoPartido {
+  PENDIENTE     // antes del partido
+  EN_JUEGO      // partido en curso
+  FINALIZADO    // partido terminado
+  SUSPENDIDO    // partido suspendido
+  CANCELADO     // partido cancelado
+}
+
+enum AciertoTipo {
+  EXACTO
+  TENDENCIA
+  NINGUNO
 }

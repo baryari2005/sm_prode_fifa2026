@@ -30,6 +30,7 @@ async function main() {
       rolId: adminRol.id,
       nombre: "Admin",
       apellido: "Root",
+      aprobado: true,
     },
     create: {
       userId: ADMIN_USERID,
@@ -39,6 +40,7 @@ async function main() {
       nombre: "Admin",
       apellido: "Root",
       avatarUrl: null,
+      aprobado: true,
     },
     include: { rol: true },
   });

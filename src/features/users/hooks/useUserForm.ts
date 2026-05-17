@@ -56,6 +56,7 @@ type UserPayload = {
   cuil: string | null;
   celular: string | null;
   domicilio: string | null;
+  localidad: string | null;
   codigoPostal: string | null;
 };
 
@@ -100,6 +101,7 @@ export function useUserForm({
       cuil: defaultValues?.cuil ?? "",
       celular: defaultValues?.celular ?? "",
       domicilio: defaultValues?.domicilio ?? "",
+      localidad: defaultValues?.localidad ?? "",
       codigoPostal: defaultValues?.codigoPostal ?? "",
       fechaNacimiento,
       genero:
@@ -147,6 +149,7 @@ export function useUserForm({
         cuil: toNullableString(values.cuil),
         celular: toNullableString(values.celular),
         domicilio: toNullableString(values.domicilio),
+        localidad: toNullableString(values.localidad),
         codigoPostal: toNullableString(values.codigoPostal),
       };
 
