@@ -1,9 +1,9 @@
 import { EstadoPartido } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+import { recalcularPronosticosDePartido } from "@/features/partidos/services/pronosticos.service";
 import { prisma } from "@/lib/db";
 import { requireAuth, requirePermission } from "@/lib/server-auth";
-import { recalcularPronosticosDePartido } from "@/features/partidos/services/pronosticos.service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,24 +19,39 @@ type FootballDataScore = {
   } | null;
 };
 
-type FootballDataLiveMatch = {
+type FootballDataMatchDetail = {
   id: number;
   status: string;
   utcDate: string;
-  stage?: string | null;
   minute?: number | null;
   score?: FootballDataScore | null;
 };
 
-type FootballDataLiveResponse = {
-  matches?: FootballDataLiveMatch[];
+type FootballDataMatchDetailResponse = {
+  match?: FootballDataMatchDetail;
   message?: string;
 };
 
-const LIVE_STATUSES = new Set(["IN_PLAY", "PAUSED", "LIVE"]);
+type SyncResultAction =
+  | "created"
+  | "updated"
+  | "finished"
+  | "skipped"
+  | "error";
 
 function normalizarApiUrl(rawUrl: string) {
   return rawUrl.trim().replace(/^['"]+/, "").replace(/['";\s]+$/, "");
+}
+
+function buildMatchDetailUrl(baseMatchesUrl: string, matchId: number) {
+  const normalized = normalizarApiUrl(baseMatchesUrl).replace(/\/+$/, "");
+  const matchCollectionSuffix = "/matches";
+
+  if (normalized.endsWith(matchCollectionSuffix)) {
+    return `${normalized}/${matchId}`;
+  }
+
+  return `${normalized}${matchCollectionSuffix}/${matchId}`;
 }
 
 async function authorize(req: NextRequest) {
@@ -61,38 +76,6 @@ async function authorize(req: NextRequest) {
   requirePermission(loggedInUser, "resultados", "crear");
 }
 
-async function getLiveMatchesFromApi() {
-  const token = process.env.FOOTBALL_DATA_API_TOKEN;
-  const urlApi = process.env.MUNDIAL_2026_API_URL;
-
-  if (!token) {
-    throw new Error("Falta configurar FOOTBALL_DATA_API_TOKEN en .env.local");
-  }
-
-  if (!urlApi) {
-    throw new Error("Falta configurar MUNDIAL_2026_API_URL en .env.local");
-  }
-
-  const apiUrl = new URL(normalizarApiUrl(urlApi));
-  apiUrl.searchParams.set("season", "2026");
-
-  const response = await fetch(apiUrl.toString(), {
-    method: "GET",
-    headers: {
-      "X-Auth-Token": token,
-    },
-    cache: "no-store",
-  });
-
-  const payload = (await response.json()) as FootballDataLiveResponse;
-
-  if (!response.ok) {
-    throw new Error(payload.message || "Error al consultar football-data.org");
-  }
-
-  return (payload.matches ?? []).filter((match) => LIVE_STATUSES.has(match.status));
-}
-
 function mapApiStatusToEstado(status: string): EstadoPartido {
   switch (status) {
     case "FINISHED":
@@ -110,82 +93,227 @@ function mapApiStatusToEstado(status: string): EstadoPartido {
   }
 }
 
+function shouldUseMock(req: NextRequest) {
+  const url = new URL(req.url);
+  const mockParam = url.searchParams.get("mock");
+  const mockEnv = process.env.LIVE_MATCH_SYNC_USE_MOCK;
+
+  return mockParam === "1" || mockEnv === "true";
+}
+
+function buildMockMatchDetail(partido: {
+  footballDataId: number;
+  fecha: Date;
+  resultado: {
+    golesLocal: number;
+    golesVisitante: number;
+    tiempoJuego: number | null;
+    estado: EstadoPartido;
+  } | null;
+}) {
+  const currentMinute =
+    partido.resultado?.estado === EstadoPartido.EN_JUEGO
+      ? partido.resultado?.tiempoJuego ?? 0
+      : 0;
+
+  const nextMinute = currentMinute <= 0 ? 15 : Math.min(currentMinute + 15, 90);
+  const baseLocal = partido.resultado?.golesLocal ?? 0;
+  const baseVisitante = partido.resultado?.golesVisitante ?? 0;
+
+  let golesLocal = baseLocal;
+  let golesVisitante = baseVisitante;
+
+  if (nextMinute >= 30 && baseLocal === 0) {
+    golesLocal = 1;
+  }
+
+  if (nextMinute >= 60 && baseVisitante === 0) {
+    golesVisitante = 1;
+  }
+
+  if (nextMinute >= 75 && golesLocal <= golesVisitante) {
+    golesLocal = golesVisitante + 1;
+  }
+
+  const status = nextMinute >= 90 ? "FINISHED" : "IN_PLAY";
+
+  return {
+    id: partido.footballDataId,
+    status,
+    utcDate: partido.fecha.toISOString(),
+    minute: status === "FINISHED" ? 90 : nextMinute,
+    score: {
+      fullTime: {
+        home: golesLocal,
+        away: golesVisitante,
+      },
+      penalties: null,
+    },
+  } satisfies FootballDataMatchDetail;
+}
+
+async function getMatchDetailFromApi(matchId: number) {
+  const token = process.env.FOOTBALL_DATA_API_TOKEN;
+  const urlApi = process.env.MUNDIAL_2026_API_URL;
+
+  if (!token) {
+    throw new Error("Falta configurar FOOTBALL_DATA_API_TOKEN en .env.local");
+  }
+
+  if (!urlApi) {
+    throw new Error("Falta configurar MUNDIAL_2026_API_URL en .env.local");
+  }
+
+  const matchUrl = buildMatchDetailUrl(urlApi, matchId);
+
+  const response = await fetch(matchUrl, {
+    method: "GET",
+    headers: {
+      "X-Auth-Token": token,
+    },
+    cache: "no-store",
+  });
+
+  const payload = (await response.json()) as FootballDataMatchDetailResponse;
+
+  if (!response.ok) {
+    throw new Error(payload.message || `Error al consultar match ${matchId}`);
+  }
+
+  if (!payload.match) {
+    throw new Error(`La API no devolvio datos para match ${matchId}`);
+  }
+
+  return payload.match;
+}
+
 export async function POST(req: NextRequest) {
   try {
     await authorize(req);
+    const useMock = shouldUseMock(req);
 
-    const liveMatches = await getLiveMatchesFromApi();
+    const now = new Date();
 
-    if (liveMatches.length === 0) {
-      return NextResponse.json({
-        message: "No hay partidos en juego para sincronizar.",
-        meta: {
-          scanned: 0,
-          updated: 0,
-          created: 0,
-          finished: 0,
-          skipped: 0,
-        },
-        resultados: [],
-      });
-    }
-
-    const ids = liveMatches.map((match) => match.id);
-
-    const partidos = await prisma.partido.findMany({
+    const partidosCandidatos = await prisma.partido.findMany({
       where: {
         activo: true,
         footballDataId: {
-          in: ids,
+          not: null,
         },
+        fecha: {
+          lte: now,
+        },
+        OR: [
+          {
+            resultado: {
+              is: null,
+            },
+          },
+          {
+            resultado: {
+              is: {
+                estado: EstadoPartido.PENDIENTE,
+              },
+            },
+          },
+          {
+            resultado: {
+              is: {
+                estado: EstadoPartido.EN_JUEGO,
+              },
+            },
+          },
+        ],
       },
       include: {
         resultado: true,
         seleccionLocal: true,
         seleccionVisitante: true,
       },
+      orderBy: {
+        fecha: "asc",
+      },
     });
 
-    const partidosByFootballDataId = new Map(
-      partidos
-        .filter(
-          (partido): partido is typeof partido & { footballDataId: number } =>
-            typeof partido.footballDataId === "number"
-        )
-        .map((partido) => [partido.footballDataId, partido])
-    );
+    if (partidosCandidatos.length === 0) {
+      return NextResponse.json({
+        message: "No hay partidos pendientes o en juego para sincronizar.",
+        meta: {
+          scanned: 0,
+          created: 0,
+          updated: 0,
+          finished: 0,
+          skipped: 0,
+          errors: 0,
+        },
+        resultados: [],
+      });
+    }
 
     const resultados: Array<{
       footballDataId: number;
+      partidoId: string;
       success: boolean;
-      action: "created" | "updated" | "finished" | "skipped" | "error";
+      action: SyncResultAction;
       message: string;
-      partidoId?: string;
     }> = [];
 
-    for (const match of liveMatches) {
-      const partido = partidosByFootballDataId.get(match.id);
+    for (const partido of partidosCandidatos) {
+      const footballDataId = partido.footballDataId;
 
-      if (!partido) {
+      if (typeof footballDataId !== "number") {
         resultados.push({
-          footballDataId: match.id,
+          footballDataId: -1,
+          partidoId: partido.id,
           success: false,
           action: "skipped",
-          message: "No se encontro un partido local con ese footballDataId.",
+          message: "El partido no tiene footballDataId valido.",
         });
         continue;
       }
 
-      const golesLocal = match.score?.fullTime?.home ?? 0;
-      const golesVisitante = match.score?.fullTime?.away ?? 0;
-      const penalesLocal = match.score?.penalties?.home ?? null;
-      const penalesVisitante = match.score?.penalties?.away ?? null;
-      const estado = mapApiStatusToEstado(match.status);
-      const isFinished = estado === EstadoPartido.FINALIZADO;
-
       try {
+        const match = useMock
+          ? buildMockMatchDetail({
+              footballDataId,
+              fecha: partido.fecha,
+              resultado: partido.resultado
+                ? {
+                    golesLocal: partido.resultado.golesLocal,
+                    golesVisitante: partido.resultado.golesVisitante,
+                    tiempoJuego: partido.resultado.tiempoJuego,
+                    estado: partido.resultado.estado,
+                  }
+                : null,
+            })
+          : await getMatchDetailFromApi(footballDataId);
+        const estado = mapApiStatusToEstado(match.status);
+
+        if (
+          estado !== EstadoPartido.EN_JUEGO &&
+          estado !== EstadoPartido.FINALIZADO &&
+          estado !== EstadoPartido.SUSPENDIDO &&
+          estado !== EstadoPartido.CANCELADO
+        ) {
+          resultados.push({
+            footballDataId,
+            partidoId: partido.id,
+            success: true,
+            action: "skipped",
+            message: `Estado remoto ${match.status} omitido para evitar sobrescribir el partido.`,
+          });
+          continue;
+        }
+
+        const golesLocal = match.score?.fullTime?.home ?? 0;
+        const golesVisitante = match.score?.fullTime?.away ?? 0;
+        const penalesLocal = match.score?.penalties?.home ?? null;
+        const penalesVisitante = match.score?.penalties?.away ?? null;
+        const isFinished = estado === EstadoPartido.FINALIZADO;
+        const hasResultado = Boolean(partido.resultado);
+
         const recalculo = await prisma.$transaction(async (tx) => {
-          if (partido.resultado) {
+          if (hasResultado) {
             await tx.resultado.update({
               where: {
                 partidoId: partido.id,
@@ -196,10 +324,14 @@ export async function POST(req: NextRequest) {
                 penalesLocal,
                 penalesVisitante,
                 estado,
-                tiempoJuego: isFinished ? 90 : null,
+                tiempoJuego: isFinished ? 90 : match.minute ?? null,
                 observaciones: isFinished
-                  ? "Resultado final sincronizado desde football-data.org."
-                  : "Marcador en vivo sincronizado desde football-data.org.",
+                  ? useMock
+                    ? "Resultado final sincronizado desde simulacion mock."
+                    : "Resultado final sincronizado desde football-data.org."
+                  : useMock
+                  ? `Marcador en vivo sincronizado desde simulacion mock${match.minute ? ` (${match.minute}')` : ""}.`
+                  : `Marcador en vivo sincronizado desde football-data.org${match.minute ? ` (${match.minute}')` : ""}.`,
               },
             });
           } else {
@@ -211,10 +343,14 @@ export async function POST(req: NextRequest) {
                 penalesLocal,
                 penalesVisitante,
                 estado,
-                tiempoJuego: isFinished ? 90 : null,
+                tiempoJuego: isFinished ? 90 : match.minute ?? null,
                 observaciones: isFinished
-                  ? "Resultado final sincronizado desde football-data.org."
-                  : "Marcador en vivo sincronizado desde football-data.org.",
+                  ? useMock
+                    ? "Resultado final sincronizado desde simulacion mock."
+                    : "Resultado final sincronizado desde football-data.org."
+                  : useMock
+                  ? `Marcador en vivo sincronizado desde simulacion mock${match.minute ? ` (${match.minute}')` : ""}.`
+                  : `Marcador en vivo sincronizado desde football-data.org${match.minute ? ` (${match.minute}')` : ""}.`,
               },
             });
           }
@@ -227,21 +363,19 @@ export async function POST(req: NextRequest) {
         });
 
         resultados.push({
-          footballDataId: match.id,
+          footballDataId,
           partidoId: partido.id,
           success: true,
-          action: isFinished
-            ? "finished"
-            : partido.resultado
-            ? "updated"
-            : "created",
+          action: isFinished ? "finished" : hasResultado ? "updated" : "created",
           message: isFinished
             ? `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: partido finalizado. Pronosticos recalculados: ${recalculo?.procesadas ?? 0}.`
-            : `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: marcador en juego sincronizado.`,
+            : hasResultado
+            ? `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: marcador en juego sincronizado.`
+            : `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: partido pasado a en juego y resultado creado.`,
         });
       } catch (error) {
         resultados.push({
-          footballDataId: match.id,
+          footballDataId,
           partidoId: partido.id,
           success: false,
           action: "error",
@@ -254,15 +388,18 @@ export async function POST(req: NextRequest) {
     const updated = resultados.filter((item) => item.action === "updated").length;
     const finished = resultados.filter((item) => item.action === "finished").length;
     const skipped = resultados.filter((item) => item.action === "skipped").length;
+    const errors = resultados.filter((item) => item.action === "error").length;
 
     return NextResponse.json({
-      message: `Sincronizacion en vivo completada. ${updated} actualizados, ${created} creados, ${finished} finalizados y ${skipped} omitidos.`,
+      message: `Sincronizacion en vivo completada${useMock ? " (mock)" : ""}. ${created} creados, ${updated} actualizados, ${finished} finalizados, ${skipped} omitidos y ${errors} con error.`,
       meta: {
-        scanned: liveMatches.length,
-        updated,
+        scanned: partidosCandidatos.length,
         created,
+        updated,
         finished,
         skipped,
+        errors,
+        source: useMock ? "mock" : "api",
       },
       resultados,
     });

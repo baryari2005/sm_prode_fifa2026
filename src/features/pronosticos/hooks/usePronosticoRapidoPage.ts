@@ -167,6 +167,18 @@ export function usePronosticoRapidoPage() {
   }, [partidos]);
 
   useEffect(() => {
+    if (pendingChangesCount > 0) return;
+
+    const intervalId = window.setInterval(() => {
+      void loadData();
+    }, 30000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [loadData, pendingChangesCount]);
+
+  useEffect(() => {
     if (!mostrandoFaseGrupos) {
       setGrupoSeleccionado(null);
       return;

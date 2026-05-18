@@ -40,6 +40,12 @@ export function PronosticoRapidoMatchCard({
   const grupoNombre = getGrupoNombre(partido);
   const hora = formatMatchHour(partido.fecha);
   const countdownLabel = getPredictionCountdownLabel(partido.fecha);
+  const resultadoActual = partido.resultado;
+  const marcadorActual = resultadoActual
+    ? `${resultadoActual.golesLocal} - ${resultadoActual.golesVisitante}`
+    : null;
+  const estaEnJuego = resultadoActual?.estado === "EN_JUEGO";
+  const estaFinalizado = resultadoActual?.estado === "FINALIZADO";
 
   return (
     <article className="group relative overflow-hidden rounded-[1.35rem] bg-transparent transition-all duration-200">
@@ -80,6 +86,26 @@ export function PronosticoRapidoMatchCard({
           </div>
 
           <div className="hidden flex-wrap items-center gap-2 2xl:flex 2xl:flex-nowrap 2xl:justify-end">
+            {marcadorActual ? (
+              <Badge
+                variant="secondary"
+                className={`h-8 whitespace-nowrap rounded-full px-3 text-xs font-medium ${
+                  estaEnJuego
+                    ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-50"
+                    : estaFinalizado
+                    ? "bg-sky-50 text-sky-700 hover:bg-sky-50"
+                    : "bg-slate-100 text-slate-700"
+                }`}
+              >
+                <Trophy className="mr-1.5 h-3.5 w-3.5 text-current" />
+                {estaEnJuego
+                  ? `En juego ${marcadorActual}`
+                  : estaFinalizado
+                  ? `Final ${marcadorActual}`
+                  : `Marcador ${marcadorActual}`}
+              </Badge>
+            ) : null}
+
             <Badge
               variant="secondary"
               className={`h-8 whitespace-nowrap rounded-full px-3 text-xs font-medium ${

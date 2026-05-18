@@ -150,6 +150,23 @@ export function PartidosAdminPanel({
     }
   }
 
+  async function handleSyncLiveMatchesMock() {
+    try {
+      setSyncingLive(true);
+      const result = await actualizarPartidosEnJuegoDesdeApi(true);
+      toast.success(result.message);
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudieron simular los partidos en juego"
+      );
+    } finally {
+      setSyncingLive(false);
+    }
+  }
+
   return (
     <div className="grid gap-6">
       <Card className="border-white/70 bg-white shadow-sm">
@@ -243,6 +260,26 @@ export function PartidosAdminPanel({
                     <>
                       <Trophy className="mr-2 h-4 w-4" />
                       Sincronizar partidos en juego
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void handleSyncLiveMatchesMock()}
+                  disabled={!canActualizarResultados || syncingLive}
+                  className="rounded-2xl border-slate-200 bg-white"
+                >
+                  {syncingLive ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Simulando...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="mr-2 h-4 w-4" />
+                      Simular marcador en vivo
                     </>
                   )}
                 </Button>

@@ -224,7 +224,9 @@ export async function reimportarPartidosDesdeApi(): Promise<{
   };
 }
 
-export async function actualizarPartidosEnJuegoDesdeApi(): Promise<{
+export async function actualizarPartidosEnJuegoDesdeApi(
+  useMock = false
+): Promise<{
   message: string;
   meta?: {
     scanned?: number;
@@ -232,9 +234,13 @@ export async function actualizarPartidosEnJuegoDesdeApi(): Promise<{
     created?: number;
     finished?: number;
     skipped?: number;
+    errors?: number;
+    source?: string;
   };
 }> {
-  const res = await fetch("/api/partidos/actualizar-en-juego-api", {
+  const suffix = useMock ? "?mock=1" : "";
+
+  const res = await fetch(`/api/partidos/actualizar-en-juego-api${suffix}`, {
     method: "POST",
     cache: "no-store",
     headers: getAuthHeaders(),
@@ -248,6 +254,8 @@ export async function actualizarPartidosEnJuegoDesdeApi(): Promise<{
       created?: number;
       finished?: number;
       skipped?: number;
+      errors?: number;
+      source?: string;
     };
   };
 
