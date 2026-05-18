@@ -6,6 +6,7 @@ import { TeamFlag } from "@/features/pronosticos/components/rapido/TeamFlag";
 type TeamPredictionColumnProps = {
   name: string;
   flag?: string | null;
+  code?: string | null;
   value: string;
   disabled: boolean;
   align: "left" | "right";
@@ -15,6 +16,7 @@ type TeamPredictionColumnProps = {
 export function TeamPredictionColumn({
   name,
   flag,
+  code,
   value,
   disabled,
   align,
@@ -37,7 +39,7 @@ export function TeamPredictionColumn({
       >
         <ScoreInput value={value} disabled={disabled} onChange={onChange} />
 
-        <TeamFlag flag={flag} name={name} />
+        <TeamFlag flag={flag} code={code} name={name} />
 
         <p className="truncate text-base font-black text-slate-950 md:text-xl">
           {name}

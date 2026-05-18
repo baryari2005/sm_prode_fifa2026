@@ -9,33 +9,33 @@ import {
 } from "react";
 import Image from "next/image";
 import {
-  CalendarDays,
-  Check,
+  CalendarDays,  
   Clock3,
+  Info,
   RefreshCw,
-  Minus,
-  Plus,
-  ShieldCheck,
+  Save,
+  Sparkles,
+  TimerReset,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-
-import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
-import { resolveBanderaSrc } from "@/lib/flags";
-
 import {
   formatMatchHour,
-  getPredictionCountdownLabel,
   getPredictionCloseTimestamp,
+  getPredictionCountdownLabel,
   isPredictionClosed,
-  type PartidoConRelaciones,
   PREDICTION_CLOSE_MINUTES_BEFORE,
+  type PartidoConRelaciones,
 } from "@/features/partidos/utils/partidos-ui.helpers";
+import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
+import { upsertPronostico } from "@/features/pronosticos/services/pronosticos.service";
+import { resolveBanderaSrc } from "@/lib/flags";
 
 type PronosticoDialogProps = {
   open: boolean;
@@ -65,8 +65,8 @@ export function PronosticoDialog({
     : true;
 
   const partidoFinalizado = partido?.resultado?.estado === "FINALIZADO";
-
   const bloqueado = pronosticoCerrado || partidoFinalizado || !partido;
+  const cargaDeshabilitada = bloqueado || saving;
 
   const countdownLabel = partido
     ? getPredictionCountdownLabel(
@@ -144,27 +144,15 @@ export function PronosticoDialog({
     try {
       setSaving(true);
 
-      const response = await fetch(`/api/partidos/${partido.id}/prediccion`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          golesLocal: Number(golesLocal),
-          golesVisitante: Number(golesVisitante),
-        }),
+      await upsertPronostico({
+        partidoId: partido.id,
+        golesLocal: Number(golesLocal),
+        golesVisitante: Number(golesVisitante),
       });
-
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(data?.message || "No se pudo guardar el pronóstico.");
-      }
 
       toast.success("Pronóstico guardado correctamente");
 
       await onSaved?.();
-
       onOpenChange(false);
     } catch (error) {
       const message =
@@ -180,28 +168,38 @@ export function PronosticoDialog({
 
   if (!partido) return null;
 
+  const scoreCardClass = bloqueado
+    ? "border-red-200 bg-red-50/40 opacity-70"
+    : "border-slate-200/90 bg-white/90";
+
+  const statusCardClass = bloqueado
+    ? "border-red-200 bg-gradient-to-b from-red-50 via-white to-red-50 text-red-700"
+    : "border-[#008C93]/15 bg-gradient-to-b from-[#E8FBFC] via-white to-[#F7FAFC] text-[#008C93]";
+
+  const statusIconClass = bloqueado ? "text-red-600" : "text-[#008C93]";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
         className="
-          w-[calc(100vw-1.5rem)]
-          max-w-[920px]
+          w-[calc(100vw-1rem)]
+          max-w-[1080px]
           overflow-hidden
           rounded-[2rem]
-          border
-          border-white/10
-          bg-[#06131d]
+          border border-slate-200/90
+          bg-gradient-to-br from-white via-white to-slate-50
           p-0
-          text-white
-          shadow-[0_35px_120px_rgba(0,0,0,0.55)]
+          text-slate-950
+          shadow-[0_30px_90px_rgba(15,23,42,0.18)]
+          sm:max-w-[1080px]
         "
       >
         <div className="relative">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#39A935]/12 blur-3xl" />
-          <div className="pointer-events-none absolute -left-20 top-24 h-72 w-72 rounded-full bg-[#008C93]/14 blur-3xl" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#008C93] via-[#00A6B2] to-[#7DD3FC]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,140,147,0.08),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(57,169,53,0.08),transparent_28%)]" />
 
-          <header className="relative px-6 pb-5 pt-6 sm:px-8">
+          <header className="relative px-5 pb-5 pt-6 sm:px-8">
             <button
               type="button"
               onClick={() => onOpenChange(false)}
@@ -215,10 +213,10 @@ export function PronosticoDialog({
                 items-center
                 justify-center
                 rounded-full
-                text-slate-400
+                text-slate-500
                 transition
-                hover:bg-white/10
-                hover:text-white
+                hover:bg-slate-100
+                hover:text-slate-950
               "
             >
               <X className="h-4 w-4" />
@@ -226,201 +224,129 @@ export function PronosticoDialog({
 
             <div className="flex flex-col gap-3 pr-10 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <DialogTitle className="text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">
-                  Pronosticar partido
+                <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.28em] text-[#008C93]">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Carga de pronóstico
+                </p>
+
+                <DialogTitle className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950 sm:text-3xl">
+                  Editar pronóstico
                 </DialogTitle>
 
-                <p className="mt-1 text-sm font-semibold text-slate-400">
-                  Completá tu predicción para el partido.
+                <p className="mt-1 flex items-center text-sm font-semibold text-slate-500">
+                  <Info className="mr-2 h-3 w-3" />
+                  Completá tu resultado y guardalo con el mismo flujo que usa la
+                  carga masiva.
                 </p>
               </div>
 
-              {miPronostico && (
-                <div className="w-fit rounded-full border border-green-500/25 bg-green-500/10 px-4 py-2 text-xs font-black text-green-300">
-                  Tu pronóstico actual: {miPronostico.golesLocal} -{" "}
+              {miPronostico ? (
+                <Badge
+                  className={`w-fit rounded-full px-4 py-2 text-xs font-black ${
+                    bloqueado
+                      ? "border border-red-200 bg-red-50 text-red-700 hover:bg-red-50"
+                      : "border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50"
+                  }`}
+                >
+                  Pronóstico actual: {miPronostico.golesLocal} -{" "}
                   {miPronostico.golesVisitante}
-                </div>
-              )}
+                </Badge>
+              ) : null}
             </div>
           </header>
 
-          <div className="relative px-6 pb-5 sm:px-8">
-            <section
-              className="
-                grid
-                items-center
-                gap-5
-                rounded-[1.5rem]
-                border
-                border-white/10
-                bg-[linear-gradient(135deg,rgba(8,26,39,0.95),rgba(11,34,50,0.92))]
-                px-5
-                py-5
-                sm:grid-cols-[1fr_220px_1fr]
-              "
-            >
-              <TeamPreview
-                name={local?.nombre ?? "Local"}
-                flag={local?.bandera}
-                code={local?.codigo}
-                align="left"
-              />
-
-              <div
-                className="
-                  mx-auto
-                  flex
-                  w-full
-                  max-w-[220px]
-                  flex-col
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  border
-                  border-white/10
-                  bg-white/5
-                  px-4
-                  py-4
-                  backdrop-blur
-                "
-              >
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-[#6DD3D8]">
-                  <CalendarDays className="h-3.5 w-3.5" />
+          <div className="relative px-5 pb-5 sm:px-8">
+            <section>
+              <div className="mx-auto flex w-full flex-col items-center justify-center rounded-2xl border border-[#008C93]/15 bg-gradient-to-b from-[#E8FBFC] via-white to-[#F7FAFC] px-5 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+                <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-[#008C93]">
+                  <CalendarDays className="h-5 w-5" />
                   <span className="capitalize">{fechaPartidoLabel}</span>
+                  <Clock3 className="h-5 w-5 text-[#008C93]" />
+                  {horaPartidoLabel} hs
                 </div>
-
-                <div className="mt-2 flex items-center gap-2 text-3xl font-black tracking-[-0.04em] text-white">
-                  <Clock3 className="h-5 w-5 text-[#6DD3D8]" />
-                  {horaPartidoLabel}
-                </div>
-
-                <span className="mt-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
-                  hs
-                </span>
               </div>
-
-              <TeamPreview
-                name={visitante?.nombre ?? "Visitante"}
-                flag={visitante?.bandera}
-                code={visitante?.codigo}
-                align="right"
-              />
             </section>
-
-            <section className="mt-7 grid items-end gap-5 sm:grid-cols-[1fr_64px_1fr]">
-              <ScoreControl
-                label={`Goles de ${local?.nombre ?? "local"}`}
-                value={golesLocal}
-                disabled={bloqueado || saving}
-                onChange={(value) => setNumericValue(value, setGolesLocal)}
-                onIncrement={() => increment(golesLocal, setGolesLocal)}
-                onDecrement={() => decrement(golesLocal, setGolesLocal)}
-              />
-
-              <div className="mb-1 flex justify-center">
-                <span
-                  className="
-                    flex
-                    h-14
-                    w-14
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-white/10
-                    bg-white/5
-                    text-sm
-                    font-black
-                    text-slate-200
-                    shadow-inner
-                  "
-                >
-                  VS
-                </span>
-              </div>
-
-              <ScoreControl
-                label={`Goles de ${visitante?.nombre ?? "visitante"}`}
-                value={golesVisitante}
-                disabled={bloqueado || saving}
-                onChange={(value) => setNumericValue(value, setGolesVisitante)}
-                onIncrement={() =>
-                  increment(golesVisitante, setGolesVisitante)
-                }
-                onDecrement={() =>
-                  decrement(golesVisitante, setGolesVisitante)
-                }
-              />
-            </section>
-
-            <Separator className="my-6 bg-white/10" />
 
             <section
-              className={`
-                flex
-                items-center
-                justify-center
-                gap-2
-                rounded-full
-                border
-                px-4
-                py-2.5
-                text-center
-                text-sm
-                font-bold
-                ${
-                  bloqueado
-                    ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
-                    : "border-green-500/20 bg-green-500/10 text-green-300"
-                }
-              `}
+              aria-disabled={cargaDeshabilitada}
+              className={`mt-5 rounded-[1.6rem] border p-4 shadow-[0_16px_35px_rgba(15,23,42,0.06)] transition sm:p-5 ${scoreCardClass}`}
             >
-              <ShieldCheck className="h-4 w-4 shrink-0" />
+              <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-4">
+                <TeamScoreControl
+                  side="local"
+                  name={local?.nombre ?? "Local"}
+                  flag={local?.bandera}
+                  code={local?.codigo}
+                  value={golesLocal}
+                  disabled={cargaDeshabilitada}
+                  onChange={(value) => setNumericValue(value, setGolesLocal)}
+                  onIncrement={() => increment(golesLocal, setGolesLocal)}
+                  onDecrement={() => decrement(golesLocal, setGolesLocal)}
+                />
 
-              {partidoFinalizado ? (
-                <span>El partido ya finalizó. No se puede editar.</span>
-              ) : pronosticoCerrado ? (
-                <span>El pronóstico está cerrado.</span>
-              ) : (
-                <span>
-                  {countdownLabel} · Editable hasta las {fechaCierreLabel} hs.
-                </span>
-              )}
+                <div className="flex items-center justify-center">
+                  <span
+                    className={`rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-[0.16em] sm:px-3 sm:text-xs sm:tracking-[0.18em] ${
+                      bloqueado
+                        ? "bg-red-100 text-red-500"
+                        : "bg-slate-100 text-slate-400"
+                    }`}
+                  >
+                    vs
+                  </span>
+                </div>
+
+                <TeamScoreControl
+                  side="visitante"
+                  name={visitante?.nombre ?? "Visitante"}
+                  flag={visitante?.bandera}
+                  code={visitante?.codigo}
+                  value={golesVisitante}
+                  disabled={cargaDeshabilitada}
+                  onChange={(value) =>
+                    setNumericValue(value, setGolesVisitante)
+                  }
+                  onIncrement={() =>
+                    increment(golesVisitante, setGolesVisitante)
+                  }
+                  onDecrement={() =>
+                    decrement(golesVisitante, setGolesVisitante)
+                  }
+                />
+              </div>
+            </section>
+
+            <Separator className="my-6 bg-slate-200" />
+
+            <section>
+              <div
+                className={`mx-auto flex w-full flex-col items-center justify-center rounded-xl border px-5 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] ${statusCardClass}`}
+              >
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em]">
+                  <TimerReset className={`h-5 w-5 shrink-0 ${statusIconClass}`} />
+
+                  {partidoFinalizado ? (
+                    <span>El partido ya finalizó. No se puede editar.</span>
+                  ) : pronosticoCerrado ? (
+                    <span>El pronóstico está cerrado. No se puede editar.</span>
+                  ) : (
+                    <span>
+                      {countdownLabel} · Editable hasta las {fechaCierreLabel}{" "}
+                      hs.
+                    </span>
+                  )}
+                </div>
+              </div>
             </section>
           </div>
 
-          <footer
-            className="
-              relative
-              flex
-              flex-col-reverse
-              gap-3
-              border-t
-              border-white/10
-              bg-white/[0.03]
-              px-6
-              py-5
-              sm:flex-row
-              sm:justify-end
-              sm:px-8
-            "
-          >
+          <footer className="relative flex flex-col-reverse gap-3 border-t border-slate-200/80 bg-slate-50/80 px-5 py-5 sm:flex-row sm:justify-end sm:px-8">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={saving}
-              className="
-                h-11
-                rounded-2xl
-                border-white/15
-                bg-transparent
-                px-7
-                font-black
-                text-slate-200
-                hover:bg-white/10
-                hover:text-white
-              "
+              className="h-11 rounded-2xl border-slate-200 bg-white px-7 font-black text-slate-700 hover:bg-slate-100 hover:text-slate-950"
             >
               Cancelar
             </Button>
@@ -429,22 +355,7 @@ export function PronosticoDialog({
               type="button"
               onClick={handleSubmit}
               disabled={bloqueado || saving}
-              className="
-                h-11
-                rounded-2xl
-                bg-[#39A935]
-                px-8
-                font-black
-                text-white
-                shadow-lg
-                shadow-green-900/30
-                transition
-                hover:bg-[#2f8d2f]
-                disabled:cursor-not-allowed
-                disabled:bg-slate-700
-                disabled:text-slate-400
-                disabled:shadow-none
-              "
+              className="h-11 rounded-2xl bg-[#39A935] px-8 font-black text-white shadow-lg shadow-green-900/20 transition hover:bg-[#2f8d2f] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
             >
               {saving ? (
                 <span className="inline-flex items-center gap-2">
@@ -453,7 +364,7 @@ export function PronosticoDialog({
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-2">
-                  <Check className="h-4 w-4" />
+                  <Save className="h-4 w-4" />
                   Guardar pronóstico
                 </span>
               )}
@@ -465,8 +376,11 @@ export function PronosticoDialog({
   );
 }
 
-type ScoreControlProps = {
-  label: string;
+type TeamScoreControlProps = {
+  side: "local" | "visitante";
+  name: string;
+  flag?: string | null;
+  code?: string | null;
   value: string;
   disabled?: boolean;
   onChange: (value: string) => void;
@@ -474,162 +388,125 @@ type ScoreControlProps = {
   onDecrement: () => void;
 };
 
-function ScoreControl({
-  label,
+function TeamScoreControl({
+  side,
+  name,
+  flag,
+  code,
   value,
   disabled = false,
   onChange,
   onIncrement,
   onDecrement,
-}: ScoreControlProps) {
+}: TeamScoreControlProps) {
+  const isLocal = side === "local";
+  const flagSrc = resolveBanderaSrc(flag?.trim(), code);
+
   return (
-    <div className="space-y-2">
-      <label className="block text-center text-sm font-black text-slate-200">
-        {label}
-      </label>
-
-      <div
-        className={`
-          grid
-          h-16
-          grid-cols-[60px_1fr_60px]
-          overflow-hidden
-          rounded-2xl
-          border
-          bg-white/5
-          backdrop-blur
-          transition
-          focus-within:border-[#39A935]
-          focus-within:ring-4
-          focus-within:ring-[#39A935]/12
-          ${disabled ? "opacity-60" : "border-white/12"}
-        `}
-      >
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={onDecrement}
-          className="
-            flex
-            items-center
-            justify-center
-            text-slate-200
-            transition
-            hover:bg-white/8
-            disabled:cursor-not-allowed
-          "
-        >
-          <Minus className="h-5 w-5" />
-        </button>
-
-        <Input
-          inputMode="numeric"
-          value={value}
-          disabled={disabled}
-          onFocus={(event) => event.target.select()}
-          onChange={(event) => onChange(event.target.value)}
-          className="
-            h-full
-            rounded-none
-            border-0
-            bg-transparent
-            px-0
-            text-center
-            text-4xl
-            font-black
-            tracking-[-0.05em]
-            text-white
-            shadow-none
-            outline-none
-            focus-visible:ring-0
-            placeholder:text-slate-500
-          "
-        />
-
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={onIncrement}
-          className="
-            flex
-            items-center
-            justify-center
-            text-slate-200
-            transition
-            hover:bg-white/8
-            disabled:cursor-not-allowed
-          "
-        >
-          <Plus className="h-5 w-5" />
-        </button>
-      </div>
+    <div
+      className={`grid min-w-0 items-center gap-2 sm:gap-3 ${
+        isLocal
+          ? "grid-cols-[minmax(0,1fr)_auto_auto]"
+          : "grid-cols-[auto_auto_minmax(0,1fr)]"
+      }`}
+    >
+      {isLocal ? (
+        <>
+          <TeamName name={name} align="right" />
+          <FlagBox name={name} flag={flag} flagSrc={flagSrc} />
+          <MiniScoreInput
+            value={value}
+            disabled={disabled}
+            onChange={onChange}
+            onIncrement={onIncrement}
+            onDecrement={onDecrement}
+          />
+        </>
+      ) : (
+        <>
+          <MiniScoreInput
+            value={value}
+            disabled={disabled}
+            onChange={onChange}
+            onIncrement={onIncrement}
+            onDecrement={onDecrement}
+          />
+          <FlagBox name={name} flag={flag} flagSrc={flagSrc} />
+          <TeamName name={name} align="left" />
+        </>
+      )}
     </div>
   );
 }
 
-type TeamPreviewProps = {
+type TeamNameProps = {
   name: string;
-  flag?: string | null;
-  code?: string | null;
   align: "left" | "right";
 };
 
-function TeamPreview({ name, flag, code, align }: TeamPreviewProps) {
-  const flagSrc = resolveBanderaSrc(flag?.trim(), code);
-  const isLeft = align === "left";
-
+function TeamName({ name, align }: TeamNameProps) {
   return (
-    <div
-      className={`
-        flex
-        min-w-0
-        items-center
-        justify-center
-        gap-3
-        ${isLeft ? "sm:justify-start" : "sm:flex-row-reverse sm:justify-start"}
-      `}
+    <p
+      className={`min-w-0 truncate text-xs font-black tracking-[-0.03em] text-slate-950 sm:text-sm md:text-base ${
+        align === "right" ? "text-right" : "text-left"
+      }`}
+      title={name}
     >
-      <div
-        className="
-          flex
-          h-12
-          w-15
-          shrink-0
-          items-center
-          justify-center
-          overflow-hidden
-          rounded-xl
-          bg-white/8
-          px-1
-        "
-      >
-        {flagSrc ? (
-          <Image
-            src={flagSrc}
-            alt={`Bandera de ${name}`}
-            width={48}
-            height={32}
-            unoptimized
-            className="h-9 w-12 object-contain"
-          />
-        ) : (
-          <span className="text-xl">{flag || "🏳️"}</span>
-        )}
-      </div>
+      {name}
+    </p>
+  );
+}
 
-      <p
-        className={`
-          min-w-0
-          truncate
-          text-lg
-          font-black
-          tracking-[-0.04em]
-          text-white
-          ${isLeft ? "text-left" : "text-left sm:text-right"}
-        `}
-      >
-        {name}
-      </p>
+type FlagBoxProps = {
+  name: string;
+  flag?: string | null;
+  flagSrc?: string | null;
+};
+
+function FlagBox({ name, flag, flagSrc }: FlagBoxProps) {
+  return (
+    <div className="shrink-0">
+      {flagSrc ? (
+        <Image
+          src={flagSrc}
+          alt={`Bandera de ${name}`}
+          width={48}
+          height={32}
+          unoptimized
+          className="h-7 w-10 object-contain sm:h-8 sm:w-12"
+        />
+      ) : (
+        <span className="text-xl">{flag || "🏳️"}</span>
+      )}
+    </div>
+  );
+}
+
+type MiniScoreInputProps = {
+  value: string;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+  onIncrement: () => void;
+  onDecrement: () => void;
+};
+
+function MiniScoreInput({
+  value,
+  disabled = false,
+  onChange,
+}: MiniScoreInputProps) {
+  return (
+    <div>
+      <Input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={value}
+        disabled={disabled}
+        onFocus={(event) => event.target.select()}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-8 w-10 rounded-xl border border-slate-200 bg-white text-center text-lg font-black text-slate-950 shadow-sm outline-none transition focus:border-[#008C93] focus:ring-4 focus:ring-[#008C93]/10 disabled:cursor-not-allowed disabled:border-red-100 disabled:bg-red-50 disabled:text-red-400 md:h-10 md:w-12 md:text-xl"
+      />
     </div>
   );
 }
