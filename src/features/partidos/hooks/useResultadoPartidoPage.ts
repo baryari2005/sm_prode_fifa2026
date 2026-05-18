@@ -118,6 +118,8 @@ export function useResultadoPartidoPage() {
   );
 
   const canSubmit = canEditar && partido !== null;
+  const isLiveLocked = resultado?.estado === "EN_JUEGO";
+  const canEditCurrentResult = canSubmit && !isLiveLocked;
 
   const headerDescription = useMemo(() => {
     if (!partido) return "";
@@ -222,6 +224,10 @@ export function useResultadoPartidoPage() {
 
   async function handleSave() {
     if (!canSubmit) return;
+    if (isLiveLocked) {
+      toast.error("No se puede modificar el resultado porque el partido esta en juego");
+      return;
+    }
 
     try {
       setSaving(true);
@@ -293,6 +299,8 @@ export function useResultadoPartidoPage() {
     canVer,
     canEditar,
     canSubmit,
+    isLiveLocked,
+    canEditCurrentResult,
 
     localNombre,
     visitanteNombre,

@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/db";
 import { requireAuth, requirePermission } from "@/lib/server-auth";
-import { recalcularPronosticosDePartido } from "@/features/partidos/services/pronosticos.service";
-
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -245,7 +243,18 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      const recalculo = await prisma.$transaction(async (tx) => {
+      if (partido.resultado?.estado === EstadoPartido.EN_JUEGO) {
+        resultados.push({
+          footballDataId: match.id,
+          partidoId: partido.id,
+          success: true,
+          action: "skipped",
+          message: `${partido.seleccionLocal.nombre} vs ${partido.seleccionVisitante.nombre}: omitido porque el partido esta en juego.`,
+        });
+        continue;
+      }
+
+      await prisma.$transaction(async (tx) => {
         if (partido.resultado) {
           await tx.resultado.update({
             where: {
@@ -278,7 +287,6 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        return recalcularPronosticosDePartido(tx, partido.id);
       });
 
       if (partido.resultado) {
@@ -287,7 +295,7 @@ export async function POST(req: NextRequest) {
           partidoId: partido.id,
           success: true,
           action: "updated",
-          message: `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: resultado actualizado. Pronosticos recalculados: ${recalculo.procesadas}.`,
+          message: `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: resultado actualizado. Pendiente de ranking diario.`,
         });
       } else {
         resultados.push({
@@ -295,7 +303,7 @@ export async function POST(req: NextRequest) {
           partidoId: partido.id,
           success: true,
           action: "created",
-          message: `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: resultado creado. Pronosticos recalculados: ${recalculo.procesadas}.`,
+          message: `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: resultado creado. Pendiente de ranking diario.`,
         });
       }
     }

@@ -1,14 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { requireAuth, requirePermission } from "@/lib/server-auth";
 import {
   createResultado,
-  updateResultado,
+  getPartidoById,
   getResultadoByPartidoId,
+  updateResultado,
 } from "@/features/partidos/services/partido.service";
-import { resultadoCreateSchema, resultadoUpdateSchema } from "@/features/partidos/schemas/resultado.schema";
+import {
+  resultadoCreateSchema,
+  resultadoUpdateSchema,
+} from "@/features/partidos/schemas/resultado.schema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+async function ensureResultadoEditable(partidoId: string) {
+  const [partido, resultado] = await Promise.all([
+    getPartidoById(partidoId),
+    getResultadoByPartidoId(partidoId),
+  ]);
+
+  if (!partido) {
+    throw new Error("PARTIDO_NOT_FOUND");
+  }
+
+  if (resultado?.estado === "EN_JUEGO") {
+    throw new Error("RESULTADO_LIVE_LOCKED");
+  }
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -20,7 +40,7 @@ export async function GET(req: NextRequest) {
 
     if (!partidoId) {
       return NextResponse.json(
-        { message: "Se requiere el parámetro partidoId" },
+        { message: "Se requiere el parametro partidoId" },
         { status: 400 }
       );
     }
@@ -38,14 +58,14 @@ export async function GET(req: NextRequest) {
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
       return NextResponse.json(
-        { message: "No autorizado. Debés iniciar sesión." },
+        { message: "No autorizado. Debes iniciar sesion." },
         { status: 401 }
       );
     }
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenés permisos para ver resultados." },
+        { message: "No tenes permisos para ver resultados." },
         { status: 403 }
       );
     }
@@ -67,21 +87,40 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const dto = resultadoCreateSchema.parse(body);
 
+    await ensureResultadoEditable(dto.partidoId);
+
     const resultado = await createResultado(dto);
 
     return NextResponse.json(resultado, { status: 201 });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
       return NextResponse.json(
-        { message: "No autorizado. Debés iniciar sesión." },
+        { message: "No autorizado. Debes iniciar sesion." },
         { status: 401 }
       );
     }
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenés permisos para crear resultados." },
+        { message: "No tenes permisos para crear resultados." },
         { status: 403 }
+      );
+    }
+
+    if (err instanceof Error && err.message === "PARTIDO_NOT_FOUND") {
+      return NextResponse.json(
+        { message: "Partido no encontrado." },
+        { status: 404 }
+      );
+    }
+
+    if (err instanceof Error && err.message === "RESULTADO_LIVE_LOCKED") {
+      return NextResponse.json(
+        {
+          message:
+            "No se puede modificar el resultado porque el partido ya esta en juego.",
+        },
+        { status: 409 }
       );
     }
 
@@ -100,7 +139,10 @@ export async function PUT(req: NextRequest) {
     requirePermission(loggedInUser, "resultados", "editar");
 
     const body = await req.json();
-    const { partidoId, ...updateData } = body;
+    const { partidoId, ...updateData } = body as {
+      partidoId?: string;
+      [key: string]: unknown;
+    };
 
     if (!partidoId) {
       return NextResponse.json(
@@ -110,21 +152,41 @@ export async function PUT(req: NextRequest) {
     }
 
     const dto = resultadoUpdateSchema.parse(updateData);
+
+    await ensureResultadoEditable(partidoId);
+
     const resultado = await updateResultado(partidoId, dto);
 
     return NextResponse.json(resultado);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
       return NextResponse.json(
-        { message: "No autorizado. Debés iniciar sesión." },
+        { message: "No autorizado. Debes iniciar sesion." },
         { status: 401 }
       );
     }
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenés permisos para editar resultados." },
+        { message: "No tenes permisos para editar resultados." },
         { status: 403 }
+      );
+    }
+
+    if (err instanceof Error && err.message === "PARTIDO_NOT_FOUND") {
+      return NextResponse.json(
+        { message: "Partido no encontrado." },
+        { status: 404 }
+      );
+    }
+
+    if (err instanceof Error && err.message === "RESULTADO_LIVE_LOCKED") {
+      return NextResponse.json(
+        {
+          message:
+            "No se puede modificar el resultado porque el partido ya esta en juego.",
+        },
+        { status: 409 }
       );
     }
 

@@ -66,10 +66,11 @@ export function PartidoCard({
   const hora = formatMatchHour(partido.fecha);
 
   const resultado = partido.resultado;
+  const tieneResultadoEnJuego = resultado?.estado === "EN_JUEGO";
   const tieneResultadoFinal = resultado?.estado === "FINALIZADO";
   const partidoActivo = partido.activo !== false;
 
-  const score = tieneResultadoFinal
+  const score = resultado && (tieneResultadoEnJuego || tieneResultadoFinal)
     ? `${resultado.golesLocal} - ${resultado.golesVisitante}`
     : null;
 
@@ -135,12 +136,18 @@ export function PartidoCard({
                 }
               >
                 <span className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-[#008C93]/70">
-                  {tieneResultadoFinal ? "Resultado" : "Hora"}
+                  {score ? "Resultado" : "Hora"}
                 </span>
 
                 <p className="text-3xl font-black leading-none tracking-[-0.04em] text-slate-950 md:text-[2.15rem]">
                   {score ?? hora}
                 </p>
+
+                {tieneResultadoEnJuego && (
+                  <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
+                    En juego {resultado?.tiempoJuego ? `${resultado.tiempoJuego}'` : ""}
+                  </span>
+                )}
 
                 {tieneResultadoFinal && (
                   <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
@@ -263,9 +270,10 @@ export function PartidoCard({
                   variant="outline"
                   size="sm"
                   onClick={onCargarFormaciones}
+                  disabled={tieneResultadoEnJuego}
                   className={secondaryActionButtonClassName}
                 >
-                  Cargar Formaciones
+                  {tieneResultadoEnJuego ? "Formaciones bloqueadas" : "Cargar Formaciones"}
                 </Button>
               )}
 
@@ -275,9 +283,10 @@ export function PartidoCard({
                   variant="outline"
                   size="sm"
                   onClick={onGestionarResultado}
+                  disabled={tieneResultadoEnJuego}
                   className={secondaryActionButtonClassName}
                 >
-                  Cargar Resultado
+                  {tieneResultadoEnJuego ? "Resultado bloqueado" : "Cargar Resultado"}
                 </Button>
               )}
 

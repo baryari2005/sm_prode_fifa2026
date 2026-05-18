@@ -89,24 +89,28 @@ export function usePartidosPorGrupo(group: string) {
     useState(false);
   const [busqueda, setBusqueda] = useState("");
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (loadOptions?: { silent?: boolean }) => {
     try {
-      setLoading(true);
+      if (!loadOptions?.silent) {
+        setLoading(true);
+      }
 
-      const [partidosList, options] = await Promise.all([
+      const [partidosList, optionsData] = await Promise.all([
         getPartidos(),
         getPartidosOptions(),
       ]);
 
       setPartidos(partidosList);
-      setSelecciones(options.selecciones);
-      setFases(options.fases);
+      setSelecciones(optionsData.selecciones);
+      setFases(optionsData.fases);
     } catch (error) {
       console.error("Error cargando partidos por grupo:", error);
       setPartidos([]);
       toast.error("Error al cargar los partidos del grupo");
     } finally {
-      setLoading(false);
+      if (!loadOptions?.silent) {
+        setLoading(false);
+      }
     }
   }, []);
 

@@ -67,6 +67,7 @@ export default function PartidoFormacionesPage() {
   );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const isLiveLocked = resultado?.estado === "EN_JUEGO";
 
   useEffect(() => {
     if (!canVer) return;
@@ -141,6 +142,10 @@ export default function PartidoFormacionesPage() {
 
   async function handleSave() {
     if (!canEditar) return;
+    if (isLiveLocked) {
+      toast.error("No se pueden modificar las formaciones porque el partido esta en juego");
+      return;
+    }
 
     try {
       setSaving(true);
@@ -216,36 +221,46 @@ export default function PartidoFormacionesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 xl:grid-cols-2">
-          <LineupEditorCard
-            title={localNombre}
-            teamCode={localCodigo}
-            lineup={alineacionLocal}
-            squad={plantelLocal}
-            onChange={setAlineacionLocal}
-            previousLineup={previousLocal?.lineup ?? null}
-            previousMatchLabel={localPreviousLabel}
-            onApplyPrevious={
-              previousLocal?.lineup
-                ? () => setAlineacionLocal(cloneLineup(previousLocal.lineup))
-                : undefined
-            }
-          />
+          {isLiveLocked ? (
+            <div className="xl:col-span-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+              El partido esta en juego. La edicion manual de formaciones queda bloqueada.
+            </div>
+          ) : null}
 
-          <LineupEditorCard
-            title={visitanteNombre}
-            teamCode={visitanteCodigo}
-            lineup={alineacionVisitante}
-            squad={plantelVisitante}
-            onChange={setAlineacionVisitante}
-            previousLineup={previousVisitante?.lineup ?? null}
-            previousMatchLabel={visitantePreviousLabel}
-            onApplyPrevious={
-              previousVisitante?.lineup
-                ? () =>
-                    setAlineacionVisitante(cloneLineup(previousVisitante.lineup))
-                : undefined
-            }
-          />
+          <div className={isLiveLocked ? "pointer-events-none opacity-60" : ""}>
+            <LineupEditorCard
+              title={localNombre}
+              teamCode={localCodigo}
+              lineup={alineacionLocal}
+              squad={plantelLocal}
+              onChange={setAlineacionLocal}
+              previousLineup={previousLocal?.lineup ?? null}
+              previousMatchLabel={localPreviousLabel}
+              onApplyPrevious={
+                previousLocal?.lineup
+                  ? () => setAlineacionLocal(cloneLineup(previousLocal.lineup))
+                  : undefined
+              }
+            />
+          </div>
+
+          <div className={isLiveLocked ? "pointer-events-none opacity-60" : ""}>
+            <LineupEditorCard
+              title={visitanteNombre}
+              teamCode={visitanteCodigo}
+              lineup={alineacionVisitante}
+              squad={plantelVisitante}
+              onChange={setAlineacionVisitante}
+              previousLineup={previousVisitante?.lineup ?? null}
+              previousMatchLabel={visitantePreviousLabel}
+              onApplyPrevious={
+                previousVisitante?.lineup
+                  ? () =>
+                      setAlineacionVisitante(cloneLineup(previousVisitante.lineup))
+                  : undefined
+              }
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -256,7 +271,7 @@ export default function PartidoFormacionesPage() {
         >
           Cancelar
         </Button>
-        <Button onClick={handleSave} disabled={!canEditar || saving}>
+        <Button onClick={handleSave} disabled={!canEditar || isLiveLocked || saving}>
           <Save className="mr-2 h-4 w-4" />
           {saving ? "Guardando..." : "Guardar formaciones"}
         </Button>

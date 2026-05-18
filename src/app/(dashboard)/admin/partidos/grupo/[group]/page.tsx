@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useMemo } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useCan } from "@/hooks/useCan";
@@ -26,6 +26,8 @@ interface GrupoPageProps {
 export default function PartidosGrupoPage({ params }: GrupoPageProps) {
     const router = useRouter();
     const { group } = use(params);
+    const [nextRefreshIn, setNextRefreshIn] = useState(60);
+    const [lastRefreshAt, setLastRefreshAt] = useState<Date | null>(null);
 
     const canVerPartidos = useCan("partidos", "ver");
     const canCrearPartidos = useCan("partidos", "crear");
@@ -63,9 +65,18 @@ export default function PartidosGrupoPage({ params }: GrupoPageProps) {
     useEffect(() => {
         if (!hasVisibleLiveMatches) return;
 
+        setNextRefreshIn(60);
         const intervalId = window.setInterval(() => {
-            void loadData();
-        }, 60_000);
+            setNextRefreshIn((prev) => {
+                if (prev <= 1) {
+                    void loadData({ silent: true });
+                    setLastRefreshAt(new Date());
+                    return 60;
+                }
+
+                return prev - 1;
+            });
+        }, 1_000);
 
         return () => window.clearInterval(intervalId);
     }, [hasVisibleLiveMatches, loadData]);
@@ -76,6 +87,12 @@ export default function PartidosGrupoPage({ params }: GrupoPageProps) {
 
     if (loading) {
         return <Loading />;
+    }
+
+    async function handleActualizarManual() {
+        await loadData({ silent: true });
+        setLastRefreshAt(new Date());
+        setNextRefreshIn(60);
     }
 
     return (
@@ -89,13 +106,13 @@ export default function PartidosGrupoPage({ params }: GrupoPageProps) {
                     cantidadPartidos={partidos.length}
                     busqueda={busqueda}
                     onBusquedaChange={setBusqueda}
-                    onActualizar={loadData}
+                    onActualizar={() => void handleActualizarManual()}
                 />
 
                 {hasVisibleLiveMatches ? (
                     <div className="flex items-center justify-end">
                         <Badge className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700 hover:bg-emerald-50">
-                            Actualizacion automatica cada 60 segundos
+                            Refresca en {nextRefreshIn}s{lastRefreshAt ? ` · ultimo refresh ${lastRefreshAt.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : ""}
                         </Badge>
                     </div>
                 ) : null}

@@ -1,7 +1,6 @@
 import { EstadoPartido } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { recalcularPronosticosDePartido } from "@/features/partidos/services/pronosticos.service";
 import { prisma } from "@/lib/db";
 import { requireAuth, requirePermission } from "@/lib/server-auth";
 
@@ -508,7 +507,7 @@ async function ejecutarSincronizacionPartidosEnJuego(req: NextRequest) {
         minute: match.minute,
       });
 
-      const recalculo = await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async (tx) => {
         if (hasResultado) {
           await tx.resultado.update({
             where: {
@@ -539,11 +538,6 @@ async function ejecutarSincronizacionPartidosEnJuego(req: NextRequest) {
           });
         }
 
-        if (isFinished) {
-          return recalcularPronosticosDePartido(tx, partido.id);
-        }
-
-        return null;
       });
 
       resultados.push({
@@ -552,9 +546,7 @@ async function ejecutarSincronizacionPartidosEnJuego(req: NextRequest) {
         success: true,
         action: isFinished ? "finished" : hasResultado ? "updated" : "created",
         message: isFinished
-          ? `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: partido finalizado. Pronosticos recalculados: ${
-              recalculo?.procesadas ?? 0
-            }.`
+          ? `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: partido finalizado. Pendiente de ranking diario.`
           : hasResultado
             ? `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: marcador en juego sincronizado.`
             : `${partido.seleccionLocal.nombre} ${golesLocal} - ${golesVisitante} ${partido.seleccionVisitante.nombre}: partido pasado a en juego y resultado creado.`,

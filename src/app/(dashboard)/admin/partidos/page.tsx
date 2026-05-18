@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useCan } from "@/hooks/useCan";
@@ -90,9 +90,18 @@ export default function PartidosPage() {
   useEffect(() => {
     if (!hasVisibleLiveMatches) return;
 
+    setNextRefreshIn(60);
     const intervalId = window.setInterval(() => {
-      void loadData();
-    }, 60_000);
+      setNextRefreshIn((prev) => {
+        if (prev <= 1) {
+          void loadData({ silent: true });
+          setLastRefreshAt(new Date());
+          return 60;
+        }
+
+        return prev - 1;
+      });
+    }, 1_000);
 
     return () => window.clearInterval(intervalId);
   }, [hasVisibleLiveMatches, loadData]);
@@ -105,6 +114,12 @@ export default function PartidosPage() {
     return <Loading />;
   }
 
+  async function handleActualizarManual() {
+    await loadData({ silent: true });
+    setLastRefreshAt(new Date());
+    setNextRefreshIn(60);
+  }
+
   return (
     <Card className="border-white/70 bg-white shadow-sm">
       <CardContent className="space-y-6 p-4 md:p-6">
@@ -115,7 +130,7 @@ export default function PartidosPage() {
           faseActivaLabel={faseActivaLabel}
           busqueda={busqueda}
           onBusquedaChange={setBusqueda}
-          onActualizar={loadData}
+          onActualizar={() => void handleActualizarManual()}
         />
 
         {mostrarFiltroGrupo ? (
@@ -129,7 +144,7 @@ export default function PartidosPage() {
         {hasVisibleLiveMatches ? (
           <div className="flex items-center justify-end">
             <Badge className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700 hover:bg-emerald-50">
-              Actualizacion automatica cada 60 segundos
+              Refresca en {nextRefreshIn}s{lastRefreshAt ? ` · ultimo refresh ${lastRefreshAt.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : ""}
             </Badge>
           </div>
         ) : null}
@@ -168,3 +183,5 @@ export default function PartidosPage() {
     </Card>
   );
 }
+  const [nextRefreshIn, setNextRefreshIn] = useState(60);
+  const [lastRefreshAt, setLastRefreshAt] = useState<Date | null>(null);

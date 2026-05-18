@@ -30,6 +30,8 @@ export default function ResultadoPartidoPage() {
 
     canVer,
     canSubmit,
+    isLiveLocked,
+    canEditCurrentResult,
 
     localNombre,
     visitanteNombre,
@@ -82,54 +84,64 @@ export default function ResultadoPartidoPage() {
       <CardContent className="space-y-6 p-4 md:p-6">
         <ResultadoManualHeader headerDescription={headerDescription} />
 
-        <ResultadoResumenEditableCard
-          competencia="Mundial 2026"
-          fechaTexto={fechaTexto}
-          local={{
-            nombre: localNombre,
-            escudoUrl: escudoLocalUrl,
-          }}
-          visitante={{
-            nombre: visitanteNombre,
-            escudoUrl: escudoVisitanteUrl,
-          }}
-          form={form}
-          plantelLocal={plantelLocal}
-          plantelVisitante={plantelVisitante}
-          importing={importingGoals}
-          onChange={updateForm}
-          onLocalGoalsChange={updateLocalGoalDetails}
-          onVisitanteGoalsChange={updateVisitanteGoalDetails}
-          onImportGoals={handleImportGoals}
-        />
+        {isLiveLocked ? (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+            El partido esta en juego. La edicion manual del resultado queda bloqueada hasta que salga de ese estado.
+          </div>
+        ) : null}
 
-        <ResultadoTabs
-          localNombre={localNombre}
-          visitanteNombre={visitanteNombre}
-          localCodigo={localCodigo}
-          visitanteCodigo={visitanteCodigo}
-          localBanderaUrl={escudoLocalUrl}
-          visitanteBanderaUrl={escudoVisitanteUrl}
-          estadisticasLocal={form.estadisticasLocal}
-          estadisticasVisitante={form.estadisticasVisitante}
-          alineacionLocal={form.alineacionLocal}
-          alineacionVisitante={form.alineacionVisitante}
-          plantelLocal={plantelLocal}
-          plantelVisitante={plantelVisitante}
-          importingStats={importingStats}
-          onImportStats={handleImportStats}
-          onLocalStatChange={updateLocalStat}
-          onVisitanteStatChange={updateVisitanteStat}
-          onLocalLineupChange={updateLocalLineup}
-          onVisitanteLineupChange={updateVisitanteLineup}
-        />
+        <div className={isLiveLocked ? "pointer-events-none opacity-60" : ""}>
+          <ResultadoResumenEditableCard
+            competencia="Mundial 2026"
+            fechaTexto={fechaTexto}
+            local={{
+              nombre: localNombre,
+              escudoUrl: escudoLocalUrl,
+            }}
+            visitante={{
+              nombre: visitanteNombre,
+              escudoUrl: escudoVisitanteUrl,
+            }}
+            form={form}
+            plantelLocal={plantelLocal}
+            plantelVisitante={plantelVisitante}
+            importing={importingGoals}
+            onChange={updateForm}
+            onLocalGoalsChange={updateLocalGoalDetails}
+            onVisitanteGoalsChange={updateVisitanteGoalDetails}
+            onImportGoals={handleImportGoals}
+          />
+        </div>
+
+        <div className={isLiveLocked ? "pointer-events-none opacity-60" : ""}>
+          <ResultadoTabs
+            localNombre={localNombre}
+            visitanteNombre={visitanteNombre}
+            localCodigo={localCodigo}
+            visitanteCodigo={visitanteCodigo}
+            localBanderaUrl={escudoLocalUrl}
+            visitanteBanderaUrl={escudoVisitanteUrl}
+            estadisticasLocal={form.estadisticasLocal}
+            estadisticasVisitante={form.estadisticasVisitante}
+            alineacionLocal={form.alineacionLocal}
+            alineacionVisitante={form.alineacionVisitante}
+            plantelLocal={plantelLocal}
+            plantelVisitante={plantelVisitante}
+            importingStats={importingStats}
+            onImportStats={handleImportStats}
+            onLocalStatChange={updateLocalStat}
+            onVisitanteStatChange={updateVisitanteStat}
+            onLocalLineupChange={updateLocalLineup}
+            onVisitanteLineupChange={updateVisitanteLineup}
+          />
+        </div>
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={cancel}>
             Cancelar
           </Button>
 
-          <Button onClick={handleSave} disabled={!canSubmit || saving}>
+          <Button onClick={handleSave} disabled={!canEditCurrentResult || saving}>
             {saving ? (
               <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
             ) : null}

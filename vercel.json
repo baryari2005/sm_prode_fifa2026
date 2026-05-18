@@ -4,6 +4,10 @@
     {
       "path": "/api/partidos/actualizar-en-juego-api",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/pronosticos/recalcular-ranking-diario",
+      "schedule": "0 3 * * *"
     }
   ]
 }

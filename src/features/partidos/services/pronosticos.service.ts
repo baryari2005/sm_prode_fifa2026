@@ -5,6 +5,12 @@ type ScoreResult = {
   aciertoTipo: AciertoTipo;
 };
 
+type PuntajeRegla = {
+  puntosExacto: number;
+  puntosParcial: number;
+  puntosSinAcierto: number;
+};
+
 function getResultadoClave(golesLocal: number, golesVisitante: number) {
   if (golesLocal > golesVisitante) return "LOCAL";
   if (golesLocal < golesVisitante) return "VISITANTE";
@@ -16,13 +22,19 @@ export function calcularPuntajePronostico(input: {
   prediccionVisitante: number;
   resultadoLocal: number;
   resultadoVisitante: number;
+  regla?: PuntajeRegla;
 }): ScoreResult {
   const {
     prediccionLocal,
     prediccionVisitante,
     resultadoLocal,
     resultadoVisitante,
+    regla,
   } = input;
+
+  const puntosExacto = regla?.puntosExacto ?? 3;
+  const puntosParcial = regla?.puntosParcial ?? 1;
+  const puntosSinAcierto = regla?.puntosSinAcierto ?? 0;
 
   const esExacto =
     prediccionLocal === resultadoLocal &&
@@ -30,7 +42,7 @@ export function calcularPuntajePronostico(input: {
 
   if (esExacto) {
     return {
-      puntosOtorgados: 3,
+      puntosOtorgados: puntosExacto,
       aciertoTipo: AciertoTipo.EXACTO,
     };
   }
@@ -43,13 +55,13 @@ export function calcularPuntajePronostico(input: {
 
   if (resultadoPronosticado === resultadoReal) {
     return {
-      puntosOtorgados: 1,
+      puntosOtorgados: puntosParcial,
       aciertoTipo: AciertoTipo.TENDENCIA,
     };
   }
 
   return {
-    puntosOtorgados: 0,
+    puntosOtorgados: puntosSinAcierto,
     aciertoTipo: AciertoTipo.NINGUNO,
   };
 }
@@ -115,6 +127,13 @@ async function recomputarRankingUsuarios(
   }
 }
 
+export async function recomputarRankingUsuariosPorIds(
+  tx: Prisma.TransactionClient,
+  usuarioIds: string[]
+) {
+  await recomputarRankingUsuarios(tx, usuarioIds);
+}
+
 export async function recalcularPronosticosDePartido(
   tx: Prisma.TransactionClient,
   partidoId: string
@@ -122,6 +141,11 @@ export async function recalcularPronosticosDePartido(
   const partido = await tx.partido.findUnique({
     where: { id: partidoId },
     include: {
+      fase: {
+        include: {
+          reglasPuntaje: true,
+        },
+      },
       resultado: true,
       predicciones: true,
     },
@@ -143,6 +167,13 @@ export async function recalcularPronosticosDePartido(
       prediccionVisitante: prediccion.golesVisitante,
       resultadoLocal: partido.resultado.golesLocal,
       resultadoVisitante: partido.resultado.golesVisitante,
+      regla: partido.fase?.reglasPuntaje?.[0]
+        ? {
+            puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
+            puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
+            puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
+          }
+        : undefined,
     });
 
     await tx.prediccionPartido.update({
@@ -163,5 +194,104 @@ export async function recalcularPronosticosDePartido(
     partidoId,
     procesadas: partido.predicciones.length,
     usuariosActualizados: Array.from(new Set(usuarioIds)).length,
+  };
+}
+
+export async function recalcularPronosticosFinalizadosEnRango(
+  tx: Prisma.TransactionClient,
+  input?: {
+    fechaDesde?: Date;
+    fechaHasta?: Date;
+    soloNoCalculados?: boolean;
+  }
+) {
+  const partidos = await tx.partido.findMany({
+    where: {
+      activo: true,
+      ...(input?.fechaDesde || input?.fechaHasta
+        ? {
+            fecha: {
+              ...(input?.fechaDesde ? { gte: input.fechaDesde } : {}),
+              ...(input?.fechaHasta ? { lte: input.fechaHasta } : {}),
+            },
+          }
+        : {}),
+      resultado: {
+        is: {
+          estado: "FINALIZADO",
+        },
+      },
+      ...(input?.soloNoCalculados
+        ? {
+            predicciones: {
+              some: {
+                calculadoAt: null,
+              },
+            },
+          }
+        : {}),
+    },
+    include: {
+      fase: {
+        include: {
+          reglasPuntaje: true,
+        },
+      },
+      resultado: true,
+      predicciones: true,
+    },
+    orderBy: {
+      fecha: "asc",
+    },
+  });
+
+  const usuarioIds = new Set<string>();
+  let partidosProcesados = 0;
+  let prediccionesProcesadas = 0;
+
+  for (const partido of partidos) {
+    if (!partido.resultado) {
+      continue;
+    }
+
+    partidosProcesados += 1;
+
+    for (const prediccion of partido.predicciones) {
+      const regla = partido.fase?.reglasPuntaje?.[0]
+        ? {
+            puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
+            puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
+            puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
+          }
+        : undefined;
+
+      const score = calcularPuntajePronostico({
+        prediccionLocal: prediccion.golesLocal,
+        prediccionVisitante: prediccion.golesVisitante,
+        resultadoLocal: partido.resultado.golesLocal,
+        resultadoVisitante: partido.resultado.golesVisitante,
+        regla,
+      });
+
+      await tx.prediccionPartido.update({
+        where: { id: prediccion.id },
+        data: {
+          puntosOtorgados: score.puntosOtorgados,
+          aciertoTipo: score.aciertoTipo,
+          calculadoAt: new Date(),
+        },
+      });
+
+      usuarioIds.add(prediccion.usuarioId);
+      prediccionesProcesadas += 1;
+    }
+  }
+
+  await recomputarRankingUsuarios(tx, Array.from(usuarioIds));
+
+  return {
+    partidosProcesados,
+    prediccionesProcesadas,
+    usuariosActualizados: usuarioIds.size,
   };
 }

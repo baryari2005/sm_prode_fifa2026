@@ -39,24 +39,28 @@ export function usePartidosPage() {
     null
   );
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (loadOptions?: { silent?: boolean }) => {
     try {
-      setLoading(true);
+      if (!loadOptions?.silent) {
+        setLoading(true);
+      }
 
-      const [partidosList, options] = await Promise.all([
+      const [partidosList, optionsData] = await Promise.all([
         getPartidos(),
         getPartidosOptions(),
       ]);
 
       setPartidos(partidosList);
-      setSelecciones(options.selecciones);
-      setFases(options.fases);
+      setSelecciones(optionsData.selecciones);
+      setFases(optionsData.fases);
     } catch (error) {
       console.error("Error cargando datos:", error);
       setPartidos([]);
       toast.error("Error al cargar los datos");
     } finally {
-      setLoading(false);
+      if (!loadOptions?.silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
