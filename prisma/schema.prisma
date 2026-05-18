@@ -256,6 +256,8 @@ model Fase {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  reglasPuntaje ReglaPuntaje[]
+
   @@index([orden])
 }
 
@@ -386,6 +388,25 @@ model PrediccionPartido {
   @@index([partidoId])
   @@index([usuarioId])
   @@index([aciertoTipo])
+}
+
+model ReglaPuntaje {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  faseId           Int
+  fase             Fase     @relation(fields: [faseId], references: [id], onDelete: Cascade)
+
+  puntosExacto     Int
+  puntosParcial    Int
+  puntosSinAcierto Int      @default(0)
+
+  activo           Boolean  @default(true)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([faseId], map: "ReglaPuntaje_faseId_unique")
+  @@index([faseId])
 }
 
 model RankingUsuario {

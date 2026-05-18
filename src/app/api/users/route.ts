@@ -6,6 +6,7 @@ import { toUserListItem } from "@/features/users/lib/user.mapper";
 import {
   listUsers,
   createOrReviveUser,
+  approveAllPendingUsers,
   handleUserError,
 } from "@/features/users/services/user.service";
 
@@ -79,5 +80,43 @@ export async function POST(req: NextRequest) {
     const { message, status } = handleUserError(err);
 
     return NextResponse.json({ message }, { status });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const loggedInUser = await requireAuth(req);
+
+    requirePermission(loggedInUser, "usuarios", "editar");
+
+    const result = await approveAllPendingUsers();
+
+    return NextResponse.json({
+      message:
+        result.count === 0
+          ? "No hay usuarios pendientes para aprobar"
+          : `Se aprobaron ${result.count} usuario${
+              result.count === 1 ? "" : "s"
+            } correctamente`,
+      count: result.count,
+    });
+  } catch (error) {
+    console.error("[USERS_APPROVE_ALL_PATCH]", error);
+
+    if (error instanceof Error && error.message === "UNAUTHORIZED") {
+      return NextResponse.json(
+        { message: "No autorizado. Debes iniciar sesión." },
+        { status: 401 }
+      );
+    }
+
+    const handled = handleUserError(error);
+
+    return NextResponse.json(
+      {
+        message: handled.message || "Error al aprobar usuarios",
+      },
+      { status: handled.status || 500 }
+    );
   }
 }

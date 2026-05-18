@@ -5,6 +5,22 @@ type FixturePronosticosResponse = {
   data?: PartidoConRelaciones[];
 };
 
+export type BulkPronosticoInput = {
+  partidoId: string;
+  golesLocal: number;
+  golesVisitante: number;
+};
+
+export type BulkPronosticoResponse = {
+  message: string;
+  savedCount: number;
+  skippedCount: number;
+  errors: Array<{
+    partidoId: string;
+    message: string;
+  }>;
+};
+
 function getAuthHeaders(): HeadersInit {
   if (typeof window === "undefined") return {};
 
@@ -53,4 +69,35 @@ export async function upsertPronostico(input: {
   }
 
   return data;
+}
+
+export async function bulkUpsertPronosticos(
+  pronosticos: BulkPronosticoInput[]
+): Promise<BulkPronosticoResponse> {
+  const res = await fetch("/api/pronosticos/bulk", {
+    method: "POST",
+    cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify({
+      pronosticos,
+    }),
+  });
+
+  const data = (await res.json()) as BulkPronosticoResponse & {
+    message?: string;
+  };
+
+  if (!res.ok) {
+    throw new Error(data.message || "Error al guardar los pronósticos");
+  }
+
+  return {
+    message: data.message ?? "Pronósticos guardados correctamente",
+    savedCount: data.savedCount ?? 0,
+    skippedCount: data.skippedCount ?? 0,
+    errors: data.errors ?? [],
+  };
 }

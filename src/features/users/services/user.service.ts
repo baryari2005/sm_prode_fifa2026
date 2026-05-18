@@ -151,3 +151,19 @@ export function handleUserError(err: unknown) {
     status: 500,
   };
 }
+
+export async function approveAllPendingUsers() {
+  const result = await prisma.usuario.updateMany({
+    where: {
+      aprobado: false,
+      deletedAt: null,
+    },
+    data: {
+      aprobado: true,
+    },
+  });
+
+  return {
+    count: result.count,
+  };
+}

@@ -142,14 +142,25 @@ export const SIDEBAR_CONFIG: SidebarItemConfig[] = [
         permission: { modulo: "partidos", accion: "resetear" },
         icon: RotateCcw,
       },
+      {
+        title: "Reglas de puntaje",
+        href: "/admin/reglas-puntaje",
+        icon: Trophy,
+        permission: { modulo: "reglas-puntaje", accion: "ver" },
+      }
     ],
-  },  
+  },
   {
     section: "Mundial",
     title: "Mis Pronosticos",
     href: "/pronosticos",
     icon: CalendarDays,
     children: [
+      {
+        title: "Carga Masiva",
+        href: "/pronosticos/rapido",
+        icon: Zap,
+      },
       {
         title: "Fase de Grupos",
         href: "/pronosticos?fase=grupos",

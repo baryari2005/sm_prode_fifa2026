@@ -237,10 +237,7 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
             ? childOwnActive || childHasActiveNested
             : childOwnActive;
 
-          const childOpen =
-            Boolean(openMenus[childKey]) ||
-            childOwnActive ||
-            childHasActiveNested;
+          const childOpen = Boolean(openMenus[childKey]);
 
           const ChildIcon = child.icon;
 
@@ -252,8 +249,8 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
                   onClick={() => toggleMenu(childKey)}
                   className={`group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold transition ${
                     childActive
-                      ? "bg-[#FDBB30]/15 text-[#FDBB30]"
-                      : "text-white/75 hover:bg-white/[0.07] hover:text-white"
+                      ? "cursor-pointer bg-[#FDBB30]/15 text-[#FDBB30]"
+                      : "cursor-pointer text-white/75 hover:bg-white/[0.07] hover:text-white"
                   }`}
                 >
                   <span className="flex min-w-0 items-center gap-2">
@@ -373,10 +370,7 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
                   ? Boolean(item.href && (itemOwnActive || hasActiveChild))
                   : itemOwnActive;
 
-                const isOpen =
-                  Boolean(openMenus[itemKey]) ||
-                  hasActiveChild ||
-                  itemOwnActive;
+                const isOpen = Boolean(openMenus[itemKey]);
 
                 if (hasChildren && !collapsed) {
                   return (
@@ -385,7 +379,7 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
                         type="button"
                         onClick={() => toggleMenu(itemKey)}
                         className={`
-                          group flex w-full items-center justify-between rounded-xl px-3 py-2.5
+                          group flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5
                           text-sm font-medium transition
                           ${
                             itemActive

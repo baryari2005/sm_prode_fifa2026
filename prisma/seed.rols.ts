@@ -204,6 +204,19 @@ const PERMISOS = [
     descripcion: "Permite importar planteles desde archivos externos.",
     icono: "upload",
   },
+  // Reglas Puntaje 
+  {
+    modulo: "reglas-puntaje",
+    accion: "ver",
+    descripcion: "Permite ver las reglas de puntaje pre establecidas.",
+    icono: "eye",
+  },
+  {
+    modulo: "reglas-puntaje",
+    accion: "editar",
+    descripcion: "Permite editar las reglas de puntaje.",
+    icono: "pencil",
+  },
 ];
 
 const ROLES = [

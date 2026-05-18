@@ -86,14 +86,14 @@ export function PartidosHeader({
             />
           </div>
 
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             className="h-11 rounded-xl border-slate-200 bg-white px-6 cursor-pointer md:w-auto"
           >
             <SlidersHorizontal className="mr-2 h-5 w-5" />
             Filtros
-          </Button>
+          </Button> */}
         </div>
       </CardContent>
     </>

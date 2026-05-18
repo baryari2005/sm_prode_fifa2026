@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import {
   CalendarPlus,
+  ChevronDown,
   Download,
   RefreshCw,
   RotateCcw,
@@ -22,12 +23,20 @@ import {
   type FixturePhaseSlug,
 } from "@/features/partidos/constants/fixture-phase-filter.constants";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 type PartidosAdminPanelProps = {
   canCrearPartidos: boolean;
   canActualizarResultados: boolean;
 };
+
+type SectionKey = "acciones" | "live" | "resultados" | "cruces";
 
 const KNOCKOUT_PHASES: Array<{
   label: string;
@@ -41,14 +50,37 @@ const KNOCKOUT_PHASES: Array<{
   { label: "Final", fase: "final" },
 ];
 
+const DEFAULT_OPEN_SECTIONS: Record<SectionKey, boolean> = {
+  acciones: true,
+  live: true,
+  resultados: true,
+  cruces: true,
+};
+
 export function PartidosAdminPanel({
   canCrearPartidos,
   canActualizarResultados,
 }: PartidosAdminPanelProps) {
   const [updatingResults, setUpdatingResults] = useState(false);
-  const [updatingResultsPhase, setUpdatingResultsPhase] = useState<string | null>(null);
+  const [updatingResultsPhase, setUpdatingResultsPhase] = useState<
+    string | null
+  >(null);
   const [syncingLive, setSyncingLive] = useState(false);
   const [generatingPhase, setGeneratingPhase] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const [openSections, setOpenSections] =
+    useState<Record<SectionKey, boolean>>(DEFAULT_OPEN_SECTIONS);
+
+  function togglePanelCollapse() {
+    setCollapsed((prev) => !prev);
+  }
+
+  function toggleSection(section: SectionKey) {
+    setOpenSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  }
 
   async function handleUpdateResults() {
     try {
@@ -67,9 +99,7 @@ export function PartidosAdminPanel({
     }
   }
 
-  async function handleUpdateResultsByPhase(
-    fase: FixturePhaseSlug
-  ) {
+  async function handleUpdateResultsByPhase(fase: FixturePhaseSlug) {
     try {
       setUpdatingResultsPhase(fase);
       const message = await actualizarResultadosDesdeApi(false, fase);
@@ -123,149 +153,211 @@ export function PartidosAdminPanel({
   return (
     <div className="grid gap-6">
       <Card className="border-white/70 bg-white shadow-sm">
-        <CardHeader className="border-b border-slate-100">
-          <CardTitle>Gestionar fixture</CardTitle>
-          <CardDescription>
-            Acciones operativas para importar, reconstruir y mantener el fixture del torneo.
-          </CardDescription>
+        <CardHeader className="border-b border-slate-100 px-5 py-5 md:px-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="space-y-2">
+              <CardTitle className="text-2xl text-slate-950">
+                Gestionar fixture
+              </CardTitle>
+              <CardDescription>
+                Acciones operativas para importar, reconstruir y mantener el
+                fixture del torneo.
+              </CardDescription>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={togglePanelCollapse}
+              className="rounded-2xl"
+            >
+              <ChevronDown
+                className={[
+                  "mr-2 h-4 w-4 transition-transform",
+                  collapsed ? "-rotate-90" : "rotate-0",
+                ].join(" ")}
+              />
+              {collapsed ? "Expandir panel" : "Colapsar panel"}
+            </Button>
+          </div>
         </CardHeader>
 
-        <CardContent className="space-y-6 p-4 md:p-6">
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <ActionCard
-              title="Importar fixture API"
-              description="Carga o sincroniza partidos desde la API con detalle por partido."
-              href="/admin/partidos/importar"
-              icon={<Download className="h-5 w-5" />}
-            />
-            <ActionCard
-              title="Reset total mundial"
-              description="Borra selecciones, planteles, partidos, resultados y predicciones antes de reconstruir."
-              href="/admin/partidos/reimportar"
-              icon={<RotateCcw className="h-5 w-5" />}
-              danger
-            />
-            <ActionCard
-              title="Nuevo partido"
-              description="Crea un partido manualmente dentro del fixture."
-              href="/admin/partidos/nuevo"
-              icon={<CalendarPlus className="h-5 w-5" />}
-            />
-            <ActionButtonCard
-              title="Actualizar resultados"
-              description="Sincroniza marcadores finales desde la API sin tocar el fixture."
-              icon={<Trophy className="h-5 w-5" />}
-              disabled={!canActualizarResultados || updatingResults}
-              busy={updatingResults}
-              onClick={() => void handleUpdateResults()}
-            />
-          </section>
+        {!collapsed && (
+          <CardContent className="space-y-6 p-4 md:p-6">
+            <CollapsibleSection
+              title="Acciones principales"
+              description="Importa, reinicia o crea partidos manualmente dentro del fixture."
+              open={openSections.acciones}
+              onToggle={() => toggleSection("acciones")}
+            >
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <ActionCard
+                  title="Importar fixture API"
+                  description="Carga o sincroniza partidos desde la API con detalle por partido."
+                  href="/admin/partidos/importar"
+                  icon={<Download className="h-5 w-5" />}
+                />
+                <ActionCard
+                  title="Reset total mundial"
+                  description="Borra selecciones, planteles, partidos, resultados y predicciones antes de reconstruir."
+                  href="/admin/partidos/reimportar"
+                  icon={<RotateCcw className="h-5 w-5" />}
+                  danger
+                />
+                <ActionCard
+                  title="Nuevo partido"
+                  description="Crea un partido manualmente dentro del fixture."
+                  href="/admin/partidos/nuevo"
+                  icon={<CalendarPlus className="h-5 w-5" />}
+                />
+                <ActionButtonCard
+                  title="Actualizar resultados"
+                  description="Sincroniza marcadores finales desde la API sin tocar el fixture."
+                  icon={<Trophy className="h-5 w-5" />}
+                  disabled={!canActualizarResultados || updatingResults}
+                  busy={updatingResults}
+                  onClick={() => void handleUpdateResults()}
+                />
+              </div>
+            </CollapsibleSection>
 
-          <section className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
-            <div className="space-y-1">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Auto-actualizacion de partidos en juego
-              </h2>
-              <p className="text-sm text-slate-600">
-                Este endpoint esta listo para ejecutarse cada 5 minutos desde un cron del hosting usando <code>x-cron-secret</code>.
-              </p>
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button
-                type="button"
-                onClick={() => void handleSyncLiveMatches()}
-                disabled={!canActualizarResultados || syncingLive}
-                className="rounded-2xl bg-[#39A935] text-white hover:bg-[#247A28]"
-              >
-                {syncingLive ? (
-                  <>
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                    Sincronizando en vivo...
-                  </>
-                ) : (
-                  <>
-                    <Trophy className="mr-2 h-4 w-4" />
-                    Sincronizar partidos en juego
-                  </>
-                )}
-              </Button>
-            </div>
-
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-              <p>
-                Endpoint recomendado para cron: <code>/api/partidos/actualizar-en-juego-api</code>
-              </p>
-              <p className="mt-2">
-                Frecuencia sugerida: cada 5 minutos. Si definis <code>CRON_SECRET</code>, el cron debe enviar el header <code>x-cron-secret</code>.
-              </p>
-            </div>
-          </section>
-
-          <section className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
-            <div className="space-y-1">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Actualizar resultados por fase
-              </h2>
-              <p className="text-sm text-slate-600">
-                Sincroniza resultados finales solo para la fase elegida.
-              </p>
-            </div>
-
-            <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {FIXTURE_PHASE_OPTIONS.map((item) => (
+            <CollapsibleSection
+              title="Auto-actualizacion de partidos en juego"
+              description="Sincroniza partidos activos y deja listo el endpoint para un cron."
+              open={openSections.live}
+              onToggle={() => toggleSection("live")}
+            >
+              <div className="flex flex-wrap gap-3">
                 <Button
-                  key={`resultados-${item.slug}`}
                   type="button"
-                  variant="outline"
-                  onClick={() => void handleUpdateResultsByPhase(item.slug)}
-                  disabled={!canActualizarResultados || updatingResultsPhase !== null}
-                  className="h-11 justify-start rounded-2xl border-slate-200 bg-white px-4"
+                  onClick={() => void handleSyncLiveMatches()}
+                  disabled={!canActualizarResultados || syncingLive}
+                  className="rounded-2xl bg-[#39A935] text-white hover:bg-[#247A28]"
                 >
-                  {updatingResultsPhase === item.slug ? (
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  {syncingLive ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Sincronizando en vivo...
+                    </>
                   ) : (
-                    <Trophy className="mr-2 h-4 w-4" />
+                    <>
+                      <Trophy className="mr-2 h-4 w-4" />
+                      Sincronizar partidos en juego
+                    </>
                   )}
-                  {item.label}
                 </Button>
-              ))}
-            </div>
-          </section>
+              </div>
 
-          <section className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
-            <div className="space-y-1">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Generar cruces
-              </h2>
-              <p className="text-sm text-slate-600">
-                Ejecuta la generación automática de cruces a partir de la fase que necesites.
-              </p>
-            </div>
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+                <p>
+                  Endpoint recomendado para cron:{" "}
+                  <code>/api/partidos/actualizar-en-juego-api</code>
+                </p>
+                <p className="mt-2">
+                  Frecuencia sugerida: cada 5 minutos. Si definis{" "}
+                  <code>CRON_SECRET</code>, el cron debe enviar el header{" "}
+                  <code>x-cron-secret</code>.
+                </p>
+              </div>
+            </CollapsibleSection>
 
-            <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {KNOCKOUT_PHASES.map((item) => (
-                <Button
-                  key={item.fase}
-                  type="button"
-                  variant="outline"
-                  onClick={() => void handleGenerateCruces(item.fase)}
-                  disabled={!canCrearPartidos || generatingPhase !== null}
-                  className="h-11 justify-start rounded-2xl border-slate-200 bg-white px-4"
-                >
-                  {generatingPhase === item.fase ? (
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Zap className="mr-2 h-4 w-4" />
-                  )}
-                  {item.label}
-                </Button>
-              ))}
-            </div>
-          </section>
-        </CardContent>
+            <CollapsibleSection
+              title="Actualizar resultados por fase"
+              description="Sincroniza resultados finales solo para la fase elegida."
+              open={openSections.resultados}
+              onToggle={() => toggleSection("resultados")}
+            >
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {FIXTURE_PHASE_OPTIONS.map((item) => (
+                  <Button
+                    key={`resultados-${item.slug}`}
+                    type="button"
+                    variant="outline"
+                    onClick={() => void handleUpdateResultsByPhase(item.slug)}
+                    disabled={
+                      !canActualizarResultados || updatingResultsPhase !== null
+                    }
+                    className="h-11 justify-start rounded-2xl border-slate-200 bg-white px-4"
+                  >
+                    {updatingResultsPhase === item.slug ? (
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trophy className="mr-2 h-4 w-4" />
+                    )}
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title="Generar cruces"
+              description="Ejecuta la generacion automatica de cruces a partir de la fase que necesites."
+              open={openSections.cruces}
+              onToggle={() => toggleSection("cruces")}
+            >
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {KNOCKOUT_PHASES.map((item) => (
+                  <Button
+                    key={item.fase}
+                    type="button"
+                    variant="outline"
+                    onClick={() => void handleGenerateCruces(item.fase)}
+                    disabled={!canCrearPartidos || generatingPhase !== null}
+                    className="h-11 justify-start rounded-2xl border-slate-200 bg-white px-4"
+                  >
+                    {generatingPhase === item.fase ? (
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Zap className="mr-2 h-4 w-4" />
+                    )}
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </CollapsibleSection>
+          </CardContent>
+        )}
       </Card>
     </div>
+  );
+}
+
+function CollapsibleSection({
+  title,
+  description,
+  open,
+  onToggle,
+  children,
+}: {
+  title: string;
+  description: string;
+  open: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <section className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-start justify-between gap-4 text-left"
+      >
+        <div className="space-y-1">
+          <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          <p className="text-sm text-slate-600">{description}</p>
+        </div>
+
+        <ChevronDown
+          className={[
+            "mt-1 h-5 w-5 shrink-0 text-slate-500 transition-transform",
+            open ? "rotate-0" : "-rotate-90",
+          ].join(" ")}
+        />
+      </button>
+
+      {open && <div className="mt-4">{children}</div>}
+    </section>
   );
 }
 

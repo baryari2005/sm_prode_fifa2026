@@ -19,7 +19,11 @@ export default function NewUserPage() {
     <div className="grid gap-6">
       <Card className="border-white/70 bg-white shadow-sm">
         <CardContent className="space-y-6 p-4 md:p-6">
-          <UserHeader cantCreate={true} title="Alta de usuario" description="Completá los datos principales para registrar un nuevo usuario en el sistema." />
+          <UserHeader 
+          cantCreate={true} 
+          cantApproveAll={true}
+          title="Alta de usuario" 
+          description="Completá los datos principales para registrar un nuevo usuario en el sistema." />
           <UserForm
             mode="create"
             onSuccess={(id) => router.replace(`/users/${id}`)}

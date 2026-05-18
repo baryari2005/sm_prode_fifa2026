@@ -22,8 +22,6 @@ import {
   type PartidoConRelaciones,
 } from "@/features/partidos/utils/partidos-ui.helpers";
 
-const TODOS_LOS_GRUPOS = "Todos";
-
 function getGrupoFilterValue(partido: PartidoConRelaciones) {
   const grupoNombre = getGrupoNombre(partido);
 
@@ -42,7 +40,7 @@ export default function PronosticosPage() {
     useState<PartidoConRelaciones | null>(null);
 
   const [grupoSeleccionado, setGrupoSeleccionado] =
-    useState<string>(TODOS_LOS_GRUPOS);
+    useState<string | null>(null);
 
   const {
     partidos,
@@ -99,7 +97,7 @@ export default function PronosticosPage() {
   const partidosAgrupadosVisibles = useMemo(() => {
     if (!mostrandoFaseGrupos) return partidosAgrupadosPorFase;
 
-    if (grupoSeleccionado === TODOS_LOS_GRUPOS) {
+    if (grupoSeleccionado === null) {
       return partidosAgrupadosPorFase;
     }
 
@@ -134,15 +132,15 @@ export default function PronosticosPage() {
 
   useEffect(() => {
     if (!mostrandoFaseGrupos) {
-      setGrupoSeleccionado(TODOS_LOS_GRUPOS);
+      setGrupoSeleccionado(null);
       return;
     }
 
     if (
-      grupoSeleccionado !== TODOS_LOS_GRUPOS &&
+      grupoSeleccionado !== null &&
       !gruposDisponibles.includes(grupoSeleccionado)
     ) {
-      setGrupoSeleccionado(TODOS_LOS_GRUPOS);
+      setGrupoSeleccionado(null);
     }
   }, [mostrandoFaseGrupos, gruposDisponibles, grupoSeleccionado]);
 
@@ -226,7 +224,7 @@ export default function PronosticosPage() {
             grupos={gruposDisponibles}
             grupoSeleccionado={grupoSeleccionado}
             onGrupoChange={(grupo) => {
-              setGrupoSeleccionado(grupo ?? TODOS_LOS_GRUPOS);
+              setGrupoSeleccionado(grupo);
             }}
           />
         )}
