@@ -5,7 +5,6 @@ import {
   Info,
   RefreshCw,
   Search,
-  SlidersHorizontal,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";

@@ -29,7 +29,6 @@ export default function ResultadoPartidoPage() {
     importingGoals,
 
     canVer,
-    canSubmit,
     isLiveLocked,
     canEditCurrentResult,
 

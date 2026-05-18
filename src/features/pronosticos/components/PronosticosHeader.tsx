@@ -4,7 +4,6 @@ import {
   CalendarDays,
   RefreshCw,
   Search,
-  SlidersHorizontal,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";

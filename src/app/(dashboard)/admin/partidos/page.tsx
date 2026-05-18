@@ -27,6 +27,8 @@ import { getFaseNombre } from "@/features/partidos/utils/partidos-ui.helpers";
 export default function PartidosPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [nextRefreshIn, setNextRefreshIn] = useState(60);
+  const [lastRefreshAt, setLastRefreshAt] = useState<Date | null>(null);
 
   const faseParam = searchParams.get("fase");
   const faseActiva = getFixturePhaseSlugFromText(faseParam);
@@ -183,5 +185,3 @@ export default function PartidosPage() {
     </Card>
   );
 }
-  const [nextRefreshIn, setNextRefreshIn] = useState(60);
-  const [lastRefreshAt, setLastRefreshAt] = useState<Date | null>(null);

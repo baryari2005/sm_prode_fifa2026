@@ -268,7 +268,6 @@ export function PronosticoDialog({
             </section>
 
             <section
-              aria-disabled={cargaDeshabilitada}
               className={`mt-5 rounded-[1.6rem] border p-4 shadow-[0_16px_35px_rgba(15,23,42,0.06)] transition sm:p-5 ${scoreCardClass}`}
             >
               <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-4">

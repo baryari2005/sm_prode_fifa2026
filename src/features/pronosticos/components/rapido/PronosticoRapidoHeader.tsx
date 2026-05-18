@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, RefreshCw, Save, Search, Zap } from "lucide-react";
+import { CalendarDays, RefreshCw, Save, Search } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
