@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, requirePermission } from "@/lib/server-auth";
+import { getNombreSeleccionEnEspanol } from "@/features/paises/lib/selecciones-es";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -78,6 +79,10 @@ export async function POST(req: NextRequest) {
       }
 
       const codigo = team.tla.toUpperCase();
+      const nombreTraducido = getNombreSeleccionEnEspanol({
+        codigo,
+        nombre: team.name,
+      });
       const matched =
         byCode.get(codigo) ??
         byName.get(normalizeName(team.name)) ??
@@ -86,7 +91,7 @@ export async function POST(req: NextRequest) {
       if (!matched) {
         const createdSeleccion = await prisma.seleccion.create({
           data: {
-            nombre: team.name,
+            nombre: nombreTraducido,
             codigo,
             footballDataTeamId: team.id,
             bandera: team.crest ?? null,
@@ -108,7 +113,7 @@ export async function POST(req: NextRequest) {
       const changed =
         matched.footballDataTeamId !== team.id ||
         (team.crest && matched.bandera !== team.crest) ||
-        matched.nombre !== team.name;
+        matched.nombre !== nombreTraducido;
 
       if (!changed) {
         results.push({
@@ -122,7 +127,7 @@ export async function POST(req: NextRequest) {
       const updatedSeleccion = await prisma.seleccion.update({
         where: { id: matched.id },
         data: {
-          nombre: team.name,
+          nombre: nombreTraducido,
           footballDataTeamId: team.id,
           bandera: team.crest ?? matched.bandera,
         },

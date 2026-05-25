@@ -1,7 +1,8 @@
-import { ArrowUp, CircleDot } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 import type { LineupPlayer } from "@/features/partidos/types/fixture-details";
 import { PlayerJerseyAvatar } from "./PlayerJerseyAvatar";
+import { PlayerActionBadges } from "./PlayerActionBadges";
 
 type BenchPlayer = LineupPlayer & {
   fotoUrl?: string | null;
@@ -27,6 +28,13 @@ export function BenchPlayerRow({
       <div className="flex items-center justify-end gap-3 px-4 py-2 text-right">
         <PlayerInfo player={player} align="right" />
 
+        <PlayerActionBadges
+          goals={player.goals}
+          yellow={player.yellow}
+          red={player.red}
+          substituted={player.substituted}
+        />
+
         <PlayerAvatar
           imageUrl={player.fotoUrl ?? player.avatarUrl ?? null}
           teamCode={teamCode}
@@ -44,6 +52,13 @@ export function BenchPlayerRow({
         teamCode={teamCode}
         teamName={teamName}
         number={player.numero}
+      />
+
+      <PlayerActionBadges
+        goals={player.goals}
+        yellow={player.yellow}
+        red={player.red}
+        substituted={player.substituted}
       />
 
       <PlayerInfo player={player} align="left" />
@@ -97,21 +112,6 @@ function PlayerInfo({
             <ArrowUp className="h-3 w-3" />
           </span>
         </span>
-      )}
-
-      {player.goals > 0 && (
-        <span className="inline-flex shrink-0 items-center gap-1 text-xs">
-          <CircleDot className="h-3.5 w-3.5 text-slate-900" />
-          {player.goals > 1 ? `x${player.goals}` : ""}
-        </span>
-      )}
-
-      {player.yellow && (
-        <span className="inline-block h-3.5 w-2.5 shrink-0 rounded-[2px] bg-yellow-400" />
-      )}
-
-      {player.red && (
-        <span className="inline-block h-3.5 w-2.5 shrink-0 rounded-[2px] bg-red-500" />
       )}
 
       {!player.substituted && player.posicion && (

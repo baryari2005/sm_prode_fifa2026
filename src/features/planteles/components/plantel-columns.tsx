@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, Pencil, ShieldX, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { buildActionsColumn } from "@/components/data-display/table/BuildActionsColumn";
@@ -165,10 +165,14 @@ export function getPlantelColumns({
         {
           label: "Eliminar",
           icon: <Trash2 className="h-4 w-4" />,
-          confirmTitle: "Eliminar este jugador?",
+          confirmTitle: "¿Eliminar jugador?",
           confirmDescription:
-            "Esta accion eliminara permanentemente el jugador. Continuar?",
-          confirmActionLabel: "Eliminar",
+            "Vas a quitar este jugador del plantel activo de la selección.",
+          confirmActionLabel: "Confirmar eliminación",
+          confirmTone: "danger",
+          confirmIcon: <ShieldX className="h-4 w-4" />,
+          confirmNote:
+            "Esta acción afecta solo al jugador seleccionado. Revisá antes de confirmar porque puede impactar el plantel cargado.",
           onConfirm: async () => {
             onDelete(row.id);
           },

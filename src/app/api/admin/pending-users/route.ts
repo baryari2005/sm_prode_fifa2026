@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/db";
 import { requireAuth, requirePermission } from "@/lib/server-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+function noStoreJson(body: unknown, init?: ResponseInit) {
+  return NextResponse.json(body, {
+    ...init,
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
+      ...(init?.headers ?? {}),
+    },
+  });
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,27 +29,24 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ count });
+    return noStoreJson({ count });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
-      return NextResponse.json(
-        { message: "No autorizado. Debés iniciar sesión." },
-        { status: 401 }
+      return noStoreJson(
+        { message: "No autorizado. Debes iniciar sesion." },
+        { status: 401 },
       );
     }
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
-      return NextResponse.json(
-        { message: "No tenés permisos para ver usuarios." },
-        { status: 403 }
+      return noStoreJson(
+        { message: "No tenes permisos para ver usuarios." },
+        { status: 403 },
       );
     }
 
     console.error("GET /api/admin/pending-users error:", err);
 
-    return NextResponse.json(
-      { message: "Error interno del servidor" },
-      { status: 500 }
-    );
+    return noStoreJson({ message: "Error interno del servidor" }, { status: 500 });
   }
 }

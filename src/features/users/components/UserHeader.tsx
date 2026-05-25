@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { approveAllUsers } from "@/features/users/services/user-client.service";
+import { ApproveAllUsersDialog } from "./ApproveAllUsersDialog";
 
 type UserHeaderProps = {
   cantCreate: boolean;
@@ -28,15 +29,10 @@ export function UserHeader({
   onApprovedAll,
 }: UserHeaderProps) {
   const [approvingAll, setApprovingAll] = useState(false);
+  const [openApproveAllDialog, setOpenApproveAllDialog] = useState(false);
 
   async function handleApproveAllUsers() {
     if (approvingAll) return;
-
-    const confirmed = window.confirm(
-      "Seguro que queres aprobar todos los usuarios pendientes?"
-    );
-
-    if (!confirmed) return;
 
     setApprovingAll(true);
 
@@ -48,6 +44,8 @@ export function UserHeader({
       } else {
         toast.success(result.message);
       }
+
+      setOpenApproveAllDialog(false);
 
       await onApprovedAll?.();
     } catch (error) {
@@ -64,6 +62,7 @@ export function UserHeader({
   }
 
   return (
+    <>
     <CardHeader className="border-b border-slate-100 px-5 py-5 md:px-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 space-y-2">
@@ -85,9 +84,9 @@ export function UserHeader({
             <Button
               type="button"
               variant="outline"
-              onClick={handleApproveAllUsers}
+                onClick={() => setOpenApproveAllDialog(true)}
               disabled={approvingAll}
-              className="h-11 rounded-2xl border-green-200 bg-green-50 font-bold text-green-700 shadow-sm transition hover:bg-green-100 hover:text-green-800"
+                className="h-11 rounded-2xl border-green-200 bg-green-50 font-bold text-green-700 shadow-sm transition hover:bg-green-100 hover:text-green-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <CheckCheck className="mr-2 h-4 w-4" />
               {approvingAll ? "Aprobando..." : "Aprobar todos"}
@@ -108,5 +107,13 @@ export function UserHeader({
         </div>
       </div>
     </CardHeader>
+
+      <ApproveAllUsersDialog
+        open={openApproveAllDialog}
+        onOpenChange={setOpenApproveAllDialog}
+        isLoading={approvingAll}
+        onConfirm={handleApproveAllUsers}
+      />
+    </>
   );
 }

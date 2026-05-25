@@ -1,25 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { Building2, Clock3, Trophy, Eye, UsersRound } from "lucide-react";
+import { Building2, Clock3, Eye, Trophy, UsersRound } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { FlagImage } from "@/components/ui/flag-image";
 import { Fase, Seleccion } from "@/features/partidos/types/types";
 import { PronosticoDialog } from "@/features/pronosticos/components/PronosticoDialog";
 import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
-import { resolveBanderaSrc } from "@/lib/flags";
-
+import { useCan } from "@/hooks/useCan";
 import {
   formatMatchHour,
-  getPredictionCountdownLabel,
   getEstadioCiudad,
   getFaseNombre,
   getGrupoNombre,
+  getMatchStatusMeta,
+  getPredictionCountdownLabel,
+  getPredictionStatusMeta,
   getSeleccionResumen,
-  isPredictionClosed,
+  isPredictionBlocked,
   PartidoConRelaciones,
   PREDICTION_CLOSE_MINUTES_BEFORE,
   SeleccionResumen,
@@ -53,45 +54,48 @@ export function PartidoCard({
   compact = false,
 }: PartidoCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  // Se actualiza cada 30 segundos porque tu hook tiene intervalMs = 30000 por defecto.
   const now = useCountdownNow();
+  const canViewPartidoDetalle = useCan("partidos", "ver_detalle");
 
   const local = getSeleccionResumen(partido, "local", selecciones);
   const visitante = getSeleccionResumen(partido, "visitante", selecciones);
-
   const fase = getFaseNombre(partido, fases);
   const grupo = getGrupoNombre(partido);
   const estadioCiudad = getEstadioCiudad(partido);
   const hora = formatMatchHour(partido.fecha);
-
   const resultado = partido.resultado;
-  const tieneResultadoEnJuego = resultado?.estado === "EN_JUEGO";
-  const tieneResultadoFinal = resultado?.estado === "FINALIZADO";
   const partidoActivo = partido.activo !== false;
-
-  const score = resultado && (tieneResultadoEnJuego || tieneResultadoFinal)
-    ? `${resultado.golesLocal} - ${resultado.golesVisitante}`
-    : null;
-
+  const tieneResultadoEnJuego =
+    resultado?.estado === "EN_JUEGO" || resultado?.estado === "ENTRETIEMPO";
+  const tieneResultadoFinal = resultado?.estado === "FINALIZADO";
+  const matchStatus = getMatchStatusMeta(partido);
   const miPronostico = partido.miPrediccion;
 
-  const pronosticoCerrado = isPredictionClosed(
-    partido.fecha,
-    PREDICTION_CLOSE_MINUTES_BEFORE,
-    now
-  );
+  const score =
+    resultado && (tieneResultadoEnJuego || tieneResultadoFinal)
+      ? `${resultado.golesLocal} - ${resultado.golesVisitante}`
+      : null;
 
+  const pronosticoCerrado = isPredictionBlocked(
+    partido,
+    PREDICTION_CLOSE_MINUTES_BEFORE,
+    now,
+  );
   const pronosticoBloqueado =
     pronosticoCerrado || tieneResultadoFinal || !partidoActivo;
+  const predictionStatus = getPredictionStatusMeta(
+    partido,
+    now,
+    PREDICTION_CLOSE_MINUTES_BEFORE,
+  );
 
   const countdownLabel =
     allowPronostico && !tieneResultadoFinal
       ? getPredictionCountdownLabel(
-        partido.fecha,
-        PREDICTION_CLOSE_MINUTES_BEFORE,
-        now
-      )
+          partido.fecha,
+          PREDICTION_CLOSE_MINUTES_BEFORE,
+          now,
+        )
       : null;
 
   const secondaryActionButtonClassName =
@@ -110,18 +114,19 @@ export function PartidoCard({
       <div
         className={
           compact
-            ? `rounded-[1.35rem] px-1 py-4 transition-all duration-200 ${highlighted
-              ? "bg-[#008C93]/8 ring-2 ring-[#008C93]/35"
-              : "bg-transparent"
-            }`
+            ? `rounded-[1.35rem] px-1 py-4 transition-all duration-200 ${
+                highlighted
+                  ? "bg-[#008C93]/8 ring-2 ring-[#008C93]/35"
+                  : "bg-transparent"
+              }`
             : highlighted
               ? "rounded-[1.65rem] ring-2 ring-[#008C93]/35 ring-offset-2 ring-offset-white"
               : ""
         }
       >
-        {!compact && (
+        {!compact ? (
           <div className="pointer-events-none absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-[#008C93] via-[#00A6B2] to-[#7DD3FC]" />
-        )}
+        ) : null}
 
         <div className={compact ? "px-3 md:px-4" : "p-4 md:p-5"}>
           <div className="grid items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
@@ -143,15 +148,12 @@ export function PartidoCard({
                   {score ?? hora}
                 </p>
 
-                {tieneResultadoEnJuego && (
+                {(tieneResultadoEnJuego || tieneResultadoFinal) && (
                   <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
-                    En juego {resultado?.tiempoJuego ? `${resultado.tiempoJuego}'` : ""}
-                  </span>
-                )}
-
-                {tieneResultadoFinal && (
-                  <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
-                    Finalizado
+                    {matchStatus.label}{" "}
+                    {tieneResultadoEnJuego && resultado?.tiempoJuego
+                      ? `${resultado.tiempoJuego}'`
+                      : ""}
                   </span>
                 )}
               </div>
@@ -172,62 +174,64 @@ export function PartidoCard({
                 {grupo}
               </span>
 
-              {estadioCiudad && (
+              {estadioCiudad ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1 text-slate-700">
                   <Building2 className="h-3.5 w-3.5 text-[#008C93]" />
                   {estadioCiudad}
                 </span>
-              )}
+              ) : null}
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-end">
-              {!partidoActivo && (
+              {!partidoActivo ? (
                 <Badge
                   variant="secondary"
                   className="h-8 rounded-full px-3 text-xs font-medium"
                 >
                   Inactivo
                 </Badge>
-              )}
+              ) : null}
 
-              {miPronostico && (
+              {miPronostico ? (
                 <Badge
                   variant="secondary"
                   className="h-8 rounded-full bg-green-50 px-3 text-xs font-medium text-green-700"
                 >
-                  Mi pronóstico: {miPronostico.golesLocal} -{" "}
+                  Mi pronostico: {miPronostico.golesLocal} -{" "}
                   {miPronostico.golesVisitante}
                 </Badge>
-              )}
+              ) : null}
 
-              {countdownLabel && (
+              {countdownLabel ? (
                 <Badge
                   variant="secondary"
-                  className={`h-8 rounded-full px-3 text-xs font-medium ${pronosticoCerrado
-                    ? "bg-amber-50 text-amber-700"
-                    : "bg-sky-50 text-sky-700"
-                    }`}
+                  className={`h-8 rounded-full px-3 text-xs font-medium ${
+                    pronosticoCerrado
+                      ? "bg-amber-50 text-amber-700"
+                      : "bg-sky-50 text-sky-700"
+                  }`}
                 >
                   <Clock3 className="mr-1 h-3.5 w-3.5" />
                   {countdownLabel}
                 </Badge>
-              )}
-              {allowPronostico && (
-                <Button
+              ) : null}
+
+              {allowPronostico && canViewPartidoDetalle ? (
+                <Button // 
                   asChild
                   type="button"
                   variant="outline"
                   size="sm"
                   className={secondaryActionButtonClassName}
                 >
-                  <Link href={`/admin/partidos/${partido.id}`}>
+                  <Link href={`/pronosticos/partidos/${partido.id}/detalle`}>
                     <Eye className="mr-1.5 h-3.5 w-3.5" />
                     Ver detalle
                   </Link>
                 </Button>
-              )}
+              ) : null}
 
-              {allowPronostico && !tieneResultadoFinal && (
+              {allowPronostico && !tieneResultadoFinal ? (
                 <Button
                   type="button"
                   size="sm"
@@ -244,15 +248,16 @@ export function PartidoCard({
                   disabled={pronosticoBloqueado}
                   className="h-8 rounded-xl bg-[#39A935] px-3 text-xs text-white hover:bg-[#247A28] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 >
-                  {pronosticoCerrado
-                    ? "Pronóstico cerrado"
+                  {predictionStatus.label === "Pronostico cerrado" ||
+                  predictionStatus.label === "Partido iniciado"
+                    ? predictionStatus.label
                     : miPronostico
-                      ? "Editar pronóstico"
+                      ? "Editar pronostico"
                       : "Pronosticar"}
                 </Button>
-              )}
+              ) : null}
 
-              {!allowPronostico && onVerDetalle && (
+              {!allowPronostico && onVerDetalle ? (
                 <Button
                   type="button"
                   variant="outline"
@@ -262,9 +267,9 @@ export function PartidoCard({
                 >
                   Ver detalle
                 </Button>
-              )}
+              ) : null}
 
-              {!allowPronostico && onCargarFormaciones && (
+              {!allowPronostico && onCargarFormaciones ? (
                 <Button
                   type="button"
                   variant="outline"
@@ -273,11 +278,13 @@ export function PartidoCard({
                   disabled={tieneResultadoEnJuego}
                   className={secondaryActionButtonClassName}
                 >
-                  {tieneResultadoEnJuego ? "Formaciones bloqueadas" : "Cargar Formaciones"}
+                  {tieneResultadoEnJuego
+                    ? "Formaciones bloqueadas"
+                    : "Cargar Formaciones"}
                 </Button>
-              )}
+              ) : null}
 
-              {!allowPronostico && onGestionarResultado && (
+              {!allowPronostico && onGestionarResultado ? (
                 <Button
                   type="button"
                   variant="outline"
@@ -286,16 +293,17 @@ export function PartidoCard({
                   disabled={tieneResultadoEnJuego}
                   className={secondaryActionButtonClassName}
                 >
-                  {tieneResultadoEnJuego ? "Resultado bloqueado" : "Cargar Resultado"}
+                  {tieneResultadoEnJuego
+                    ? "Resultado bloqueado"
+                    : "Cargar Resultado"}
                 </Button>
-              )}
-
+              ) : null}
             </div>
           </div>
         </div>
       </div>
 
-      {allowPronostico && !onPronosticarClick && (
+      {allowPronostico && !onPronosticarClick ? (
         <PronosticoDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
@@ -304,7 +312,7 @@ export function PartidoCard({
             await onPronosticoSaved?.();
           }}
         />
-      )}
+      ) : null}
     </article>
   );
 }
@@ -320,14 +328,15 @@ function TeamSlot({
 
   return (
     <div
-      className={`flex min-w-0 items-center justify-center gap-2 ${isLocal ? "md:justify-end" : "md:justify-start"
-        }`}
+      className={`flex min-w-0 items-center justify-center gap-2 ${
+        isLocal ? "md:justify-end" : "md:justify-start"
+      }`}
     >
-      {isLocal && (
+      {isLocal ? (
         <p className="max-w-[150px] truncate text-base font-extrabold tracking-[-0.02em] text-slate-950 md:max-w-[220px] md:text-[1.08rem]">
           {team.nombre}
         </p>
-      )}
+      ) : null}
 
       <TeamFlag
         bandera={team.bandera}
@@ -335,11 +344,11 @@ function TeamSlot({
         nombre={team.nombre}
       />
 
-      {!isLocal && (
+      {!isLocal ? (
         <p className="max-w-[150px] truncate text-base font-extrabold tracking-[-0.02em] text-slate-950 md:max-w-[220px] md:text-[1.08rem]">
           {team.nombre}
         </p>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -353,40 +362,15 @@ function TeamFlag({
   codigo?: string | null;
   nombre: string;
 }) {
-  const value = bandera?.trim();
-  const src = resolveBanderaSrc(value, codigo);
-
-  const flagClassName = "h-9 w-12 shrink-0 object-contain shadow-none";
-
-  const flagWrapperClassName =
-    "flex h-9 w-12 shrink-0 items-center justify-center overflow-hidden";
-
-  if (!value) {
-    return (
-      <span className={`${flagWrapperClassName} bg-slate-50 text-lg`}>
-        🏳️
-      </span>
-    );
-  }
-
-  if (src) {
-    return (
-      <span className={flagWrapperClassName}>
-        <Image
-          src={src}
-          alt={`Bandera de ${nombre ?? "selección"}`}
-          width={40}
-          height={28}
-          unoptimized
-          className={flagClassName}
-        />
-      </span>
-    );
-  }
-
   return (
-    <span className={`${flagWrapperClassName} bg-white px-1 text-xl`}>
-      {value}
-    </span>
+    <FlagImage
+      bandera={bandera}
+      codigo={codigo}
+      nombre={nombre}
+      widthClassName="w-12"
+      heightClassName="h-9"
+      fallbackMode="dash"
+      fallbackTextClassName="text-lg"
+    />
   );
 }

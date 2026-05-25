@@ -1,19 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, requirePermission } from "@/lib/server-auth";
 
+import { requireAuth, requirePermission } from "@/lib/server-auth";
 import {
-  getPartidos,
   createPartido,
-  getSelecciones,
   getFases,
+  getPartidos,
+  getSelecciones,
 } from "@/features/partidos/services/partido.service";
 import { partidoCreateSchema } from "@/features/partidos/schemas/partido.schema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const DEFAULT_LIMIT = 200;
 const MAX_LIMIT = 300;
+
+function noStoreJson(body: unknown, init?: ResponseInit) {
+  return NextResponse.json(body, {
+    ...init,
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
+      ...(init?.headers ?? {}),
+    },
+  });
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -46,12 +57,11 @@ export async function GET(req: NextRequest) {
     params.limit = Number.isNaN(limit)
       ? DEFAULT_LIMIT
       : Math.min(limit, MAX_LIMIT);
-
     params.offset = Number.isNaN(offset) ? 0 : offset;
 
     const { items, total } = await getPartidos(params);
 
-    return NextResponse.json({
+    return noStoreJson({
       data: items,
       meta: {
         total,
@@ -61,25 +71,22 @@ export async function GET(req: NextRequest) {
     });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
-      return NextResponse.json(
-        { message: "No autorizado. Debés iniciar sesión." },
-        { status: 401 }
+      return noStoreJson(
+        { message: "No autorizado. Debes iniciar sesion." },
+        { status: 401 },
       );
     }
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
-      return NextResponse.json(
-        { message: "No tenés permisos para ver partidos." },
-        { status: 403 }
+      return noStoreJson(
+        { message: "No tenes permisos para ver partidos." },
+        { status: 403 },
       );
     }
 
     console.error("GET /api/partidos error:", err);
 
-    return NextResponse.json(
-      { message: "Error interno del servidor" },
-      { status: 500 }
-    );
+    return noStoreJson({ message: "Error interno del servidor" }, { status: 500 });
   }
 }
 
@@ -101,32 +108,28 @@ export async function POST(req: NextRequest) {
       ciudad: dto.ciudad ?? null,
     });
 
-    return NextResponse.json(partido, { status: 201 });
+    return noStoreJson(partido, { status: 201 });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
-      return NextResponse.json(
-        { message: "No autorizado. Debés iniciar sesión." },
-        { status: 401 }
+      return noStoreJson(
+        { message: "No autorizado. Debes iniciar sesion." },
+        { status: 401 },
       );
     }
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
-      return NextResponse.json(
-        { message: "No tenés permisos para crear partidos." },
-        { status: 403 }
+      return noStoreJson(
+        { message: "No tenes permisos para crear partidos." },
+        { status: 403 },
       );
     }
 
     console.error("POST /api/partidos error:", err);
 
-    return NextResponse.json(
-      { message: "Error interno del servidor" },
-      { status: 500 }
-    );
+    return noStoreJson({ message: "Error interno del servidor" }, { status: 500 });
   }
 }
 
-// Endpoint adicional para obtener selecciones y fases disponibles
 export async function OPTIONS(req: NextRequest) {
   try {
     const loggedInUser = await requireAuth(req);
@@ -137,14 +140,11 @@ export async function OPTIONS(req: NextRequest) {
       getFases(),
     ]);
 
-    return NextResponse.json({
+    return noStoreJson({
       selecciones,
       fases,
     });
   } catch {
-    return NextResponse.json(
-      { message: "Error interno del servidor" },
-      { status: 500 }
-    );
+    return noStoreJson({ message: "Error interno del servidor" }, { status: 500 });
   }
 }

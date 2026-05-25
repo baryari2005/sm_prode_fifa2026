@@ -7,6 +7,7 @@ import {
   PrediccionPartido,
   Seleccion,
 } from "@/features/partidos/types/types";
+import { EstadoPartido } from "@prisma/client";
 
 type GrupoLike = {
   nombre?: string | null;
@@ -35,6 +36,28 @@ export type SeleccionResumen = {
   bandera?: string | null;
   codigo?: string | null;
 };
+
+export type MatchStatusMeta = {
+  label: string;
+  toneClassName: string;
+};
+
+export type PredictionStatusMeta = {
+  label: string;
+  toneClassName: string;
+};
+
+export const ESTADO_PARTIDO_OPTIONS: Array<{
+  value: EstadoPartido;
+  label: string;
+}> = [
+  { value: EstadoPartido.PENDIENTE, label: "Pendiente" },
+  { value: EstadoPartido.EN_JUEGO, label: "En juego" },
+  { value: EstadoPartido.ENTRETIEMPO, label: "Entretiempo" },
+  { value: EstadoPartido.FINALIZADO, label: "Finalizado" },
+  { value: EstadoPartido.SUSPENDIDO, label: "Suspendido" },
+  { value: EstadoPartido.CANCELADO, label: "Cancelado" },
+];
 
 export function getSeleccionResumen(
   partido: PartidoConRelaciones,
@@ -223,6 +246,21 @@ export function isPredictionClosed(
   return now >= closeTime;
 }
 
+export function hasMatchStartedForPrediction(partido: PartidoConRelaciones) {
+  return Boolean(partido.resultado);
+}
+
+export function isPredictionBlocked(
+  partido: PartidoConRelaciones,
+  minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE,
+  now = Date.now()
+) {
+  return (
+    hasMatchStartedForPrediction(partido) ||
+    isPredictionClosed(partido.fecha, minutesBefore, now)
+  );
+}
+
 export function getPredictionCountdownLabel(
   fecha: string | Date,
   minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE,
@@ -250,8 +288,92 @@ export function getPredictionCountdownLabel(
   }
 
   if (hours > 0) {
-    return `Cierra en ${hours} h ${minutes} min`;
+    return `${hours} h ${minutes} min`;
   }
 
   return `Cierra en ${minutes} min`;
+}
+
+export function getMatchStatusMeta(
+  partido: PartidoConRelaciones
+): MatchStatusMeta {
+  const estado = partido.resultado?.estado;
+
+  if (estado === "FINALIZADO") {
+    return {
+      label: "Finalizado",
+      toneClassName: "bg-emerald-50 text-emerald-700",
+    };
+  }
+
+  if (estado === "EN_JUEGO") {
+    return {
+      label: "En juego",
+      toneClassName: "bg-emerald-50 text-emerald-700",
+    };
+  }
+
+  if (estado === "ENTRETIEMPO") {
+    return {
+      label: "Entretiempo",
+      toneClassName: "bg-sky-50 text-sky-700",
+    };
+  }
+
+  return {
+    label: "Pendiente",
+    toneClassName: "bg-slate-100 text-slate-700",
+  };
+}
+
+export function getEstadoPartidoLabel(
+  estado?: string | null
+): string | null {
+  if (!estado) return null;
+
+  const normalized = estado.trim().toUpperCase();
+  const match = ESTADO_PARTIDO_OPTIONS.find(
+    (item) => item.value === normalized
+  );
+
+  return match?.label ?? estado;
+}
+
+export function getPredictionStatusMeta(
+  partido: PartidoConRelaciones,
+  now = Date.now(),
+  minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE
+): PredictionStatusMeta {
+  if (partido.resultado?.estado === "FINALIZADO") {
+    return {
+      label: "Finalizado",
+      toneClassName: "bg-emerald-50 text-emerald-700",
+    };
+  }
+
+  if (hasMatchStartedForPrediction(partido)) {
+    return {
+      label: "Partido iniciado",
+      toneClassName: "bg-red-50 text-red-700",
+    };
+  }
+
+  if (partido.miPrediccion) {
+    return {
+      label: "Cargado",
+      toneClassName: "bg-green-50 text-green-700",
+    };
+  }
+
+  if (isPredictionClosed(partido.fecha, minutesBefore, now)) {
+    return {
+      label: "Pronostico cerrado",
+      toneClassName: "bg-amber-50 text-amber-700",
+    };
+  }
+
+  return {
+    label: "Pendiente",
+    toneClassName: "bg-[#FFF7E1] text-[#9A6500]",
+  };
 }

@@ -93,6 +93,12 @@ const PERMISOS = [
   },
   {
     modulo: "partidos",
+    accion: "ver_detalle",
+    descripcion: "Ver detalle de partido desde pronosticos.",
+    icono: "eye",
+  },
+  {
+    modulo: "partidos",
     accion: "crear",
     descripcion: "Permite crear nuevos partidos.",
     icono: "plus",
@@ -217,55 +223,126 @@ const PERMISOS = [
     descripcion: "Permite editar las reglas de puntaje.",
     icono: "pencil",
   },
+  {
+    modulo: "live-control",
+    accion: "editar",
+    descripcion: "Permite editar todo -- Dios Supremo.",
+    icono: "layoutDashboard",
+  },
+  {
+    modulo: "dashboard",
+    accion: "ver_acceso_pronosticos",
+    descripcion: "Permite ver accesos a pronosticos dentro del dashboard.",
+    icono: "layoutDashboard",
+  },
+  {
+    modulo: "dashboard",
+    accion: "ver_acceso_ranking",
+    descripcion: "Permite ver accesos al ranking dentro del dashboard.",
+    icono: "layoutDashboard",
+  },
+  {
+    modulo: "dashboard",
+    accion: "ver_posicion_actual",
+    descripcion: "Permite ver la card de posicion actual en el dashboard.",
+    icono: "layoutDashboard",
+  },
+  {
+    modulo: "dashboard",
+    accion: "ver_puntos_obtenidos",
+    descripcion: "Permite ver la card de puntos obtenidos en el dashboard.",
+    icono: "layoutDashboard",
+  },
+  {
+    modulo: "pronosticos",
+    accion: "ver",
+    descripcion: "Permite acceder a la seccion de pronosticos.",
+    icono: "calendarDays",
+  },
+  {
+    modulo: "ranking",
+    accion: "ver",
+    descripcion: "Permite acceder a la seccion de ranking.",
+    icono: "listOrdered",
+  },
+  {
+    modulo: "ayuda",
+    accion: "ver_usuario",
+    descripcion: "Permite acceder a la ayuda para usuarios del Prode.",
+    icono: "circleHelp",
+  },
+  {
+    modulo: "ayuda",
+    accion: "ver_admin",
+    descripcion: "Permite acceder a la ayuda administrativa del Prode.",
+    icono: "shieldCheck",
+  },
+  {
+    modulo: "ayuda",
+    accion: "ver_reglas",
+    descripcion: "Permite acceder a las reglas y condiciones del Prode.",
+    icono: "bookOpen",
+  },
 ];
 
 const ROLES = [
   {
     nombre: "admin",
-    descripcion: "Administrador del sistema con acceso completo",
-    permisos: PERMISOS.map(p => `${p.modulo}:${p.accion}`), // Todos los permisos
+    descripcion: "Administrador del sistema con permisos editables por rol.",
+    permisos: PERMISOS.map((permiso) => `${permiso.modulo}:${permiso.accion}`),
+  },
+  {
+    nombre: "dev-sup",
+    descripcion: "Desarrollador Supervisor",
+    permisos: PERMISOS.map((permiso) => `${permiso.modulo}:${permiso.accion}`),
   },
   {
     nombre: "user",
     descripcion: "Usuario estándar con permisos limitados",
     permisos: [
-      "legajo:ver",
-      "usuarios:ver",
-      "usuarios:editar", // Solo editar su propio perfil
+      "dashboard:ver_acceso_pronosticos",
+      "dashboard:ver_acceso_ranking",
+      "dashboard:ver_posicion_actual",
+      "dashboard:ver_puntos_obtenidos",
+      "pronosticos:ver",
+      "partidos:ver_detalle",
+      "ranking:ver",
+      "ayuda:ver_usuario",
+      "ayuda:ver_reglas",
     ],
   },
 ];
 
 async function main() {
-  console.log("🌱 Iniciando seed de permisos, roles y usuario admin...");
+  console.log("Iniciando seed de permisos, roles y usuario admin...");
 
-  // 1. Crear permisos
-  console.log("📝 Creando permisos...");
-  for (const p of PERMISOS) {
+  console.log("Creando permisos...");
+  for (const permiso of PERMISOS) {
     await prisma.permiso.upsert({
       where: {
         modulo_accion: {
-          modulo: p.modulo,
-          accion: p.accion,
+          modulo: permiso.modulo,
+          accion: permiso.accion,
         },
       },
       update: {
-        descripcion: p.descripcion,
-        icono: p.icono,
+        descripcion: permiso.descripcion,
+        icono: permiso.icono,
       },
       create: {
-        modulo: p.modulo,
-        accion: p.accion,
-        nombre: `${p.modulo}:${p.accion}`,
-        descripcion: p.descripcion,
-        icono: p.icono,
+        modulo: permiso.modulo,
+        accion: permiso.accion,
+        nombre: `${permiso.modulo}:${permiso.accion}`,
+        descripcion: permiso.descripcion,
+        icono: permiso.icono,
       },
     });
   }
   console.log(`✅ ${PERMISOS.length} permisos creados/actualizados`);
 
-  // 2. Crear roles y asignar permisos
-  console.log("👥 Creando roles...");
+  console.log(`${PERMISOS.length} permisos creados o actualizados`);
+
+  console.log("Creando roles...");
   for (const roleData of ROLES) {
     const role = await prisma.rol.upsert({
       where: { nombre: roleData.nombre },
@@ -284,7 +361,7 @@ async function main() {
     // Obtener permisos a asignar
     const permisosToAssign = await prisma.permiso.findMany({
       where: {
-        OR: roleData.permisos.map(permisoStr => {
+        OR: roleData.permisos.map((permisoStr) => {
           const [modulo, accion] = permisoStr.split(":");
           return { modulo, accion };
         }),
@@ -300,17 +377,20 @@ async function main() {
       skipDuplicates: true,
     });
 
-    console.log(`✅ Rol "${role.nombre}" creado con ${permisosToAssign.length} permisos`);
+    console.log(
+      `Rol "${role.nombre}" creado con ${permisosToAssign.length} permisos`,
+    );
   }
 
-  // 3. Crear usuario admin si no existe
-  console.log("👤 Verificando usuario admin...");
+  console.log("Verificando usuario admin...");
   const adminRole = await prisma.rol.findFirst({
     where: { nombre: "admin" },
   });
 
   if (!adminRole) {
-    throw new Error("Rol 'admin' no encontrado. Verifica que el seed se ejecutó correctamente.");
+    throw new Error(
+      "Rol 'admin' no encontrado. Verifica que el seed se ejecuto correctamente.",
+    );
   }
 
   const existingAdmin = await prisma.usuario.findFirst({
@@ -332,18 +412,19 @@ async function main() {
         aprobado: true,
       },
     });
-    console.log("✅ Usuario admin creado (userId: admin, password: admin123)");
+
+    console.log("Usuario admin creado (userId: admin, password: admin123)");
   } else {
-    console.log("ℹ️ Usuario admin ya existe");
+    console.log("Usuario admin ya existe");
   }
 
-  console.log("🎉 Seed completado exitosamente!");
+  console.log("Seed completado exitosamente");
 }
 
 main()
   .then(() => prisma.$disconnect())
-  .catch(async (e) => {
-    console.error("❌ Error en el seed:", e);
+  .catch(async (error) => {
+    console.error("Error en el seed:", error);
     await prisma.$disconnect();
     process.exit(1);
   });

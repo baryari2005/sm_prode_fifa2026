@@ -5,17 +5,16 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import Loading from "../loading";
+import { useLiveAutoRefresh } from "@/hooks/useLiveAutoRefresh";
+import { useCan } from "@/hooks/useCan";
 
 import { PronosticosHeader } from "@/features/pronosticos/components/PronosticosHeader";
 import { usePronosticosPage } from "@/features/pronosticos/hooks/usePronosticosPage";
 import { PartidosDateGroup } from "@/features/partidos/components/PartidosDataGroup";
 import { PronosticoDialog } from "@/features/pronosticos/components/PronosticoDialog";
 import { GrupoFilter } from "@/features/partidos/components/GrupoFilter";
-
-import {  
-  getFixturePhaseSlugFromText,
-} from "@/features/partidos/constants/fixture-phase-filter.constants";
-
+import AccessDenied403Page from "../403/page";
+import { getFixturePhaseSlugFromText } from "@/features/partidos/constants/fixture-phase-filter.constants";
 import {
   getFaseNombre,
   getGrupoNombre,
@@ -24,9 +23,7 @@ import {
 
 function getGrupoFilterValue(partido: PartidoConRelaciones) {
   const grupoNombre = getGrupoNombre(partido);
-
   if (!grupoNombre) return null;
-
   return grupoNombre.replace(/^grupo\s+/i, "").trim();
 }
 
@@ -34,17 +31,19 @@ export default function PronosticosPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const canViewPronosticos = useCan("pronosticos", "ver");
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedPartido, setSelectedPartido] =
     useState<PartidoConRelaciones | null>(null);
-
-  const [grupoSeleccionado, setGrupoSeleccionado] =
-    useState<string | null>(null);
+  const [grupoSeleccionado, setGrupoSeleccionado] = useState<string | null>(
+    null,
+  );
 
   const {
     partidos,
     partidosAgrupados,
+    hasVisibleLiveMatches,
     loading,
     busqueda,
     setBusqueda,
@@ -52,10 +51,8 @@ export default function PronosticosPage() {
   } = usePronosticosPage();
 
   const partidoIdFromQuery = searchParams.get("partido");
-
   const faseParam = searchParams.get("fase");
   const faseActiva = getFixturePhaseSlugFromText(faseParam);
-
   const mostrandoFaseGrupos = faseActiva === "grupos";
 
   const partidosAgrupadosPorFase = useMemo(() => {
@@ -67,7 +64,6 @@ export default function PronosticosPage() {
         partidos: grupo.partidos.filter((partido) => {
           const faseNombre = getFaseNombre(partido, []);
           const partidoFaseSlug = getFixturePhaseSlugFromText(faseNombre);
-
           return partidoFaseSlug === faseActiva;
         }),
       }))
@@ -78,35 +74,27 @@ export default function PronosticosPage() {
     if (!mostrandoFaseGrupos) return [];
 
     const grupos = new Set<string>();
-
     partidosAgrupadosPorFase.forEach((grupoFecha) => {
       grupoFecha.partidos.forEach((partido) => {
         const grupo = getGrupoFilterValue(partido);
-
-        if (grupo) {
-          grupos.add(grupo);
-        }
+        if (grupo) grupos.add(grupo);
       });
     });
 
     return Array.from(grupos).sort((a, b) =>
-      a.localeCompare(b, "es", { numeric: true })
+      a.localeCompare(b, "es", { numeric: true }),
     );
   }, [partidosAgrupadosPorFase, mostrandoFaseGrupos]);
 
   const partidosAgrupadosVisibles = useMemo(() => {
     if (!mostrandoFaseGrupos) return partidosAgrupadosPorFase;
-
-    if (grupoSeleccionado === null) {
-      return partidosAgrupadosPorFase;
-    }
+    if (grupoSeleccionado === null) return partidosAgrupadosPorFase;
 
     return partidosAgrupadosPorFase
       .map((grupoFecha) => ({
         ...grupoFecha,
         partidos: grupoFecha.partidos.filter((partido) => {
           const grupo = getGrupoFilterValue(partido);
-
           return grupo === grupoSeleccionado;
         }),
       }))
@@ -116,19 +104,27 @@ export default function PronosticosPage() {
   const totalPartidosVisibles = useMemo(() => {
     return partidosAgrupadosVisibles.reduce(
       (total, grupo) => total + grupo.partidos.length,
-      0
+      0,
     );
   }, [partidosAgrupadosVisibles]);
 
   const partidoPreseleccionado = useMemo(() => {
     if (!partidoIdFromQuery) return null;
-
     return partidos.find((partido) => partido.id === partidoIdFromQuery) ?? null;
   }, [partidoIdFromQuery, partidos]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (!canViewPronosticos) return;
+    void loadData();
+  }, [canViewPronosticos, loadData]);
+
+  const autoRefresh = useLiveAutoRefresh({
+    enabled: canViewPronosticos,
+    intervalSeconds: 30,
+    onRefresh: async () => {
+      await loadData({ silent: true });
+    },
+  });
 
   useEffect(() => {
     if (!mostrandoFaseGrupos) {
@@ -145,18 +141,19 @@ export default function PronosticosPage() {
   }, [mostrandoFaseGrupos, gruposDisponibles, grupoSeleccionado]);
 
   useEffect(() => {
+    if (!canViewPronosticos) return;
     if (!partidoPreseleccionado) return;
-
     setSelectedPartido(partidoPreseleccionado);
     setDialogOpen(true);
-  }, [partidoPreseleccionado]);
+  }, [canViewPronosticos, partidoPreseleccionado]);
 
   useEffect(() => {
+    if (!canViewPronosticos) return;
     if (!partidoIdFromQuery || loading) return;
 
     const frame = requestAnimationFrame(() => {
       const element = document.querySelector<HTMLElement>(
-        `[data-partido-id="${partidoIdFromQuery}"]`
+        `[data-partido-id="${partidoIdFromQuery}"]`,
       );
 
       element?.scrollIntoView({
@@ -166,11 +163,10 @@ export default function PronosticosPage() {
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [partidoIdFromQuery, loading, partidosAgrupadosVisibles]);
+  }, [canViewPronosticos, partidoIdFromQuery, loading, partidosAgrupadosVisibles]);
 
   const clearDialogQuery = () => {
     const params = new URLSearchParams(searchParams.toString());
-
     params.delete("partido");
 
     const next = params.toString()
@@ -179,6 +175,10 @@ export default function PronosticosPage() {
 
     router.replace(next);
   };
+
+  if (!canViewPronosticos) {
+    return <AccessDenied403Page />;
+  }
 
   if (loading) {
     return <Loading />;
@@ -190,36 +190,21 @@ export default function PronosticosPage() {
         <PronosticosHeader
           total={faseActiva ? totalPartidosVisibles : partidos.length}
           busqueda={busqueda}
+          isAutoRefreshing={autoRefresh.isRefreshing}
+          nextAutoRefreshIn={autoRefresh.nextRefreshIn}
+          lastAutoRefreshAt={autoRefresh.lastRefreshAt}
           onBusquedaChange={setBusqueda}
-          onActualizar={loadData}
+          onActualizar={() => void autoRefresh.triggerRefresh()}
         />
 
-        {/* {faseActiva && (
-          <div className="flex flex-col gap-3 rounded-2xl border border-[#008C93]/20 bg-[#008C93]/5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#008C93]">
-                Filtro de pronósticos
-              </p>
-
-              <h2 className="text-lg font-black tracking-tight text-slate-950">
-                {faseActivaLabel}
-              </h2>
-
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                Mostrando solamente los partidos de esta fase.
-              </p>
-            </div>
-
-            <Link
-              href="/pronosticos"
-              className="inline-flex h-9 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 shadow-sm transition hover:border-[#008C93]/40 hover:bg-[#008C93]/5 hover:text-[#008C93]"
-            >
-              Ver todos los pronósticos
-            </Link>
+        {hasVisibleLiveMatches ? (
+          <div className="rounded-2xl border border-emerald-100 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-700">
+            Hay partidos en juego. La lista se refresca automaticamente para
+            mantener los estados al dia.
           </div>
-        )} */}
+        ) : null}
 
-        {mostrandoFaseGrupos && gruposDisponibles.length > 0 && (
+        {mostrandoFaseGrupos && gruposDisponibles.length > 0 ? (
           <GrupoFilter
             grupos={gruposDisponibles}
             grupoSeleccionado={grupoSeleccionado}
@@ -227,7 +212,7 @@ export default function PronosticosPage() {
               setGrupoSeleccionado(grupo);
             }}
           />
-        )}
+        ) : null}
 
         {partidosAgrupadosVisibles.length === 0 ? (
           <div className="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50/70 px-6 py-16 text-center text-sm font-medium text-slate-500">

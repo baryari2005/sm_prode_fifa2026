@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCw, Save, Plus, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { FlagImage } from "@/components/ui/flag-image";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -20,7 +21,6 @@ import { paisCreateSchema, paisUpdateSchema } from "../schemas/paises.schema";
 import type { Pais } from "../types/types";
 import z from "zod";
 import type { Resolver } from "react-hook-form";
-import Image from "next/image";
 import { resolveBanderaSrc } from "@/lib/flags";
 
 type Mode = "create" | "edit";
@@ -278,16 +278,16 @@ export function PaisForm({ mode, pais, onSuccess }: PaisFormProps) {
 
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                   {previewSrc ? (
-                    <Image
-                      src={previewSrc}
-                      alt="Bandera cargada"
-                      width={112}
-                      height={80}
-                      unoptimized
-                      className="h-20 w-28 rounded-2xl border border-slate-200 object-cover"
+                    <FlagImage
+                      bandera={preview}
+                      codigo={codigoValue}
+                      nombre={form.getValues("nombre") || "Selección"}
+                      widthClassName="w-20"
+                      heightClassName="h-14"
+                      fallbackMode="emoji"
                     />
                   ) : (
-                    <div className="flex h-20 w-28 items-center justify-center rounded-2xl border border-dashed border-slate-200 text-sm text-muted-foreground">
+                    <div className="flex h-14 w-20 items-center justify-center rounded-2xl border border-dashed border-slate-200 text-sm text-muted-foreground">
                       Sin imagen
                     </div>
                   )}

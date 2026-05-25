@@ -7,6 +7,7 @@ import {
   Search,
 } from "lucide-react";
 
+import { LiveRefreshBadge } from "@/components/live-refresh-badge";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,10 @@ type PartidosHeaderProps = {
   cantidadPartidos: number;
   faseActivaLabel?: string | null;
   busqueda: string;
+  showAutoRefreshBadge?: boolean;
+  isAutoRefreshing?: boolean;
+  nextAutoRefreshIn?: number;
+  lastAutoRefreshAt?: Date | null;
   onBusquedaChange: (value: string) => void;
   onActualizar: () => void;
 };
@@ -29,6 +34,10 @@ export function PartidosHeader({
   cantidadPartidos,
   faseActivaLabel,
   busqueda,
+  showAutoRefreshBadge = false,
+  isAutoRefreshing = false,
+  nextAutoRefreshIn = 30,
+  lastAutoRefreshAt = null,
   onBusquedaChange,
   onActualizar,
 }: PartidosHeaderProps) {
@@ -46,6 +55,16 @@ export function PartidosHeader({
               <Badge className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 hover:bg-blue-50">
                 {cantidadPartidos} visibles
               </Badge>
+
+              {showAutoRefreshBadge ? (
+                <LiveRefreshBadge
+                  isRefreshing={isAutoRefreshing}
+                  nextRefreshIn={nextAutoRefreshIn}
+                  lastRefreshAt={lastAutoRefreshAt}
+                  shortText
+                  className="rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700 hover:bg-sky-50"
+                />
+              ) : null}
             </div>
 
             <CardDescription className="flex flex-wrap items-center gap-2 text-sm text-slate-500">

@@ -20,6 +20,7 @@ import { GoalTeamEditor } from "./GoalTeamEditor";
 import type { GoalDetail } from "@/features/partidos/types/fixture-details";
 import type { JugadorSeleccion } from "@/features/partidos/types/types";
 import type { ResultadoFormState } from "@/features/partidos/types/resultado-manual.types";
+import { ESTADO_PARTIDO_OPTIONS } from "@/features/partidos/utils/partidos-ui.helpers";
 
 type TeamSummary = {
   nombre: string;
@@ -168,28 +169,14 @@ export function ResultadoResumenEditableCard({
                     <SelectValue placeholder="Estado" />
                   </SelectTrigger>
 
-                  <SelectContent>
-                    <SelectItem value={EstadoPartido.PENDIENTE}>
-                      Pendiente
-                    </SelectItem>
-
-                    <SelectItem value={EstadoPartido.EN_JUEGO}>
-                      En juego
-                    </SelectItem>
-
-                    <SelectItem value={EstadoPartido.FINALIZADO}>
-                      Finalizado
-                    </SelectItem>
-
-                    <SelectItem value={EstadoPartido.SUSPENDIDO}>
-                      Suspendido
-                    </SelectItem>
-
-                    <SelectItem value={EstadoPartido.CANCELADO}>
-                      Cancelado
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                    <SelectContent>
+                      {ESTADO_PARTIDO_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
               </HorizontalField>
             </div>
           </div>

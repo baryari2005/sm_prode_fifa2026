@@ -1,5 +1,6 @@
 import { ChartNoAxesColumnIcon, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { LiveRefreshBadge } from "@/components/live-refresh-badge";
 
 import { CardDescription, CardTitle } from "@/components/ui/card";
 
@@ -20,6 +21,10 @@ export function PartidoDetalleHeader({
   fase,
   grupo,
   jornada,
+  autoRefreshEnabled = false,
+  nextRefreshIn = 0,
+  isRefreshing = false,
+  lastRefreshAt = null,
 }: PartidoDetalleHeaderProps) {
   const partidoInfo = buildPartidoInfo({
     fase,
@@ -41,6 +46,15 @@ export function PartidoDetalleHeader({
               <CardDescription className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
                 <span>Alineaciones y estadisticas del partido.</span>
                 <Info className="h-4 w-4 text-slate-400" />
+                {autoRefreshEnabled ? (
+                  <LiveRefreshBadge
+                    isRefreshing={isRefreshing}
+                    nextRefreshIn={nextRefreshIn}
+                    lastRefreshAt={lastRefreshAt}
+                    shortText
+                    className="inline-flex max-w-full items-center rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700 hover:bg-sky-50"
+                  />
+                ) : null}
               </CardDescription>
             </div>
           </div>
@@ -62,7 +76,7 @@ export function PartidoDetalleHeader({
                 </span>
 
                 {fechaTexto && (
-                  <span className="ml-2 text-slate-500">Â· {fechaTexto}</span>
+                  <span className="ml-2 text-slate-500">{fechaTexto}</span>
                 )}
               </div>
 

@@ -25,7 +25,10 @@ async function ensureResultadoEditable(partidoId: string) {
     throw new Error("PARTIDO_NOT_FOUND");
   }
 
-  if (resultado?.estado === "EN_JUEGO") {
+  if (
+    resultado?.estado === "EN_JUEGO" ||
+    resultado?.estado === "ENTRETIEMPO"
+  ) {
     throw new Error("RESULTADO_LIVE_LOCKED");
   }
 }
@@ -33,7 +36,7 @@ async function ensureResultadoEditable(partidoId: string) {
 export async function GET(req: NextRequest) {
   try {
     const loggedInUser = await requireAuth(req);
-    requirePermission(loggedInUser, "partidos", "ver");
+    requirePermission(loggedInUser, "partidos", "ver_detalle");
 
     const url = new URL(req.url);
     const partidoId = url.searchParams.get("partidoId");

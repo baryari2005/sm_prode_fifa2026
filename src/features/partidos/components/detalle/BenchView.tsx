@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 
 import type { TeamLineup } from "@/features/partidos/types/fixture-details";
+import { PlayerActionBadges } from "./lineups/PlayerActionBadges";
 
 type BenchViewProps = {
   title: string;
@@ -20,7 +21,7 @@ export function BenchView({ title, lineup }: BenchViewProps) {
         <CardTitle>{`Suplentes de ${title}`}</CardTitle>
         <CardDescription>
           {lineup.entrenador
-            ? `Director técnico: ${lineup.entrenador}`
+            ? `Director tecnico: ${lineup.entrenador}`
             : "Sin DT cargado"}
         </CardDescription>
       </CardHeader>
@@ -32,9 +33,9 @@ export function BenchView({ title, lineup }: BenchViewProps) {
           </p>
         ) : (
           <div className="space-y-3">
-            {lineup.suplentes.map((player) => (
+            {lineup.suplentes.map((player, index) => (
               <div
-                key={`${title}-bench-${player.jugadorId}`}
+                key={`${title}-bench-${player.jugadorId}-${index}`}
                 className="flex items-center justify-between rounded-xl border border-slate-200 p-3"
               >
                 <div>
@@ -42,17 +43,15 @@ export function BenchView({ title, lineup }: BenchViewProps) {
                     {player.nombre} {player.numero ? `#${player.numero}` : ""}
                   </p>
 
-                  <p className="text-sm text-slate-500">
-                    {player.posicion}
-                  </p>
+                  <p className="text-sm text-slate-500">{player.posicion}</p>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm">
-                  {player.goals > 0 && <span>{`⚽ ${player.goals}`}</span>}
-                  {player.yellow && <span>🟨</span>}
-                  {player.red && <span>🟥</span>}
-                  {player.substituted && <span>↕</span>}
-                </div>
+                <PlayerActionBadges
+                  goals={player.goals}
+                  yellow={player.yellow}
+                  red={player.red}
+                  substituted={player.substituted}
+                />
               </div>
             ))}
           </div>

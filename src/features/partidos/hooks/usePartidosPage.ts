@@ -2,9 +2,11 @@
 
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { detectGoalEvents } from "@/features/partidos/lib/goal-events";
+import { useGoalCelebrationStore } from "@/stores/goal-celebration";
 import { Fase, Seleccion } from "@/features/partidos/types/types";
 
 import {
@@ -38,6 +40,11 @@ export function usePartidosPage() {
   const [grupoSeleccionado, setGrupoSeleccionado] = useState<string | null>(
     null
   );
+  const partidosRef = useRef<PartidoConRelaciones[]>([]);
+  const hasLoadedRef = useRef(false);
+  const enqueueGoalEvents = useGoalCelebrationStore(
+    (state) => state.enqueueEvents,
+  );
 
   const loadData = useCallback(async (loadOptions?: { silent?: boolean }) => {
     try {
@@ -50,9 +57,15 @@ export function usePartidosPage() {
         getPartidosOptions(),
       ]);
 
+      if (hasLoadedRef.current) {
+        enqueueGoalEvents(detectGoalEvents(partidosRef.current, partidosList));
+      }
+
       setPartidos(partidosList);
       setSelecciones(optionsData.selecciones);
       setFases(optionsData.fases);
+      partidosRef.current = partidosList;
+      hasLoadedRef.current = true;
     } catch (error) {
       console.error("Error cargando datos:", error);
       setPartidos([]);
@@ -62,7 +75,7 @@ export function usePartidosPage() {
         setLoading(false);
       }
     }
-  }, []);
+  }, [enqueueGoalEvents]);
 
   const handleCargarDesdeApi = useCallback(async () => {
     try {

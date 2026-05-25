@@ -11,18 +11,15 @@ type RouteParams = {
   }>;
 };
 
-export async function GET(
-  req: NextRequest,
-  { params }: RouteParams
-) {
+export async function GET(req: NextRequest, { params }: RouteParams) {
   const { id } = await params;
+
   try {
     const loggedInUser = await requireAuth(req);
-    requirePermission(loggedInUser, "partidos", "ver");
 
-    const partidoId = id;
+    requirePermission(loggedInUser, "partidos", "ver_detalle");
 
-    const partido = await getPartidoById(partidoId);
+    const partido = await getPartidoById(id);
 
     if (!partido) {
       return NextResponse.json(
@@ -42,7 +39,7 @@ export async function GET(
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenés permisos para ver partidos." },
+        { message: "No tenés permisos para ver el detalle del partido." },
         { status: 403 }
       );
     }

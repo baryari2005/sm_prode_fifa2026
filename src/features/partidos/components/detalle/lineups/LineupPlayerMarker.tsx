@@ -1,7 +1,8 @@
-import { ArrowDown, CircleDot } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 
 import type { LineupPlayer } from "@/features/partidos/types/fixture-details";
 import { PlayerJerseyAvatar } from "./PlayerJerseyAvatar";
+import { PlayerActionBadges } from "./PlayerActionBadges";
 
 type PositionedPlayer = LineupPlayer & {
   fotoUrl?: string | null;
@@ -41,26 +42,19 @@ export function LineupPlayerMarker({
           className="shadow-sm ring-2 ring-white/60"
         />
 
-        <div className="absolute -right-1 -top-1 flex flex-col gap-0.5">
-          {player.yellow && (
-            <span className="h-3.5 w-2.5 rounded-[2px] bg-yellow-400 shadow-sm" />
-          )}
-
-          {player.red && (
-            <span className="h-3.5 w-2.5 rounded-[2px] bg-red-500 shadow-sm" />
-          )}
+        <div className="absolute -right-3 top-1/2 -translate-y-1/2">
+          <PlayerActionBadges
+            goals={player.goals}
+            yellow={player.yellow}
+            red={player.red}
+            substituted={false}
+            className="flex-col"
+          />
         </div>
 
         {player.substituted && (
           <span className="absolute -left-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-rose-100 text-rose-700 shadow-sm">
             <ArrowDown className="h-3 w-3" />
-          </span>
-        )}
-
-        {player.goals > 0 && (
-          <span className="absolute -bottom-1 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold text-slate-950 shadow-sm">
-            <CircleDot className="h-3 w-3" />
-            {player.goals > 1 ? player.goals : ""}
           </span>
         )}
       </div>

@@ -13,7 +13,7 @@ export default function DashboardNotFoundPage() {
         <div className="relative mx-auto w-fit">
           <div className="animate-float">
             <Image
-              src="/robot-404.png"
+              src="/error-404.png"
               alt="Pagina no encontrada."
               width={600}
               height={600}
@@ -68,7 +68,7 @@ export default function DashboardNotFoundPage() {
         {/* Opcional: link “Solicitar acceso” */}
         <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">
           ¿Necesitás permisos?{" "}
-          <Link href="/soporte" className="text-[#008C93] hover:underline">
+          <Link href="/ayuda/usuario" className="text-[#008C93] hover:underline">
             Solicitar acceso
           </Link>
         </div>

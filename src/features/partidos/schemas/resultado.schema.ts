@@ -1,7 +1,7 @@
 import { EstadoPartido } from "@prisma/client";
 import { z } from "zod";
 
-const lineupPlayerSchema = z.object({
+export const lineupPlayerSchema = z.object({
   jugadorId: z.string().uuid(),
   nombre: z.string().min(1),
   numero: z.number().int().min(0).nullable(),
@@ -14,14 +14,14 @@ const lineupPlayerSchema = z.object({
   substituted: z.boolean().default(false),
 });
 
-const goalDetailSchema = z.object({
+export const goalDetailSchema = z.object({
   jugadorId: z.string().uuid(),
   nombre: z.string().min(1),
   minuto: z.number().int().min(0).max(130),
   penal: z.boolean().default(false),
 });
 
-const teamStatsSchema = z.object({
+export const teamStatsSchema = z.object({
   shots: z.number().int().min(0).default(0),
   shotsOnTarget: z.number().int().min(0).default(0),
   possession: z.number().int().min(0).max(100).default(0),
@@ -34,7 +34,7 @@ const teamStatsSchema = z.object({
   corners: z.number().int().min(0).default(0),
 });
 
-const teamLineupSchema = z.object({
+export const teamLineupSchema = z.object({
   formacion: z.string().default(""),
   entrenador: z.string().default(""),
   titulares: z.array(lineupPlayerSchema).default([]),

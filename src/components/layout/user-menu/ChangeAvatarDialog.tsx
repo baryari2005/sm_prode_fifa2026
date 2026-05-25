@@ -1,46 +1,65 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import axios from "axios";
+import {  
+  ImagePlus,
+  FileImage,
+  RefreshCw,
+  Save,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  DialogFormSection,
+  DialogHero,
+  DialogHighlightCard,
+  DialogMutedNote,
+  DialogShell,
+} from "@/components/ui/dialog-shell";
 import { AvatarUploader } from "@/features/settings/components/AvatarUploader";
 import { useAvatarStaging } from "@/features/users/hooks/useAvatarStaging";
 import { pathFromPublicUrl } from "@/features/users/lib/utils";
-import { useAuth } from "@/stores/auth"; // donde tengas user + logout
-import { Separator } from "@/components/ui/separator";
-import { FileImage, RefreshCw, Save } from "lucide-react";
+import { useAuth } from "@/stores/auth";
 import { formatMessage } from "@/utils/formatters";
 import { changeMyAvatar } from "@/lib/api/account";
-import axios from "axios";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
 export function ChangeAvatarDialog({ open, onOpenChange }: Props) {
-  const { user, logout } = useAuth();                 // 👈 tu usuario logueado
+  const { user, logout } = useAuth();
   const { tmpPath, setTmpPath, commit } = useAvatarStaging();
-  const oldKey = pathFromPublicUrl(user?.avatarUrl);  // ej: users/<id>.jpg
+  const oldKey = pathFromPublicUrl(user?.avatarUrl);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { if (open) setTmpPath(null); }, [open, setTmpPath]);
+  useEffect(() => {
+    if (open) setTmpPath(null);
+  }, [open, setTmpPath]);
 
   const onSave = async () => {
     if (!tmpPath) {
       toast.error("Seleccioná una imagen primero");
       return;
     }
+
     try {
       setSaving(true);
-      // mueve de avatars/tmp/... a avatars/users/<id>.<ext> y devuelve { key, publicUrl }
-      const r = await commit(`users/${user!.id}`, oldKey);
 
-      await changeMyAvatar({ avatarUrl: r.publicUrl });
-      // guarda en tu usuario logueado
-      //await axiosInstance.post("/auth/change-avatar", { avatarUrl: r.publicUrl });
+      const result = await commit(`users/${user!.id}`, oldKey);
+      await changeMyAvatar({ avatarUrl: result.publicUrl });
 
-      toast.success("Avatar actualizado. Vuelve a iniciar sesión.");
+      toast.success("Avatar actualizado. Volvé a iniciar sesión.");
       onOpenChange(false);
-      onOpenChange(false);                    // 👈 cierra el modal
       setTimeout(() => logout(), 1500);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -62,49 +81,69 @@ export function ChangeAvatarDialog({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-sm p-0">
-        <DialogHeader className="px-5 pt-4 pb-2">
-          <DialogTitle className="text-sm-plus font-semibold flex">
-            <FileImage className="w-4 h-4 mr-2" />Cambiar avatar
-          </DialogTitle>
-          <Separator className="mt-4 mb-4" />
-          <DialogDescription className="text-sm-plus  justify-center">
-            Cambiar tu avatar de acceso
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-md overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-0 shadow-2xl">
+        <DialogTitle className="sr-only">Cambiar avatar</DialogTitle>
+        <DialogDescription className="sr-only">
+          Dialog para actualizar tu avatar de acceso.
+        </DialogDescription>
 
-        <div className="grid gap-3 px-5 pb-4">
-          <AvatarUploader
-            currentUrl={user?.avatarUrl}
-            onTempUploaded={({ tmpPath }) => setTmpPath(tmpPath)} // 👈 guardamos el tmp
+        <DialogShell>
+          <DialogHero
+            icon={<FileImage className="h-6 w-6 text-white" />}
+            title="Cambiar avatar"
+            description="Actualizá tu imagen de perfil con una experiencia visual alineada al resto de acciones de cuenta."
           />
-        </div>
 
+          <DialogFormSection>
+            <DialogHighlightCard
+              icon={<ImagePlus className="h-5 w-5 text-sky-600" />}
+              title="Subí una nueva imagen"
+              description="Elegí un avatar claro y reconocible. El cambio se aplicará a tu perfil después de guardar."
+            />
 
-        <DialogFooter className="px-5 py-3 bg-muted/40 border-t rounded-none">
-          <DialogClose asChild>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <AvatarUploader
+                currentUrl={user?.avatarUrl}
+                onTempUploaded={({ tmpPath: nextTmpPath }) => setTmpPath(nextTmpPath)}
+              />
+            </div>
+
+            <DialogMutedNote>
+              Por seguridad, después de actualizar tu avatar vas a tener que
+              iniciar sesión nuevamente.
+            </DialogMutedNote>
+          </DialogFormSection>
+
+          <DialogFooter className="gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:justify-end">
+            <DialogClose asChild>
+              <Button
+                className="h-11 rounded-xl border-slate-200 px-5 font-bold"
+                variant="outline"
+              >
+                <X className="mr-2 h-4 w-4" />
+                Cancelar
+              </Button>
+            </DialogClose>
+
             <Button
-              className="h-11 rounded-2xl"
-              variant="outline">
-              Cancelar
+              onClick={onSave}
+              disabled={saving || !tmpPath}
+              className="h-11 rounded-xl bg-sky-600 px-5 font-black text-white shadow-lg shadow-sky-600/20 transition hover:bg-sky-700"
+            >
+              {saving ? (
+                <span className="inline-flex items-center gap-2">
+                  <RefreshCw className="animate-spin" size={18} />
+                  {formatMessage("Guardando...")}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2">                  
+                  <Save className="h-4 w-4" />
+                  Guardar avatar
+                </span>
+              )}
             </Button>
-          </DialogClose>
-          <Button onClick={onSave}
-            disabled={saving || !tmpPath}
-            className="h-11 rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]">
-            {saving ? (
-              <span className="inline-flex items-center gap-2">
-                <RefreshCw className="animate-spin" size={18} />
-                {formatMessage("Guardando...")}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-2">
-                <Save className="mr-2" />
-                Guardar
-              </span>
-            )}
-          </Button>
-        </DialogFooter>
+          </DialogFooter>
+        </DialogShell>
       </DialogContent>
     </Dialog>
   );

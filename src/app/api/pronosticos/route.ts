@@ -1,4 +1,3 @@
-import { EstadoPartido } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -100,9 +99,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (partido.resultado?.estado === EstadoPartido.FINALIZADO) {
+    if (partido.resultado) {
       return NextResponse.json(
-        { message: "No se puede pronosticar un partido ya finalizado." },
+        {
+          message:
+            "No se puede modificar el pronostico porque el partido ya esta iniciado.",
+        },
         { status: 400 }
       );
     }

@@ -5,18 +5,19 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { usePronosticosPage } from "@/features/pronosticos/hooks/usePronosticosPage";
-import { bulkUpsertPronosticos } from "@/features/pronosticos/services/pronosticos.service";
-
+import {
+  bulkUpsertPronosticos,
+  PronosticosApiError,
+} from "@/features/pronosticos/services/pronosticos.service";
 import {
   getFixturePhaseLabel,
   getFixturePhaseSlugFromText,
 } from "@/features/partidos/constants/fixture-phase-filter.constants";
-
 import {
   getFaseNombre,
+  hasMatchStartedForPrediction,
   isPredictionClosed,
 } from "@/features/partidos/utils/partidos-ui.helpers";
-
 import {
   getGrupoFilterValue,
   getInitialPredictionValue,
@@ -25,7 +26,6 @@ import {
   onlyNumbers,
   valuesAreEqual,
 } from "@/features/pronosticos/helpers/pronostico-rapido.helpers";
-
 import type {
   PartidoPronosticoRapido,
   PhaseFilterValue,
@@ -39,30 +39,33 @@ export function usePronosticoRapidoPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [grupoSeleccionado, setGrupoSeleccionado] =
-    useState<string | null>(null);
-
-  const [values, setValues] = useState<Record<string, PronosticoRapidoValue>>(
-    {}
+  const [grupoSeleccionado, setGrupoSeleccionado] = useState<string | null>(
+    null,
   );
-
+  const [values, setValues] = useState<Record<string, PronosticoRapidoValue>>(
+    {},
+  );
   const [initialValues, setInitialValues] = useState<
     Record<string, PronosticoRapidoValue>
   >({});
-
   const [errors, setErrors] = useState<PronosticoRapidoErrors>({});
   const [saving, setSaving] = useState(false);
 
-  const { partidos, partidosAgrupados, loading, busqueda, setBusqueda, loadData } =
-    usePronosticosPage();
+  const {
+    partidos,
+    partidosAgrupados,
+    hasVisibleLiveMatches,
+    loading,
+    busqueda,
+    setBusqueda,
+    loadData,
+  } = usePronosticosPage();
 
   const faseParam = searchParams.get("fase") ?? "";
   const faseActiva = faseParam ? getFixturePhaseSlugFromText(faseParam) : null;
-
   const faseActivaLabel = faseActiva
     ? getFixturePhaseLabel(faseActiva)
     : "Todas las fases";
-
   const mostrandoFaseGrupos = faseActiva === "grupos";
 
   const partidosById = useMemo(() => {
@@ -110,7 +113,7 @@ export function usePronosticoRapidoPage() {
     });
 
     return Array.from(grupos).sort((a, b) =>
-      a.localeCompare(b, "es", { numeric: true })
+      a.localeCompare(b, "es", { numeric: true }),
     );
   }, [partidosAgrupadosPorFase, mostrandoFaseGrupos]);
 
@@ -147,7 +150,7 @@ export function usePronosticoRapidoPage() {
   const pendingChangesCount = modifiedEntries.length;
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, [loadData]);
 
   useEffect(() => {
@@ -157,7 +160,6 @@ export function usePronosticoRapidoPage() {
 
     partidos.forEach((partido) => {
       const partidoRapido = partido as PartidoPronosticoRapido;
-
       nextValues[partidoRapido.id] = getInitialPredictionValue(partidoRapido);
     });
 
@@ -167,24 +169,15 @@ export function usePronosticoRapidoPage() {
   }, [partidos]);
 
   useEffect(() => {
-    if (pendingChangesCount > 0) return;
-
-    const intervalId = window.setInterval(() => {
-      void loadData();
-    }, 30000);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [loadData, pendingChangesCount]);
-
-  useEffect(() => {
     if (!mostrandoFaseGrupos) {
       setGrupoSeleccionado(null);
       return;
     }
 
-    if (grupoSeleccionado !== null && !gruposDisponibles.includes(grupoSeleccionado)) {
+    if (
+      grupoSeleccionado !== null &&
+      !gruposDisponibles.includes(grupoSeleccionado)
+    ) {
       setGrupoSeleccionado(null);
     }
   }, [mostrandoFaseGrupos, gruposDisponibles, grupoSeleccionado]);
@@ -207,7 +200,7 @@ export function usePronosticoRapidoPage() {
   function updateScore(
     partidoId: string,
     field: PronosticoRapidoField,
-    value: string
+    value: string,
   ) {
     const cleanValue = onlyNumbers(value);
 
@@ -232,14 +225,20 @@ export function usePronosticoRapidoPage() {
 
     modifiedEntries.forEach(([partidoId, value]) => {
       const partido = partidosById.get(partidoId);
-
       const initialValue = initialValues[partidoId] ?? {
         golesLocal: "",
         golesVisitante: "",
       };
 
+      if (partido && hasMatchStartedForPrediction(partido)) {
+        nextErrors[partidoId] =
+          "El pronostico de este partido ya no se puede modificar porque el partido esta iniciado";
+        return;
+      }
+
       if (partido && isPredictionClosed(partido.fecha)) {
-        nextErrors[partidoId] = "El pronóstico de este partido ya está cerrado";
+        nextErrors[partidoId] =
+          "El pronostico de este partido ya esta cerrado";
         return;
       }
 
@@ -262,7 +261,6 @@ export function usePronosticoRapidoPage() {
     if (saving) return;
 
     const isValid = validateBeforeSave();
-
     if (!isValid) return;
 
     const payload = modifiedEntries
@@ -301,11 +299,18 @@ export function usePronosticoRapidoPage() {
     } catch (error) {
       console.error(error);
 
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Ocurrió un error al guardar los pronósticos"
-      );
+      if (error instanceof PronosticosApiError && error.status === 400) {
+        toast.error(
+          "El partido ya cerro para pronosticar. Actualizamos la informacion.",
+        );
+        await loadData();
+      } else {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Ocurrio un error al guardar los pronosticos",
+        );
+      }
     } finally {
       setSaving(false);
     }
@@ -321,6 +326,7 @@ export function usePronosticoRapidoPage() {
     mostrandoFaseGrupos,
     gruposDisponibles,
     grupoSeleccionado,
+    hasVisibleLiveMatches,
     partidosAgrupadosVisibles,
     values,
     errors,

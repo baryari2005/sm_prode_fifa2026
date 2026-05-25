@@ -18,7 +18,7 @@ const pronosticoBulkItemSchema = z.object({
 const pronosticoBulkSchema = z.object({
   pronosticos: z
     .array(pronosticoBulkItemSchema)
-    .min(1, "No hay pronósticos para guardar"),
+    .min(1, "No hay pronosticos para guardar"),
 });
 
 type PronosticoBulkItem = z.infer<typeof pronosticoBulkItemSchema>;
@@ -27,12 +27,9 @@ type PartidoParaValidar = {
   id: string;
   fecha: Date;
   activo: boolean;
-  seleccionLocal: {
-    nombre: string;
-  };
-  seleccionVisitante: {
-    nombre: string;
-  };
+  resultado: {
+    id: string;
+  } | null;
 };
 
 function isPredictionClosed(fechaPartido: Date | string) {
@@ -55,7 +52,6 @@ function removeDuplicatedPredictions(items: PronosticoBulkItem[]) {
 export async function POST(req: NextRequest) {
   try {
     const loggedInUser = await requireAuth(req);
-
     const body = await req.json();
 
     const parsed = pronosticoBulkSchema.safeParse(body);
@@ -63,15 +59,14 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         {
-          message: "Datos inválidos",
+          message: "Datos invalidos",
           errors: parsed.error.flatten(),
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const pronosticos = removeDuplicatedPredictions(parsed.data.pronosticos);
-
     const partidoIds = pronosticos.map((pronostico) => pronostico.partidoId);
 
     const partidos: PartidoParaValidar[] = await prisma.partido.findMany({
@@ -84,21 +79,15 @@ export async function POST(req: NextRequest) {
         id: true,
         fecha: true,
         activo: true,
-        seleccionLocal: {
+        resultado: {
           select: {
-            nombre: true,
-          },
-        },
-        seleccionVisitante: {
-          select: {
-            nombre: true,
+            id: true,
           },
         },
       },
     });
 
     const partidosById = new Map<string, PartidoParaValidar>();
-
     partidos.forEach((partido) => {
       partidosById.set(partido.id, partido);
     });
@@ -123,7 +112,16 @@ export async function POST(req: NextRequest) {
       if (!partido.activo) {
         errors.push({
           partidoId: pronostico.partidoId,
-          message: "El partido no está activo",
+          message: "El partido no esta activo",
+        });
+        return;
+      }
+
+      if (partido.resultado) {
+        errors.push({
+          partidoId: pronostico.partidoId,
+          message:
+            "El pronostico de este partido ya no se puede modificar porque el partido esta iniciado",
         });
         return;
       }
@@ -131,7 +129,7 @@ export async function POST(req: NextRequest) {
       if (isPredictionClosed(partido.fecha)) {
         errors.push({
           partidoId: pronostico.partidoId,
-          message: "El pronóstico de este partido ya está cerrado",
+          message: "El pronostico de este partido ya esta cerrado",
         });
         return;
       }
@@ -142,12 +140,12 @@ export async function POST(req: NextRequest) {
     if (pronosticosValidos.length === 0) {
       return NextResponse.json(
         {
-          message: "No se pudo guardar ningún pronóstico",
+          message: "No se pudo guardar ningun pronostico",
           savedCount: 0,
           skippedCount: errors.length,
           errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -170,15 +168,15 @@ export async function POST(req: NextRequest) {
             golesLocal: pronostico.golesLocal,
             golesVisitante: pronostico.golesVisitante,
           },
-        })
-      )
+        }),
+      ),
     );
 
     return NextResponse.json({
       message:
         errors.length > 0
-          ? "Algunos pronósticos se guardaron, pero otros fueron omitidos"
-          : "Pronósticos guardados correctamente",
+          ? "Algunos pronosticos se guardaron, pero otros fueron omitidos"
+          : "Pronosticos guardados correctamente",
       savedCount: pronosticosValidos.length,
       skippedCount: errors.length,
       errors,
@@ -188,9 +186,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Error interno al guardar los pronósticos",
+        message: "Error interno al guardar los pronosticos",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

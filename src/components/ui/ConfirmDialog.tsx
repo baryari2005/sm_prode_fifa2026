@@ -1,89 +1,165 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-    DialogFooter,
-    DialogClose,
-} from "@/components/ui/dialog";
+  AlertTriangle,
+  Loader2,
+  ShieldCheck,
+  ShieldX,
+  X,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { RefreshCw } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DialogFormSection,
+  DialogHero,
+  DialogHighlightCard,
+  DialogMutedNote,
+  DialogShell,
+} from "@/components/ui/dialog-shell";
+import { cn } from "@/lib/utils";
+
+export type ConfirmDialogTone = "primary" | "danger";
 
 type ConfirmDialogProps = {
-    open: boolean;
-    title?: string;
-    description?: string;
-    confirmLabel?: string;
-    cancelLabel?: string;
-    loading?: boolean;
-    icon?: React.ReactNode;
-    onConfirm: () => Promise<void> | void;
-    onClose: () => void;
+  open: boolean;
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  loading?: boolean;
+  icon?: ReactNode;
+  tone?: ConfirmDialogTone;
+  note?: string;
+  onConfirm: () => Promise<void> | void;
+  onClose: () => void;
+};
+
+const toneStyles: Record<
+  ConfirmDialogTone,
+  {
+    heroClassName: string;
+    highlightClassName: string;
+    highlightTitleClassName: string;
+    highlightDescriptionClassName: string;
+    confirmButtonClassName: string;
+    defaultHeroIcon: ReactNode;
+    defaultHighlightIcon: ReactNode;
+    defaultConfirmIcon: ReactNode;
+  }
+> = {
+  primary: {
+    heroClassName: "from-emerald-500 via-green-600 to-slate-900",
+    highlightClassName: "border-emerald-100 bg-emerald-50",
+    highlightTitleClassName: "text-emerald-900",
+    highlightDescriptionClassName: "text-emerald-700",
+    confirmButtonClassName:
+      "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700",
+    defaultHeroIcon: <ShieldCheck className="h-6 w-6 text-white" />,
+    defaultHighlightIcon: <ShieldCheck className="h-5 w-5 text-emerald-600" />,
+    defaultConfirmIcon: <ShieldCheck className="h-4 w-4" />,
+  },
+  danger: {
+    heroClassName: "from-rose-500 via-red-600 to-slate-900",
+    highlightClassName: "border-rose-100 bg-rose-50",
+    highlightTitleClassName: "text-rose-900",
+    highlightDescriptionClassName: "text-rose-700",
+    confirmButtonClassName:
+      "bg-rose-600 text-white shadow-lg shadow-rose-600/20 hover:bg-rose-700",
+    defaultHeroIcon: <ShieldX className="h-6 w-6 text-white" />,
+    defaultHighlightIcon: <AlertTriangle className="h-5 w-5 text-rose-600" />,
+    defaultConfirmIcon: <ShieldX className="h-4 w-4" />,
+  },
 };
 
 export function ConfirmDialog({
-    open,
-    title = "¿Estás seguro?",
-    description = "Esta acción no se puede deshacer.",
-    confirmLabel = "Confirmar",
-    cancelLabel = "Cancelar",
-    loading,
-    icon,
-    onConfirm,
-    onClose,
+  open,
+  title = "¿Estás seguro?",
+  description = "Esta acción no se puede deshacer.",
+  confirmLabel = "Confirmar",
+  cancelLabel = "Cancelar",
+  loading = false,
+  icon,
+  tone = "primary",
+  note,
+  onConfirm,
+  onClose,
 }: ConfirmDialogProps) {
-    return (
-        <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent>
-                {/* HEADER */}
-                <DialogHeader className="px-5 pt-4 ">
-                    <DialogTitle className="text-sm-plus font-semibold flex">
-                        {title}
-                    </DialogTitle>
-                    <Separator className="mt-4 mb-4" />
-                    <DialogDescription className="text-sm-plus  justify-center">
-                        {description}
-                    </DialogDescription>
-                </DialogHeader>
+  const styles = toneStyles[tone];
 
-                {/* FOOTER */}
-                {/* <DialogFooter className="px-5 py-3 bg-muted/40 border-t rounded-none"> */}
-                <DialogFooter className="px-5 py-3 border-t rounded-none bg-background">
-                    <DialogClose asChild>
-                        <Button
-                            variant="outline"
-                            //className="h-11 rounded"
-                            className="h-11 rounded-2xl"
-                            disabled={loading}
-                        >
-                            {cancelLabel}
-                        </Button>
-                    </DialogClose>
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-md overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-0 shadow-2xl">
+        <DialogTitle className="sr-only">{title}</DialogTitle>
+        <DialogDescription className="sr-only">{description}</DialogDescription>
 
-                    <Button
-                        onClick={onConfirm}
-                        disabled={loading}
-                        className="h-11 rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
-                        //className="h-11 rounded bg-[#008C93] hover:bg-[#007381]"
-                    >
-                        {loading ? (
-                            <span className="inline-flex items-center gap-2">
-                                <RefreshCw className="animate-spin" size={16} />
-                                Procesando...
-                            </span>
-                        ) : (
-                            <span className="inline-flex items-center gap-2">
-                                {icon}
-                                <span>{confirmLabel}</span>
-                            </span>
-                        )}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
+        <DialogShell>
+          <DialogHero
+            icon={styles.defaultHeroIcon}
+            title={title}
+            description={description}
+            className={styles.heroClassName}
+          />
+
+          <DialogFormSection>
+            <DialogHighlightCard
+              icon={styles.defaultHighlightIcon}
+              title={title}
+              description={description}
+              className={styles.highlightClassName}
+              titleClassName={styles.highlightTitleClassName}
+              descriptionClassName={styles.highlightDescriptionClassName}
+            />
+
+            <DialogMutedNote>
+              {note ??
+                "Revisá esta acción antes de confirmar porque puede impactar datos visibles del sistema."}
+            </DialogMutedNote>
+          </DialogFormSection>
+
+          <DialogFooter className="gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:justify-end">
+            <DialogClose asChild>
+              <Button
+                variant="outline"
+                className="h-11 rounded-xl border-slate-200 px-5 font-bold"
+                disabled={loading}
+              >
+                <X className="mr-2 h-4 w-4" />
+                {cancelLabel}
+              </Button>
+            </DialogClose>
+
+            <Button
+              onClick={onConfirm}
+              disabled={loading}
+              className={cn(
+                "h-11 rounded-xl px-5 font-black",
+                styles.confirmButtonClassName
+              )}
+            >
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Procesando...
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2">
+                  {icon ?? styles.defaultConfirmIcon}
+                  <span>{confirmLabel}</span>
+                </span>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogShell>
+      </DialogContent>
+    </Dialog>
+  );
 }

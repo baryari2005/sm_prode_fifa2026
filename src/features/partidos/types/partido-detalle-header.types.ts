@@ -11,12 +11,12 @@ export type EquipoResumenProps = {
 };
 
 export type PartidoDetalleHeaderProps = {
-  partidoId: string;
+  partidoId?: string;
   local: string;
   visitante: string;
   marcador: string;
-  seleccionLocalId: string;
-  seleccionVisitanteId: string;
+  seleccionLocalId?: string;
+  seleccionVisitanteId?: string;
   escudoLocalUrl?: string | null;
   escudoVisitanteUrl?: string | null;
   competencia?: string;
@@ -25,5 +25,9 @@ export type PartidoDetalleHeaderProps = {
   fase?: string;
   grupo?: string;
   jornada?: string;
-  onBack: () => void;
+  autoRefreshEnabled?: boolean;
+  nextRefreshIn?: number;
+  isRefreshing?: boolean;
+  lastRefreshAt?: Date | null;
+  onBack?: () => void;
 };

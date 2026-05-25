@@ -2,12 +2,11 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Users } from "lucide-react";
-import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { FlagImage } from "@/components/ui/flag-image";
 import { buildActionsColumn } from "@/components/data-display/table/BuildActionsColumn";
-import { resolveBanderaSrc } from "@/lib/flags";
 
 export type PaisRow = {
   id: string | number;
@@ -29,23 +28,17 @@ export const getPaisesColumns = (
     accessorKey: "bandera",
     header: "Bandera",
     cell: ({ row }) => {
-      const value = row.original.bandera;
-      const src = resolveBanderaSrc(value, row.original.codigo);
-
-      if (src) {
-        return (
-          <Image
-            src={src}
-            alt={row.original.nombre ?? "Bandera"}
-            width={48}
-            height={32}
-            unoptimized
-            className="h-8 w-12 rounded-none object-cover"
-          />
-        );
-      }
-
-      return <div className="text-2xl">{value ?? "-"}</div>;
+      return (
+        <FlagImage
+          bandera={row.original.bandera}
+          codigo={row.original.codigo}
+          nombre={row.original.nombre}
+          widthClassName="w-12"
+          heightClassName="h-8"
+          fallbackMode="emoji"
+          fallbackTextClassName="text-xl"
+        />
+      );
     },
     enableSorting: false,
   },

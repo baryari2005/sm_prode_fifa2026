@@ -18,7 +18,11 @@ function getErrorMessage(error: unknown): string {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    console.log(body);
+    
     const parsed = registerSchema.safeParse(body);
+
 
     if (!parsed.success) {
       return NextResponse.json(

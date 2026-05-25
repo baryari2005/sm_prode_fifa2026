@@ -1,6 +1,7 @@
 import {
   Award,
   CalendarDays,
+  CircleHelp,
   Download,
   Flag,
   GitMerge,
@@ -22,11 +23,12 @@ import {
 import { ComponentType, SVGProps } from "react";
 
 type SidebarIcon = ComponentType<SVGProps<SVGSVGElement>>;
+type SidebarPermission = { modulo: string; accion: string };
 
 export type SidebarSubItemConfig = {
   title: string;
   href: string;
-  permission?: { modulo: string; accion: string };
+  permission?: SidebarPermission | SidebarPermission[];
   icon: SidebarIcon;
   children?: SidebarSubItemConfig[];
 };
@@ -36,7 +38,7 @@ export type SidebarItemConfig = {
   title: string;
   href: string;
   icon: SidebarIcon;
-  permission?: { modulo: string; accion: string };
+  permission?: SidebarPermission | SidebarPermission[];
   badgeKey?: string;
   children?: SidebarSubItemConfig[];
 };
@@ -155,47 +157,55 @@ export const SIDEBAR_CONFIG: SidebarItemConfig[] = [
     title: "Mis Pronosticos",
     href: "/pronosticos",
     icon: CalendarDays,
+    permission: { modulo: "pronosticos", accion: "ver" },
     children: [
       {
         title: "Carga Masiva",
         href: "/pronosticos/rapido",
         icon: Zap,
+        permission: { modulo: "pronosticos", accion: "ver" },
       },
       {
         title: "Fase de Grupos",
         href: "/pronosticos?fase=grupos",
         icon: Grid2x2,
+        permission: { modulo: "pronosticos", accion: "ver" },
       },
       {
         title: "Dieciseisavos de final",
         href: "/pronosticos?fase=dieciseisavos",
         icon: Rows3,
-
+        permission: { modulo: "pronosticos", accion: "ver" },
       },
       {
         title: "Octavos de final",
         href: "/pronosticos?fase=octavos",
         icon: GitMerge,
+        permission: { modulo: "pronosticos", accion: "ver" },
       },
       {
         title: "Cuartos de final",
         href: "/pronosticos?fase=cuartos",
         icon: LayoutGrid,
+        permission: { modulo: "pronosticos", accion: "ver" },
       },
       {
         title: "Semifinal",
         href: "/pronosticos?fase=semis",
         icon: Split,
+        permission: { modulo: "pronosticos", accion: "ver" },
       },
       {
         title: "3er y 4to puesto",
         href: "/pronosticos?fase=tercer-puesto",
         icon: Award,
+        permission: { modulo: "pronosticos", accion: "ver" },
       },
       {
         title: "Final",
         href: "/pronosticos?fase=final",
         icon: Trophy,
+        permission: { modulo: "pronosticos", accion: "ver" },
       },
     ],
   },
@@ -204,6 +214,14 @@ export const SIDEBAR_CONFIG: SidebarItemConfig[] = [
     title: "Mi Ranking",
     href: "/ranking",
     icon: ListOrdered,
+    permission: { modulo: "ranking", accion: "ver" },
+  },
+  {
+    section: "Live Control",
+    title: "Live Control",
+    href: "/admin/live-control",
+    icon: ShieldCheck,
+    permission: { modulo: "live-control", accion: "editar" },
   },
   {
     section: "Mundial",
@@ -276,5 +294,26 @@ export const SIDEBAR_CONFIG: SidebarItemConfig[] = [
     href: "/admin/cruces",
     icon: Zap,
     permission: { modulo: "partidos", accion: "ver" },
+  },
+  {
+    section: "Ayuda y reglas",
+    title: "Ayuda",
+    href: "/ayuda/usuario",
+    icon: CircleHelp,
+    permission: { modulo: "ayuda", accion: "ver_usuario" },
+  },
+  {
+    section: "Ayuda y reglas",
+    title: "Ayuda",
+    href: "/ayuda/admin",
+    icon: CircleHelp,
+    permission: { modulo: "ayuda", accion: "ver_admin" },
+  },
+  {
+    section: "Ayuda y reglas",
+    title: "Reglas y condiciones",
+    href: "/reglas-y-condiciones",
+    icon: Trophy,
+    permission: { modulo: "ayuda", accion: "ver_reglas" },
   },
 ];

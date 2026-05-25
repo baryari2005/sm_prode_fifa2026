@@ -29,7 +29,8 @@ import {
   formatMatchHour,
   getPredictionCloseTimestamp,
   getPredictionCountdownLabel,
-  isPredictionClosed,
+  hasMatchStartedForPrediction,
+  isPredictionBlocked,
   PREDICTION_CLOSE_MINUTES_BEFORE,
   type PartidoConRelaciones,
 } from "@/features/partidos/utils/partidos-ui.helpers";
@@ -61,8 +62,11 @@ export function PronosticoDialog({
   const miPronostico = partido?.miPrediccion;
 
   const pronosticoCerrado = partido
-    ? isPredictionClosed(partido.fecha, PREDICTION_CLOSE_MINUTES_BEFORE, now)
+    ? isPredictionBlocked(partido, PREDICTION_CLOSE_MINUTES_BEFORE, now)
     : true;
+  const partidoIniciado = partido
+    ? hasMatchStartedForPrediction(partido)
+    : false;
 
   const partidoFinalizado = partido?.resultado?.estado === "FINALIZADO";
   const bloqueado = pronosticoCerrado || partidoFinalizado || !partido;
@@ -326,6 +330,8 @@ export function PronosticoDialog({
 
                   {partidoFinalizado ? (
                     <span>El partido ya finalizó. No se puede editar.</span>
+                  ) : partidoIniciado ? (
+                    <span>El partido ya esta iniciado. No se puede editar.</span>
                   ) : pronosticoCerrado ? (
                     <span>El pronóstico está cerrado. No se puede editar.</span>
                   ) : (

@@ -243,7 +243,10 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      if (partido.resultado?.estado === EstadoPartido.EN_JUEGO) {
+      if (
+        partido.resultado?.estado === EstadoPartido.EN_JUEGO ||
+        partido.resultado?.estado === EstadoPartido.ENTRETIEMPO
+      ) {
         resultados.push({
           footballDataId: match.id,
           partidoId: partido.id,

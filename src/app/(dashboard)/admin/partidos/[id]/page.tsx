@@ -11,6 +11,7 @@ import { usePartidoDetallePage } from "@/features/partidos/hooks/usePartidoDetal
 import { PartidoDetalleHeader } from "@/features/partidos/components/detalle/PartidoDetalleHeader";
 import { PartidoDetalleTabs } from "@/features/partidos/components/detalle/PartidoDetalleTabs";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLiveAutoRefresh } from "@/hooks/useLiveAutoRefresh";
 
 export default function PartidoDetallePage() {
   const params = useParams<{ id: string }>();
@@ -19,7 +20,7 @@ export default function PartidoDetallePage() {
   const partidoId = params.id;
   const canVer = useCan("partidos", "ver");
 
-  const { detalle, loading, loadData } = usePartidoDetallePage({
+  const { detalle, loading, refreshing, loadData } = usePartidoDetallePage({
     partidoId,
     canVer,
   });
@@ -29,6 +30,21 @@ export default function PartidoDetallePage() {
       loadData();
     }
   }, [canVer, loadData]);
+
+  const autoRefreshEnabled =
+    detalle?.estado === "EN_JUEGO" || detalle?.estado === "ENTRETIEMPO";
+
+  const {
+    nextRefreshIn,
+    lastRefreshAt,
+    isRefreshing,
+  } = useLiveAutoRefresh({
+    enabled: Boolean(autoRefreshEnabled && canVer && partidoId),
+    intervalSeconds: 30,
+    onRefresh: async () => {
+      await loadData({ silent: true });
+    },
+  });
 
   if (!canVer) {
     return <AccessDenied403Page />;
@@ -60,6 +76,10 @@ export default function PartidoDetallePage() {
           fase={detalle.fase}
           grupo={detalle.grupo}
           jornada={detalle.jornada}
+          autoRefreshEnabled={autoRefreshEnabled}
+          nextRefreshIn={nextRefreshIn}
+          isRefreshing={isRefreshing || refreshing}
+          lastRefreshAt={lastRefreshAt}
           onBack={() => router.push("/admin/partidos")}
         />
 

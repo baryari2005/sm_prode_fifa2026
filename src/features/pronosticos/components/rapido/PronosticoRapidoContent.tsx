@@ -2,6 +2,7 @@
 
 import Loading from "@/app/(dashboard)/loading";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLiveAutoRefresh } from "@/hooks/useLiveAutoRefresh";
 import { usePronosticoRapidoPage } from "@/features/pronosticos/hooks/usePronosticoRapidoPage";
 import { PronosticoRapidoDateGroup } from "@/features/pronosticos/components/rapido/PronosticoRapidoDateGroup";
 import { PronosticoRapidoFilters } from "@/features/pronosticos/components/rapido/PronosticoRapidoFilters";
@@ -30,9 +31,17 @@ export function PronosticoRapidoContent() {
     handleSaveAll,
   } = usePronosticoRapidoPage();
 
+  const autoRefresh = useLiveAutoRefresh({
+    enabled: pendingChangesCount === 0,
+    intervalSeconds: 30,
+    onRefresh: async () => {
+      await loadData({ silent: true });
+    },
+  });
+
   const totalPartidosVisibles = partidosAgrupadosVisibles.reduce(
     (total, grupo) => total + grupo.partidos.length,
-    0
+    0,
   );
 
   if (loading) {
@@ -47,8 +56,11 @@ export function PronosticoRapidoContent() {
           busqueda={busqueda}
           saving={saving}
           pendingChangesCount={pendingChangesCount}
+          isAutoRefreshing={autoRefresh.isRefreshing}
+          nextAutoRefreshIn={autoRefresh.nextRefreshIn}
+          lastAutoRefreshAt={autoRefresh.lastRefreshAt}
           onBusquedaChange={setBusqueda}
-          onActualizar={loadData}
+          onActualizar={() => void autoRefresh.triggerRefresh()}
           onSaveAll={handleSaveAll}
         />
 

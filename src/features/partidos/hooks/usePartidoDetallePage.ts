@@ -25,6 +25,11 @@ import {
 type UsePartidoDetallePageParams = {
   partidoId: string;
   canVer: boolean;
+  redirectTo?: string;
+};
+
+type LoadDataOptions = {
+  silent?: boolean;
 };
 
 function applyGoalDetailsToLineup(
@@ -53,18 +58,24 @@ function applyGoalDetailsToLineup(
 export function usePartidoDetallePage({
   partidoId,
   canVer,
+  redirectTo = "/partidos",
 }: UsePartidoDetallePageParams) {
   const router = useRouter();
 
   const [partido, setPartido] = useState<Partido | null>(null);
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (options?: LoadDataOptions) => {
     if (!canVer || !partidoId) return;
 
     try {
-      setLoading(true);
+      if (options?.silent) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
 
       const [partidoData, resultadoData] = await Promise.all([
         getPartidoDetalle(partidoId),
@@ -76,11 +87,15 @@ export function usePartidoDetallePage({
     } catch (error) {
       console.error(error);
       toast.error("No se pudo cargar el detalle del partido");
-      router.push("/admin/partidos");
+      router.push(redirectTo);
     } finally {
-      setLoading(false);
+      if (options?.silent) {
+        setRefreshing(false);
+      } else {
+        setLoading(false);
+      }
     }
-  }, [canVer, partidoId, router]);
+  }, [canVer, partidoId, redirectTo, router]);
 
   const detalle = useMemo<PartidoDetalleViewModel | null>(() => {
     if (!partido) return null;
@@ -153,6 +168,7 @@ export function usePartidoDetallePage({
   return {
     detalle,
     loading,
+    refreshing,
     loadData,
   };
 }

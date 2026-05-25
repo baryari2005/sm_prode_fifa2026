@@ -1,5 +1,6 @@
 "use client";
 
+import { ProdeIcon } from "@/components/icons/Iconos";
 import Image from "next/image";
 
 export function LoginMascotSection() {
@@ -13,15 +14,16 @@ export function LoginMascotSection() {
         <div className="pointer-events-none absolute -inset-8 rounded-full bg-gradient-to-br from-[#B8EF6A]/18 via-transparent to-[#F7B731]/14 blur-3xl" />
 
         <div className="mb-4 inline-flex items-center rounded-full border border-white/14
-           bg-[#031A14]/55 px-4 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#F7B731] backdrop-blur-xl">
+           bg-[#031A14]/55 px-4 py-2 text-[14px] font-black uppercase tracking-[0.2em] text-[#F7B731] backdrop-blur-xl">
+            <ProdeIcon source="/trofeo.ico" mode="mask"  className="w-6 h-6 text-[#F7B731] mr-4"/>
           Mundial 2026
         </div>
 
         <Image
-          src="/fifa2026.png"
+          src="/prode.png"
           alt="Prode Mundial 2026 presentado por Más San Miguel"
-          width={1122}
-          height={1402}
+          width={1322}
+          height={1602}
           priority
           className="
             relative z-10
@@ -38,7 +40,7 @@ export function LoginMascotSection() {
           "
         />
 
-        <div className="relative z-10 mt-6 max-w-[380px] rounded-[1.5rem] border border-white/12 bg-[#071A14]/70 px-5 py-4 text-center shadow-xl shadow-black/25 backdrop-blur-xl">
+        {/* <div className="relative z-10 mt-6 max-w-[380px] rounded-[1.5rem] border border-white/12 bg-[#071A14]/70 px-5 py-4 text-center shadow-xl shadow-black/25 backdrop-blur-xl">
           <p className="text-sm font-black uppercase tracking-[0.18em] text-[#F7B731]">
             Mejor experiencia visual
           </p>
@@ -47,7 +49,7 @@ export function LoginMascotSection() {
             Para seguir partidos, ranking y pronósticos con mayor comodidad, te
             recomendamos usar notebook, PC o tablet.
           </p>
-        </div>
+        </div> */}
       </div>
     </section>
   );

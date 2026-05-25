@@ -1,444 +1,224 @@
 "use client";
 
 import Image from "next/image";
-import {
-    ArrowRight,
-    CalendarDays,
-    Clock3,
-    Trophy,    
-} from "lucide-react";
-import { format } from "date-fns";
+import { useMemo } from "react";
+import type { LucideIcon } from "lucide-react";
+import { CalendarCheck2, Clock3, Radio } from "lucide-react";
 
-import { resolveBanderaSrc } from "@/lib/flags";
-import type { PartidoConRelaciones } from "@/features/partidos/utils/partidos-ui.helpers";
 import { ProdeIcon } from "@/components/icons/Iconos";
 
 type DashboardHeroProps = {
-    displayName: string;
-    pronosticosCargados: number;
-    totalPartidos: number;
-    proximoPartido: PartidoConRelaciones | null;
-    proximoPartidoCountdown: string | null;
-    proximoPartidoCerrado: boolean;
-    proximoPartidoFinalizado: boolean;
-    proximoPartidoBloqueado: boolean;
-    onGoPronosticos: () => void;
-    onGoRanking: () => void;
-    onGoProximoPartido: () => void;
+  displayName: string;
+  roleName?: string | null;
+  pronosticosCargados: number;
+  totalPartidos: number;
+  partidosEnJuegoCount: number;
+  isAutoRefreshing?: boolean;
+  nextAutoRefreshIn?: number;
+  lastAutoRefreshAt?: Date | null;
 };
+
+type MascotOption = {
+  src: string;
+  alt: string;
+  glowClassName: string;
+};
+
+const HERO_MASCOTS: MascotOption[] = [
+  {
+    src: "/mascotas/canada.png",
+    alt: "Mascota del Prode Mundial 2026 con camiseta de Canadá",
+    glowClassName: "bg-[#F7B731]/25",
+  },
+  {
+    src: "/mascotas/mexico.png",
+    alt: "Mascota del Prode Mundial 2026 con camiseta de México",
+    glowClassName: "bg-emerald-300/24",
+  },
+  {
+    src: "/mascotas/usa.png",
+    alt: "Mascota del Prode Mundial 2026 con camiseta de Estados Unidos",
+    glowClassName: "bg-sky-300/22",
+  },
+];
 
 export function DashboardHero({
-    displayName,
-    pronosticosCargados,
-    totalPartidos,
-    proximoPartido,
-    proximoPartidoCountdown,
-    proximoPartidoCerrado,
-    proximoPartidoFinalizado,
-    proximoPartidoBloqueado,
-    onGoPronosticos,
-    onGoRanking,
-    onGoProximoPartido,
+  displayName,
+  roleName,
+  pronosticosCargados,
+  totalPartidos,
+  partidosEnJuegoCount,
+  isAutoRefreshing = false,
+  nextAutoRefreshIn = 30,
 }: DashboardHeroProps) {
-    const porcentaje =
-        totalPartidos > 0
-            ? Math.round((pronosticosCargados / totalPartidos) * 100)
-            : 0;
+  const selectedMascot = useMemo(
+    () => HERO_MASCOTS[Math.floor(Math.random() * HERO_MASCOTS.length)],
+    [],
+  );
 
-    return (
-        <section
-            className="
-        relative
-        overflow-hidden
-        rounded-[2rem]
-        border
-        border-white/80
-        bg-gradient-to-br
-        from-[#F7FFF8]
-        via-white
-        to-[#EAF8FA]
-        p-5
-        shadow-[0_22px_70px_rgba(15,23,42,0.12)]
-        md:p-7
-      "
-        >
-            <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#39A935]/16 blur-3xl" />
-            <div className="pointer-events-none absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-[#008C93]/14 blur-3xl" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#39A935]/8 to-transparent" />
+  const normalizedRoleName = roleName?.trim().toLowerCase();
+  const isAdmin = normalizedRoleName === "admin";
 
-            <div className="relative grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-stretch">
-                <div
-                    className="
-            relative
-            overflow-hidden
-            rounded-[1.7rem]
-            bg-gradient-to-br
-            from-[#052b1c]
-            via-[#082033]
-            to-[#06111F]
-            p-6
-            text-white
-            shadow-[0_18px_50px_rgba(15,23,42,0.22)]
-            md:p-7
-          "
-                >
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(57,169,53,0.36),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(0,140,147,0.32),transparent_35%)]" />
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(90deg,rgba(57,169,53,0.18),rgba(247,183,49,0.10),rgba(0,140,147,0.16))]" />
+  const heroCopy = isAdmin
+    ? {
+        title: "Tenés el torneo bajo control",
+        description:
+          "Gestioná usuarios, partidos, resultados y el avance del Prode en tiempo real.",
+      }
+    : {
+        title: "Cada partido puede cambiar todo",
+        description:
+          "Seguí tus pronósticos, sumá puntos y mantenete cerca de la cima jornada tras jornada.",
+      };
 
-                    <div className="relative">
-                        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#F7B731]/35 bg-[#F7B731]/12 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#F7B731]">
-                            <ProdeIcon
-                                source="/trofeo.ico"
-                                mode="mask"
-                                className="h-6 w-6 text-[#F7B731]"
-                            />
-                            Prode Mundial 2026
-                        </div>
+  return (
+    <section className="relative h-full w-full min-w-0 overflow-hidden rounded-[30px] border border-white/10 bg-slate-950 px-4 py-6 text-white shadow-[0_24px_70px_rgba(2,6,23,0.24)] md:px-6 md:py-7 xl:px-7 xl:py-7 2xl:h-[420px] 2xl:px-8 2xl:py-8">
+      <div className="pointer-events-none absolute inset-0">
+        <Image
+          src="/cancha.png"
+          alt=""
+          fill
+          priority
+          aria-hidden="true"
+          className="scale-[1.06] object-cover object-center opacity-95 brightness-[1.42] saturate-[1.38] contrast-[1.04]"
+        />
+      </div>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.34),transparent_18%),radial-gradient(circle_at_68%_26%,rgba(255,255,255,0.26),transparent_22%),radial-gradient(circle_at_86%_18%,rgba(255,255,255,0.35),transparent_16%)] opacity-85" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.72)_0%,rgba(6,78,59,0.52)_36%,rgba(5,53,69,0.22)_62%,rgba(2,6,23,0.36)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_35%,rgba(34,197,94,0.30),transparent_30%),radial-gradient(circle_at_34%_0%,rgba(16,185,129,0.24),transparent_35%),linear-gradient(135deg,rgba(6,78,59,0.28)_0%,rgba(5,53,69,0.16)_46%,rgba(2,6,23,0.30)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.08)_48%,transparent_62%)] opacity-45" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-emerald-950/75 via-emerald-950/24 to-transparent" />
+      <div className="pointer-events-none absolute right-10 top-8 h-56 w-56 rounded-full bg-emerald-400/20 blur-3xl" />
+      <div className="pointer-events-none absolute -left-8 bottom-5 h-28 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
+      <div className="pointer-events-none absolute left-[5%] right-[42%] bottom-7 h-px bg-gradient-to-r from-transparent via-emerald-100/25 to-transparent" />
+      <div className="pointer-events-none absolute bottom-0 left-[7%] h-20 w-[40%] rounded-[100%] border-t border-white/10 opacity-30" />
+      <div className="pointer-events-none absolute bottom-0 left-[19%] h-16 w-[28%] rounded-[100%] border-t border-white/8 opacity-25" />
 
-                        <div className="grid gap-6 lg:grid-cols-[1fr_190px] lg:items-center">
-                            <div>
-                                <h1 className="max-w-3xl text-3xl font-black leading-[1.08] tracking-[-0.045em] md:text-4xl 2xl:text-5xl">
-                                    Hola, {displayName}
-                                    <span className="block text-white/90">
-                                        ¿Listo para jugar el prode?
-                                    </span>
-                                </h1>
-
-                                <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-white/68 md:text-base">
-                                    Seguí tus puntos, revisá los próximos partidos y competí en el
-                                    ranking general del grupo.
-                                </p>
-
-                                <div className="mt-6 flex flex-wrap gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={onGoPronosticos}
-                                        className="
-                      inline-flex
-                      items-center
-                      gap-2
-                      rounded-2xl
-                      bg-[#39A935]
-                      px-5
-                      py-3
-                      text-sm
-                      font-black
-                      text-white
-                      shadow-lg
-                      shadow-green-950/25
-                      transition
-                      hover:-translate-y-0.5
-                      hover:bg-[#247A28]
-                    "
-                                    >
-                                        <Trophy className="h-4 w-4" />
-                                        Cargar pronósticos
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={onGoRanking}
-                                        className="inline-flex items-center gap-2 rounded-2xl border border-white/18 bg-white/10 px-5 py-3 text-sm font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
-                                    >
-                                        <Trophy className="h-4 w-4" />
-                                        Ver ranking
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="hidden lg:flex lg:justify-end">
-                                <div className="relative grid h-44 w-44 place-items-center rounded-full border border-white/10 bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur">
-                                    <div className="absolute inset-4 rounded-full border border-white/10" />
-
-                                    <div className="text-center">
-                                        <p className="text-xs font-black uppercase tracking-[0.18em] text-white/55">
-                                            Pronósticos
-                                        </p>
-
-                                        <p className="mt-2 text-4xl font-black tracking-[-0.08em]">
-                                            {pronosticosCargados}
-                                            <span className="text-white/40">/{totalPartidos}</span>
-                                        </p>
-
-                                        <p className="mt-1 text-sm font-bold text-white/65">
-                                            {porcentaje}% completo
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <NextMatchHeroCard
-                    partido={proximoPartido}
-                    countdown={proximoPartidoCountdown}
-                    cerrado={proximoPartidoCerrado}
-                    finalizado={proximoPartidoFinalizado}
-                    bloqueado={proximoPartidoBloqueado}
-                    onGoProximoPartido={onGoProximoPartido}
-                />
-            </div>
-        </section>
-    );
-}
-
-type NextMatchHeroCardProps = {
-    partido: PartidoConRelaciones | null;
-    countdown: string | null;
-    cerrado: boolean;
-    finalizado: boolean;
-    bloqueado: boolean;
-    onGoProximoPartido: () => void;
-};
-
-function NextMatchHeroCard({
-    partido,
-    countdown,
-    cerrado,
-    finalizado,
-    bloqueado,
-    onGoProximoPartido,
-}: NextMatchHeroCardProps) {
-    if (!partido) {
-        return (
-            <div className="rounded-[1.7rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-                <div className="flex items-center justify-between">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
-                        Próximo partido
-                    </p>
-
-                    <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFF7E1] text-[#B77900]">
-                        <CalendarDays className="h-5 w-5" />
-                    </div>
-                </div>
-
-                <div className="mt-8 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm font-semibold text-slate-500">
-                    No hay partidos futuros para pronosticar en este momento.
-                </div>
-            </div>
-        );
-    }
-
-    const local = partido.seleccionLocal;
-    const visitante = partido.seleccionVisitante;
-
-    const statusLabel = finalizado
-        ? "Partido finalizado"
-        : partido.miPrediccion
-            ? "Pronóstico cargado"
-            : cerrado
-                ? "Pronóstico cerrado"
-                : "Pendiente de cargar";
-
-    const statusClassName = finalizado
-        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-        : partido.miPrediccion
-            ? "border-green-200 bg-green-50 text-green-700"
-            : cerrado
-                ? "border-amber-200 bg-amber-50 text-amber-700"
-                : "border-[#F7B731]/30 bg-[#FFF7E1] text-[#9A6500]";
-
-    return (
-        <div
-            className="
-        rounded-[1.7rem]
-        border
-        border-slate-200
-        bg-white
-        p-5
-        shadow-[0_18px_50px_rgba(15,23,42,0.10)]
-        md:p-6
-      "
-        >
-            <div className="mb-5 flex items-center justify-between">
-                <div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#008C93]">
-                        Próximo partido
-                    </p>
-
-                    <h2 className="mt-1 text-xl font-black tracking-[-0.04em] text-slate-950">
-                        {local?.nombre ?? "Local"} vs {visitante?.nombre ?? "Visitante"}
-                    </h2>
-                </div>
-
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#FFF7E1] text-[#B77900]">
-                    <CalendarDays className="h-5 w-5" />
-                </div>
-            </div>
-
-            <div className="rounded-[1.4rem] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-[#F4FBFC] p-4">
-                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                    <TeamPreview
-                        nombre={local?.nombre ?? "Local"}
-                        bandera={local?.bandera}
-                        codigo={local?.codigo}
-                    />
-
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase text-slate-500">
-                        VS
-                    </span>
-
-                    <TeamPreview
-                        nombre={visitante?.nombre ?? "Visitante"}
-                        bandera={visitante?.bandera}
-                        codigo={visitante?.codigo}
-                        right
-                    />
-                </div>
-
-                <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                    <InfoPill
-                        icon={CalendarDays}
-                        label={format(new Date(partido.fecha), "dd/MM/yyyy")}
-                        detail={partido.fase?.nombre ?? "Sin fase"}
-                    />
-
-                    <InfoPill
-                        icon={Clock3}
-                        label={format(new Date(partido.fecha), "HH:mm")}
-                        detail="Hora del partido"
-                    />
-
-                    <div
-                        className={`flex items-center justify-center rounded-2xl border px-3 py-3 text-center text-xs font-black ${statusClassName}`}
-                    >
-                        {statusLabel}
-                    </div>
-                </div>
-
-                {partido.resultado?.estado !== "FINALIZADO" && countdown && (
-                    <div
-                        className={`mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black ${cerrado
-                            ? "border-amber-200 bg-amber-50 text-amber-700"
-                            : "border-sky-200 bg-sky-50 text-sky-700"
-                            }`}
-                    >
-                        <Clock3 className="h-4 w-4" />
-                        {countdown}
-                    </div>
-                )}
-            </div>
-
-            <button
-                type="button"
-                disabled={bloqueado}
-                onClick={() => {
-                    if (bloqueado) return;
-                    onGoProximoPartido();
-                }}
-                className={`
-          mt-4
-          inline-flex
-          h-12
-          w-full
-          items-center
-          justify-center
-          gap-2
-          rounded-2xl
-          px-5
-          text-sm
-          font-black
-          transition
-          ${bloqueado
-                        ? "cursor-not-allowed bg-slate-200 text-slate-500"
-                        : "bg-[#39A935] text-white shadow-lg shadow-green-700/20 hover:-translate-y-0.5 hover:bg-[#247A28]"
-                    }
-        `}
-            >
-                {finalizado
-                    ? "Partido finalizado"
-                    : cerrado
-                        ? "Pronóstico cerrado"
-                        : partido.miPrediccion
-                            ? "Editar mi pronóstico"
-                            : "Pronosticar ahora"}
-
-                {!bloqueado && <ArrowRight className="h-4 w-4" />}
-            </button>
+      <div className="relative z-10 flex h-full max-w-[580px] min-w-0 flex-col">
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#F7B731]/45 bg-[#F7B731]/10 px-5 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-[#F7B731] backdrop-blur-md">
+          <ProdeIcon
+            source="/trofeo.ico"
+            mode="mask"
+            className="h-5 w-5 text-[#F7B731]"
+          />
+          Prode Mundial 2026
         </div>
-    );
-}
 
-type InfoPillProps = {
-    icon: React.ElementType;
-    label: string;
-    detail: string;
-};
+        <div className="mt-6 space-y-2.5 xl:mt-8">
+          <h1 className="text-[2.1rem] font-bold leading-[0.98] tracking-[-0.065em] md:text-[2.35rem] xl:text-[2.55rem] 2xl:text-[2.9rem]">
+            Hola, {displayName}
+          </h1>
 
-function InfoPill({ icon: Icon, label, detail }: InfoPillProps) {
-    return (
-        <div className="rounded-2xl border border-slate-200 bg-white px-3 py-3">
-            <div className="flex items-center gap-2 text-sm font-black text-slate-950">
-                <Icon className="h-4 w-4 text-[#008C93]" />
-                {label}
-            </div>
+          <p className="max-w-[540px] text-[1.75rem] font-semibold leading-[1.02] tracking-[-0.06em] text-[#72DD84] md:text-[1.8rem] xl:text-[2rem] 2xl:text-[2.3rem]">
+            {heroCopy.title}
+          </p>
 
-            <p className="mt-1 text-xs font-semibold text-slate-500">{detail}</p>
+          <p className="max-w-[470px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">
+            {heroCopy.description}
+          </p>
         </div>
-    );
-}
 
-type TeamPreviewProps = {
-    nombre: string;
-    bandera?: string | null;
-    codigo?: string | null;
-    right?: boolean;
-};
+        <div className="pt-8 xl:pt-10 2xl:pt-14">
+          <div className="flex max-w-[960px] flex-wrap gap-2 2xl:flex-nowrap">
+            <HeroBadge
+              icon={CalendarCheck2}
+              value={`${pronosticosCargados}/${totalPartidos}`}
+              label="pronósticos cargados"
+              tone="green"
+            />
 
-function TeamPreview({ nombre, bandera, codigo, right = false }: TeamPreviewProps) {
-    return (
-        <div
-            className={`flex min-w-0 items-center gap-2 ${right ? "flex-row-reverse text-right" : ""
-                }`}
-        >
-            <TeamFlag bandera={bandera} codigo={codigo} nombre={nombre} />
+            <HeroBadge
+              icon={Radio}
+              value={`${partidosEnJuegoCount}`}
+              label="en juego"
+              tone="violet"
+            />
 
-            <p className="min-w-0 truncate text-sm font-black text-slate-950">
-                {nombre}
-            </p>
+            <HeroBadge
+              icon={Clock3}
+              value={
+                isAutoRefreshing
+                  ? "Actualizando..."
+                  : `Actualiza en ${nextAutoRefreshIn}s`
+              }
+              label="en tiempo real"
+              tone="blue"
+            />
+          </div>
         </div>
-    );
+      </div>
+
+      <HeroMascot mascot={selectedMascot} />
+    </section>
+  );
 }
 
-function TeamFlag({
-    bandera,
-    codigo,
-    nombre,
+function HeroBadge({
+  icon: Icon,
+  value,
+  label,
+  tone,
 }: {
-    bandera?: string | null;
-    codigo?: string | null;
-    nombre: string;
+  icon: LucideIcon;
+  value: string;
+  label: string;
+  tone: "green" | "violet" | "blue";
 }) {
-    const value = bandera?.trim();
-    const src = resolveBanderaSrc(value, codigo);
+  const toneStyles =
+    tone === "green"
+      ? {
+          shell: "border-emerald-200/25 bg-slate-950/18",
+          icon: "bg-emerald-500/18 text-emerald-200 shadow-[0_0_22px_rgba(34,197,94,0.18)]",
+          minWidth: "min-w-[190px] 2xl:min-w-[214px]",
+        }
+      : tone === "violet"
+        ? {
+            shell: "border-violet-200/25 bg-slate-950/18",
+            icon: "bg-violet-500/18 text-violet-200 shadow-[0_0_22px_rgba(168,85,247,0.18)]",
+            minWidth: "min-w-[136px] 2xl:min-w-[150px]",
+          }
+        : {
+            shell: "border-sky-200/25 bg-slate-950/18",
+            icon: "bg-sky-500/18 text-sky-200 shadow-[0_0_22px_rgba(14,165,233,0.18)]",
+            minWidth: "min-w-[198px] 2xl:min-w-[224px]",
+          };
 
-    if (!value) {
-        return (
-            <span className="flex h-9 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100 text-lg">
-                🏳️
-            </span>
-        );
-    }
+  return (
+    <div
+      className={`inline-flex w-fit max-w-full items-center gap-2.5 rounded-4xl border px-4 py-3 backdrop-blur-md xl:px-4 2xl:px-5 ${toneStyles.minWidth} ${toneStyles.shell}`}
+    >
+      <span
+        className={`grid h-8 w-8 shrink-0 place-items-center rounded-4xl ${toneStyles.icon}`}
+      >
+        <Icon className="h-4.5 w-4.5" />
+      </span>
 
-    if (src) {
-        return (
-            <span className="flex h-9 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100">
-                <Image
-                    src={src}
-                    alt={`Bandera de ${nombre}`}
-                    width={36}
-                    height={26}
-                    unoptimized
-                    className="object-contain"
-                />
-            </span>
-        );
-    }
-
-    return (
-        <span className="flex h-9 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100 text-lg">
-            {value}
+      <span className="min-w-0">
+        <span className="block text-[14px] font-black leading-none tracking-[0.04em] text-white">
+          {value}
         </span>
-    );
+        <span className="mt-1 block text-[11px] font-semibold leading-4 text-white/82">
+          {label}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function HeroMascot({ mascot }: { mascot: MascotOption }) {
+  return (
+    <div className="pointer-events-none absolute bottom-[-72px] right-0 z-20 hidden h-[390px] w-[270px] xl:block 2xl:bottom-[-96px] 2xl:right-6 2xl:h-[500px] 2xl:w-[340px]">
+      <div
+        className={`absolute inset-6 rounded-full blur-[100px] ${mascot.glowClassName}`}
+      />
+
+      <Image
+        src={mascot.src}
+        alt={mascot.alt}
+        fill
+        priority
+        className="relative object-contain object-bottom drop-shadow-[0_34px_74px_rgba(0,0,0,0.5)]"
+      />
+    </div>
+  );
 }

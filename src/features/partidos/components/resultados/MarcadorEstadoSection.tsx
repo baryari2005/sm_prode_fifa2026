@@ -17,6 +17,7 @@ import { NumberField } from "./common/NumberField";
 import { TextField } from "./common/TextField";
 
 import type { ResultadoFormState } from "@/features/partidos/types/resultado-manual.types";
+import { ESTADO_PARTIDO_OPTIONS } from "@/features/partidos/utils/partidos-ui.helpers";
 
 type MarcadorEstadoSectionProps = {
   localNombre: string;
@@ -79,21 +80,11 @@ export function MarcadorEstadoSection({
             </SelectTrigger>
 
             <SelectContent>
-              <SelectItem value={EstadoPartido.PENDIENTE}>
-                Pendiente
-              </SelectItem>
-              <SelectItem value={EstadoPartido.EN_JUEGO}>
-                En juego
-              </SelectItem>
-              <SelectItem value={EstadoPartido.FINALIZADO}>
-                Finalizado
-              </SelectItem>
-              <SelectItem value={EstadoPartido.SUSPENDIDO}>
-                Suspendido
-              </SelectItem>
-              <SelectItem value={EstadoPartido.CANCELADO}>
-                Cancelado
-              </SelectItem>
+              {ESTADO_PARTIDO_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

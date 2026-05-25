@@ -1,29 +1,52 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { buildPartidoSearchText, groupPartidosByDate, PartidoConRelaciones } from "@/features/partidos/utils/partidos-ui.helpers";
+import { detectGoalEvents } from "@/features/partidos/lib/goal-events";
+import { useGoalCelebrationStore } from "@/stores/goal-celebration";
+import {
+  buildPartidoSearchText,
+  groupPartidosByDate,
+  PartidoConRelaciones,
+} from "@/features/partidos/utils/partidos-ui.helpers";
 import { getFixturePronosticos } from "@/features/pronosticos/services/pronosticos.service";
 
 export function usePronosticosPage() {
   const [partidos, setPartidos] = useState<PartidoConRelaciones[]>([]);
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState("");
+  const partidosRef = useRef<PartidoConRelaciones[]>([]);
+  const hasLoadedRef = useRef(false);
+  const enqueueGoalEvents = useGoalCelebrationStore(
+    (state) => state.enqueueEvents,
+  );
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (options?: { silent?: boolean }) => {
     try {
-      setLoading(true);
+      if (!options?.silent) {
+        setLoading(true);
+      }
+
       const items = await getFixturePronosticos();
+
+      if (hasLoadedRef.current) {
+        enqueueGoalEvents(detectGoalEvents(partidosRef.current, items));
+      }
+
       setPartidos(items);
+      partidosRef.current = items;
+      hasLoadedRef.current = true;
     } catch (error) {
-      console.error("Error cargando pronósticos:", error);
+      console.error("Error cargando pronosticos:", error);
       setPartidos([]);
-      toast.error("Error al cargar el fixture de pronósticos");
+      toast.error("Error al cargar el fixture de pronosticos");
     } finally {
-      setLoading(false);
+      if (!options?.silent) {
+        setLoading(false);
+      }
     }
-  }, []);
+  }, [enqueueGoalEvents]);
 
   const partidosFiltrados = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
@@ -38,10 +61,18 @@ export function usePronosticosPage() {
     return groupPartidosByDate(partidosFiltrados);
   }, [partidosFiltrados]);
 
+  const hasVisibleLiveMatches = useMemo(() => {
+    return partidos.some((partido) => {
+      const estado = partido.resultado?.estado;
+      return estado === "EN_JUEGO" || estado === "ENTRETIEMPO";
+    });
+  }, [partidos]);
+
   return {
     partidos,
     partidosFiltrados,
     partidosAgrupados,
+    hasVisibleLiveMatches,
     loading,
     busqueda,
     setBusqueda,

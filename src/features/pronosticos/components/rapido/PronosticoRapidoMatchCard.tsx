@@ -7,8 +7,10 @@ import {
   formatMatchHour,
   getFaseNombre,
   getGrupoNombre,
+  getMatchStatusMeta,
   getPredictionCountdownLabel,
-  isPredictionClosed,
+  getPredictionStatusMeta,
+  isPredictionBlocked,
 } from "@/features/partidos/utils/partidos-ui.helpers";
 import { TeamPredictionColumn } from "@/features/pronosticos/components/rapido/TeamPredictionColumn";
 
@@ -35,7 +37,7 @@ export function PronosticoRapidoMatchCard({
   error,
   onScoreChange,
 }: PronosticoRapidoMatchCardProps) {
-  const closed = isPredictionClosed(partido.fecha);
+  const closed = isPredictionBlocked(partido);
   const faseNombre = getFaseNombre(partido, []);
   const grupoNombre = getGrupoNombre(partido);
   const hora = formatMatchHour(partido.fecha);
@@ -44,8 +46,12 @@ export function PronosticoRapidoMatchCard({
   const marcadorActual = resultadoActual
     ? `${resultadoActual.golesLocal} - ${resultadoActual.golesVisitante}`
     : null;
-  const estaEnJuego = resultadoActual?.estado === "EN_JUEGO";
+  const estaEnJuego =
+    resultadoActual?.estado === "EN_JUEGO" ||
+    resultadoActual?.estado === "ENTRETIEMPO";
   const estaFinalizado = resultadoActual?.estado === "FINALIZADO";
+  const matchStatus = getMatchStatusMeta(partido);
+  const predictionStatus = getPredictionStatusMeta(partido);
 
   return (
     <article className="group relative overflow-hidden rounded-[1.35rem] bg-transparent transition-all duration-200">
@@ -99,7 +105,7 @@ export function PronosticoRapidoMatchCard({
               >
                 <Trophy className="mr-1.5 h-3.5 w-3.5 text-current" />
                 {estaEnJuego
-                  ? `En juego ${marcadorActual}`
+                  ? `${matchStatus.label} ${marcadorActual}`
                   : estaFinalizado
                   ? `Final ${marcadorActual}`
                   : `Marcador ${marcadorActual}`}
@@ -161,9 +167,9 @@ export function PronosticoRapidoMatchCard({
             {closed ? (
               <Badge
                 variant="secondary"
-                className="h-8 whitespace-nowrap rounded-full bg-amber-50 px-3 text-xs font-medium text-amber-700"
+                className={`h-8 whitespace-nowrap rounded-full px-3 text-xs font-medium ${predictionStatus.toneClassName}`}
               >
-                Carga desactivada
+                {predictionStatus.label}
               </Badge>
             ) : (
               <Badge

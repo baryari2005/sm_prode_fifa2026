@@ -1,7 +1,5 @@
-import Image from "next/image";
-
 import { Badge } from "@/components/ui/badge";
-import { resolveBanderaSrc } from "@/lib/flags";
+import { FlagImage } from "@/components/ui/flag-image";
 
 type CruceTeamSlotProps = {
   label: string;
@@ -41,10 +39,6 @@ export function CruceTeamSlot({
         />
       )}
 
-      {/* <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#008C93]/15 bg-[#008C93]/10 text-[#008C93]">
-        <ShieldQuestion className="h-5 w-5" />
-      </div> */}
-
       {!isLocal && (
         <CruceTeamText
           label={label}
@@ -76,17 +70,25 @@ function CruceTeamText({
 }) {
   return (
     <div className="min-w-0 text-center md:text-left">
-
       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#008C93]/70">
         {label}
       </p>
+
       <div className="mt-2 flex items-center justify-center gap-2 md:justify-start">
         <p className="max-w-[160px] truncate text-base font-extrabold tracking-[-0.02em] text-slate-950 md:max-w-[220px]">
           {value}
         </p>
 
         {resolved ? (
-          <TeamFlag bandera={bandera} codigo={codigo} nombre={nombre} />
+          <FlagImage
+            bandera={bandera}
+            codigo={codigo}
+            nombre={nombre}
+            widthClassName="w-8"
+            heightClassName="h-6"
+            fallbackMode="emoji"
+            fallbackTextClassName="text-sm"
+          />
         ) : null}
       </div>
 
@@ -102,48 +104,4 @@ function CruceTeamText({
       </Badge>
     </div>
   );
-}
-
-function TeamFlag({
-  bandera,
-  codigo,
-  nombre,
-}: {
-  bandera?: string | null;
-  codigo?: string | null;
-  nombre: string;
-}) {
-  const value = bandera?.trim();
-  const src = resolveBanderaSrc(value, codigo);
-  const flagClassName = "h-6 w-8 shrink-0 rounded object-contain shadow-none";
-  const flagWrapperClassName =
-    "flex h-6 w-8 shrink-0 items-center justify-center overflow-hidden rounded";
-
-  if (!value) {
-    return (
-      <span className={`${flagWrapperClassName} bg-slate-50 text-sm`}>🏳️</span>
-    );
-  }
-
-  if (src) {
-    return (
-      <span className={flagWrapperClassName}>
-        <Image
-          src={src}
-          alt={`Bandera de ${nombre || "selección"}`}
-          width={32}
-          height={24}
-          unoptimized
-          className={flagClassName}
-        />
-      </span>
-    );
-  }
-  
-  return (
-    <span className={`${flagWrapperClassName} bg-white px-1 text-base`}>
-      {value}
-    </span>
-  );
-
 }

@@ -1,16 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import { Download, Flag, RefreshCw, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { FlagImage } from "@/components/ui/flag-image";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { resolveBanderaSrc } from "@/lib/flags";
 
 import { SeleccionResumen } from "../types/plantel-manager.types";
 import { SummaryCard } from "./SummaryCard";
@@ -33,13 +32,10 @@ function SeleccionFlag({
   seleccion: SeleccionResumen | null;
   size?: "sm" | "md" | "lg";
 }) {
-  const sizeClass = size === "sm" ? "h-6 w-8" : size === "md" ? "h-8 w-10" : "h-10 w-12";
-  const src = resolveBanderaSrc(seleccion?.bandera, seleccion?.codigo);
-
-  if (!src) {
+  if (!seleccion?.bandera && !seleccion?.codigo) {
     return (
       <div
-        className={`${sizeClass} flex shrink-0 items-center justify-center text-slate-400`}
+        className={`${size === "sm" ? "h-6 w-8" : size === "md" ? "h-8 w-10" : "h-10 w-12"} flex shrink-0 items-center justify-center text-slate-400`}
       >
         <Flag className="h-4 w-4" />
       </div>
@@ -47,13 +43,12 @@ function SeleccionFlag({
   }
 
   return (
-    <Image
-      src={src}
-      alt={`Bandera de ${seleccion?.nombre ?? "seleccion"}`}
-      width={size === "sm" ? 32 : size === "md" ? 40 : 48}
-      height={size === "sm" ? 24 : size === "md" ? 32 : 40}
-      unoptimized
-      className={`${sizeClass} shadow-sm`}
+    <FlagImage
+      bandera={seleccion?.bandera}
+      codigo={seleccion?.codigo}
+      nombre={seleccion?.nombre ?? "selección"}
+      widthClassName={size === "sm" ? "w-8" : size === "md" ? "w-10" : "w-12"}
+      heightClassName={size === "sm" ? "h-6" : size === "md" ? "h-8" : "h-10"}
     />
   );
 }

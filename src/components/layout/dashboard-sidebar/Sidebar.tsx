@@ -11,7 +11,7 @@ import {
 import { usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, HelpCircle, Menu } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { SidebarNavIcon } from "./SidebarNavIcon";
@@ -21,6 +21,7 @@ import {
   type SidebarSubItemConfig,
 } from "@/config/sidebar.config";
 import { useAuth } from "@/stores/auth";
+import type { PermissionDTO } from "@/features/auth/types/auth.types";
 import { hasPermission } from "@/features/auth/libs/permissions";
 
 type Props = {
@@ -41,8 +42,17 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
   };
 
   const canSeePermission = useCallback(
-    (permission?: { modulo: string; accion: string }) => {
+    (
+      permission?:
+        | { modulo: string; accion: string }
+        | { modulo: string; accion: string }[]
+    ) => {
       if (!permission) return true;
+      if (Array.isArray(permission)) {
+        return permission.some((item: PermissionDTO) =>
+          hasPermission(permissions, item.modulo, item.accion)
+        );
+      }
       return hasPermission(permissions, permission.modulo, permission.accion);
     },
     [permissions]
@@ -292,8 +302,8 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
   };
 
   return (
-    <aside className="flex h-full flex-col overflow-hidden bg-[#06111F] text-white shadow-[18px_0_45px_rgba(0,0,0,0.22)] transition-all duration-300">
-      <div className="relative border-b border-white/10 p-4">
+    <aside className="flex h-dvh min-h-dvh min-w-0 shrink-0 flex-col overflow-hidden bg-[#06111F] text-white shadow-[18px_0_45px_rgba(0,0,0,0.22)] transition-all duration-300">
+      <div className="relative shrink-0 border-b border-white/10 p-3 xl:p-4">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(57,169,53,0.22),transparent_45%)]" />
 
         <div
@@ -309,7 +319,7 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
                   alt="104 partidos en el Mundial 2026"
                   width={130}
                   height={130}
-                  className="h-auto w-[120px] select-none object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)]"
+                  className="h-auto w-[104px] select-none object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)] xl:w-[120px]"
                 />
               </div>
             </div>
@@ -349,7 +359,7 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-2 py-4">
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-2 py-3 xl:py-4">
         {Object.entries(grouped).map(([section, items]) => (
           <div key={section} className="mb-3">
             <SidebarSection label={section} collapsed={collapsed} />
@@ -436,16 +446,7 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
             <Separator className="my-4 bg-white/10" />
           </div>
         ))}
-      </div>
 
-      <div className="border-t border-white/10 p-2">
-        <SidebarNavIcon
-          Icon={HelpCircle}
-          title="Ayuda"
-          href="/soporte"
-          active={pathname === "/soporte"}
-          collapsed={collapsed}
-        />
       </div>
     </aside>
   );

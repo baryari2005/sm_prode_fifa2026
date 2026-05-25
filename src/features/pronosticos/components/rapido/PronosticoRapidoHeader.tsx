@@ -2,6 +2,7 @@
 
 import { CalendarDays, RefreshCw, Save, Search } from "lucide-react";
 
+import { LiveRefreshBadge } from "@/components/live-refresh-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,9 @@ type PronosticoRapidoHeaderProps = {
   busqueda: string;
   saving: boolean;
   pendingChangesCount: number;
+  isAutoRefreshing: boolean;
+  nextAutoRefreshIn: number;
+  lastAutoRefreshAt?: Date | null;
   onBusquedaChange: (value: string) => void;
   onActualizar: () => void;
   onSaveAll: () => void;
@@ -27,6 +31,9 @@ export function PronosticoRapidoHeader({
   busqueda,
   saving,
   pendingChangesCount,
+  isAutoRefreshing,
+  nextAutoRefreshIn,
+  lastAutoRefreshAt,
   onBusquedaChange,
   onActualizar,
   onSaveAll,
@@ -49,6 +56,15 @@ export function PronosticoRapidoHeader({
               <Badge className="rounded-full bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700 hover:bg-sky-50">
                 {pendingChangesCount} cambios pendientes
               </Badge>
+
+              <LiveRefreshBadge
+                isRefreshing={isAutoRefreshing}
+                nextRefreshIn={nextAutoRefreshIn}
+                lastRefreshAt={lastAutoRefreshAt}
+                shortText
+                suffix={pendingChangesCount > 0 ? "pausado" : null}
+                className="rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700 hover:bg-sky-50"
+              />
             </div>
 
             <CardDescription className="text-sm text-slate-500">

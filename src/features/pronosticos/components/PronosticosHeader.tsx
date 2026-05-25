@@ -6,6 +6,7 @@ import {
   Search,
 } from "lucide-react";
 
+import { LiveRefreshBadge } from "@/components/live-refresh-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,9 @@ import { Input } from "@/components/ui/input";
 type Props = {
   total: number;
   busqueda: string;
+  isAutoRefreshing: boolean;
+  nextAutoRefreshIn: number;
+  lastAutoRefreshAt?: Date | null;
   onBusquedaChange: (value: string) => void;
   onActualizar: () => void;
 };
@@ -26,6 +30,9 @@ type Props = {
 export function PronosticosHeader({
   total,
   busqueda,
+  isAutoRefreshing,
+  nextAutoRefreshIn,
+  lastAutoRefreshAt,
   onBusquedaChange,
   onActualizar,
 }: Props) {
@@ -43,6 +50,14 @@ export function PronosticosHeader({
               <Badge className="rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700 hover:bg-green-50">
                 {total} partidos
               </Badge>
+
+              <LiveRefreshBadge
+                isRefreshing={isAutoRefreshing}
+                nextRefreshIn={nextAutoRefreshIn}
+                lastRefreshAt={lastAutoRefreshAt}
+                shortText
+                className="rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700 hover:bg-sky-50"
+              />
             </div>
 
             <CardDescription className="text-sm text-slate-500">

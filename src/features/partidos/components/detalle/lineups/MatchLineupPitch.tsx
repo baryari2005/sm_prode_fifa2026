@@ -74,18 +74,18 @@ export function MatchLineupPitch({
           </div>
         ) : (
           <>
-            {localPlayers.map((player) => (
+            {localPlayers.map((player, index) => (
               <LineupPlayerMarker
-                key={`local-${player.jugadorId}`}
+                key={`local-${player.jugadorId}-${index}`}
                 player={player}
                 teamCode={local.codigo}
                 teamName={local.nombre}
               />
             ))}
 
-            {visitantePlayers.map((player) => (
+            {visitantePlayers.map((player, index) => (
               <LineupPlayerMarker
-                key={`visitante-${player.jugadorId}`}
+                key={`visitante-${player.jugadorId}-${index}`}
                 player={player}
                 teamCode={visitante.codigo}
                 teamName={visitante.nombre}

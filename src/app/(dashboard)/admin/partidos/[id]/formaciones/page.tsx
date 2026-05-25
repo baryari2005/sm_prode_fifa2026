@@ -67,7 +67,8 @@ export default function PartidoFormacionesPage() {
   );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const isLiveLocked = resultado?.estado === "EN_JUEGO";
+  const isLiveLocked =
+    resultado?.estado === "EN_JUEGO" || resultado?.estado === "ENTRETIEMPO";
 
   useEffect(() => {
     if (!canVer) return;

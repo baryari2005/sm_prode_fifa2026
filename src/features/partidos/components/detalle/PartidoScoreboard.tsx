@@ -1,4 +1,5 @@
 import { EquipoResumen } from "./EquipoResumen";
+import { getEstadoPartidoLabel } from "@/features/partidos/utils/partidos-ui.helpers";
 
 type PartidoScoreboardProps = {
   local: string;
@@ -18,6 +19,7 @@ export function PartidoScoreboard({
   estado,
 }: PartidoScoreboardProps) {
   const estadoNormalizado = estado?.trim().toUpperCase();
+  const estadoLabel = getEstadoPartidoLabel(estado);
   const etiquetaSuperior =
     estadoNormalizado === "FINALIZADO" ? "Resultado" : "Marcador";
   const etiquetaInferior =
@@ -25,9 +27,11 @@ export function PartidoScoreboard({
       ? "Finalizado"
       : estadoNormalizado === "EN_JUEGO"
       ? "En juego"
+      : estadoNormalizado === "ENTRETIEMPO"
+      ? "Entretiempo"
       : estadoNormalizado === "PENDIENTE"
       ? "Pendiente"
-      : estado;
+      : estadoLabel;
 
   return (
     <div className="grid w-full items-center gap-3 md:grid-cols-[1fr_auto_1fr] md:gap-4">

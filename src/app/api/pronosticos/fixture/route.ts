@@ -1,57 +1,122 @@
 import { NextRequest, NextResponse } from "next/server";
+import { EstadoPartido } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/server-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
     const loggedInUser = await requireAuth(req);
 
-    const partidos = await prisma.partido.findMany({
-      where: {
-        activo: true,
-      },
-      include: {
-        fase: true,
-        seleccionLocal: true,
-        seleccionVisitante: true,
-        resultado: true,
-        predicciones: {
-          where: {
-            usuarioId: loggedInUser.id,
+    const [partidosFinalizados, partidosAbiertos] = await Promise.all([
+      prisma.partido.findMany({
+        where: {
+          activo: true,
+          resultado: {
+            is: {
+              estado: EstadoPartido.FINALIZADO,
+            },
           },
-          take: 1,
+        },
+        include: {
+          fase: true,
+          seleccionLocal: true,
+          seleccionVisitante: true,
+          resultado: true,
+        },
+        orderBy: {
+          fecha: "asc",
+        },
+      }),
+      prisma.partido.findMany({
+        where: {
+          activo: true,
+          OR: [
+            {
+              resultado: null,
+            },
+            {
+              resultado: {
+                is: {
+                  estado: {
+                    not: EstadoPartido.FINALIZADO,
+                  },
+                },
+              },
+            },
+          ],
+        },
+        include: {
+          fase: true,
+          seleccionLocal: true,
+          seleccionVisitante: true,
+          resultado: true,
+        },
+        orderBy: {
+          fecha: "asc",
+        },
+      }),
+    ]);
+
+    const partidos = [...partidosFinalizados, ...partidosAbiertos].sort(
+      (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+    );
+
+    const predicciones = await prisma.prediccionPartido.findMany({
+      where: {
+        usuarioId: loggedInUser.id,
+        partidoId: {
+          in: partidos.map((partido) => partido.id),
         },
       },
       orderBy: {
-        fecha: "asc",
+        createdAt: "desc",
       },
-      take: 200,
+    });
+
+    const prediccionByPartidoId = new Map<string, (typeof predicciones)[number]>();
+    predicciones.forEach((prediccion) => {
+      if (!prediccionByPartidoId.has(prediccion.partidoId)) {
+        prediccionByPartidoId.set(prediccion.partidoId, prediccion);
+      }
     });
 
     const data = partidos.map((partido) => {
-      const { predicciones, ...rest } = partido;
+      const miPrediccion = prediccionByPartidoId.get(partido.id) ?? null;
 
       return {
-        ...rest,
-        miPrediccion: predicciones[0] ?? null,
+        ...partido,
+        miPrediccion,
       };
     });
 
-    return NextResponse.json({
-      data,
-      meta: {
-        total: data.length,
+    return NextResponse.json(
+      {
+        data,
+        meta: {
+          total: data.length,
+        },
       },
-    });
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      }
+    );
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
       return NextResponse.json(
         { message: "No autorizado. Debes iniciar sesion." },
-        { status: 401 }
+        {
+          status: 401,
+          headers: {
+            "Cache-Control": "no-store, max-age=0",
+          },
+        }
       );
     }
 
@@ -61,7 +126,12 @@ export async function GET(req: NextRequest) {
       {
         message: "Error interno del servidor",
       },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      }
     );
   }
 }

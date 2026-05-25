@@ -1,11 +1,10 @@
 // src/features/partidos/components/TablaPosiciones.tsx
 
-import Image from "next/image";
 import { Trophy } from "lucide-react";
 
-import { PosicionEquipo } from "@/features/partidos/services/tabla-posiciones.service";
 import { Button } from "@/components/ui/button";
-import { resolveBanderaSrc } from "@/lib/flags";
+import { FlagImage } from "@/components/ui/flag-image";
+import { PosicionEquipo } from "@/features/partidos/services/tabla-posiciones.service";
 
 interface TablaPosicionesProps {
   grupos: string[];
@@ -66,7 +65,8 @@ export function TablaPosiciones({
         ))}
       </div>
 
-      {gruposATabla.length === 0 || gruposATabla.every((item) => item.equipos.length === 0) ? (
+      {gruposATabla.length === 0 ||
+      gruposATabla.every((item) => item.equipos.length === 0) ? (
         <div className="rounded-3xl border border-slate-200 bg-white px-4 py-10 text-center text-slate-500 shadow-sm">
           No hay datos disponibles
         </div>
@@ -79,18 +79,38 @@ export function TablaPosiciones({
       )}
 
       <div className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-cyan-50 p-4 shadow-sm">
-        <p className="mb-3 text-xs ml-2 font-bold uppercase tracking-[0.22em] text-slate-700">
+        <p className="mb-3 ml-2 text-xs font-bold uppercase tracking-[0.22em] text-slate-700">
           Referencias
         </p>
-        <div className="grid grid-cols-2 gap-2 text-xs font-medium text-slate-600 md:grid-cols-4 ml-2 ">
-          <div><span className="font-semibold text-slate-800">PJ</span> = Partidos jugados</div>
-          <div><span className="font-semibold text-slate-800">G</span> = Ganados</div>
-          <div><span className="font-semibold text-slate-800">E</span> = Empates</div>
-          <div><span className="font-semibold text-slate-800">P</span> = Perdidos</div>
-          <div><span className="font-semibold text-slate-800">GF</span> = Goles a favor</div>
-          <div><span className="font-semibold text-slate-800">GC</span> = Goles en contra</div>
-          <div><span className="font-semibold text-slate-800">DIF</span> = Diferencia de goles</div>
-          <div><span className="font-semibold text-slate-800">PTS</span> = Puntos</div>
+        <div className="ml-2 grid grid-cols-2 gap-2 text-xs font-medium text-slate-600 md:grid-cols-4">
+          <div>
+            <span className="font-semibold text-slate-800">PJ</span> = Partidos
+            jugados
+          </div>
+          <div>
+            <span className="font-semibold text-slate-800">G</span> = Ganados
+          </div>
+          <div>
+            <span className="font-semibold text-slate-800">E</span> = Empates
+          </div>
+          <div>
+            <span className="font-semibold text-slate-800">P</span> = Perdidos
+          </div>
+          <div>
+            <span className="font-semibold text-slate-800">GF</span> = Goles a
+            favor
+          </div>
+          <div>
+            <span className="font-semibold text-slate-800">GC</span> = Goles en
+            contra
+          </div>
+          <div>
+            <span className="font-semibold text-slate-800">DIF</span> =
+            Diferencia de goles
+          </div>
+          <div>
+            <span className="font-semibold text-slate-800">PTS</span> = Puntos
+          </div>
         </div>
       </div>
     </div>
@@ -136,14 +156,30 @@ function TablaGrupoCard({
                 <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
                   Equipo
                 </th>
-                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">PJ</th>
-                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">G</th>
-                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">E</th>
-                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">P</th>
-                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">GF</th>
-                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">GC</th>
-                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">DIF</th>
-                <th className="rounded-r-2xl px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">PTS</th>
+                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                  PJ
+                </th>
+                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                  G
+                </th>
+                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                  E
+                </th>
+                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                  P
+                </th>
+                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                  GF
+                </th>
+                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                  GC
+                </th>
+                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                  DIF
+                </th>
+                <th className="rounded-r-2xl px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                  PTS
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -161,25 +197,43 @@ function TablaGrupoCard({
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <TeamFlag
+                      <FlagImage
                         bandera={equipo.bandera}
                         codigo={equipo.codigo}
                         nombre={equipo.nombre}
+                        widthClassName="w-12"
+                        heightClassName="h-8"
+                        fallbackMode="emoji"
+                        fallbackTextClassName="text-lg"
                       />
                       <div>
-                        <div className="font-semibold text-slate-900">{equipo.nombre}</div>
+                        <div className="font-semibold text-slate-900">
+                          {equipo.nombre}
+                        </div>
                         <div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">
                           {equipo.codigo}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-3 text-center font-medium text-slate-700">{equipo.partidosJugados}</td>
-                  <td className="px-3 py-3 text-center font-medium text-slate-700">{equipo.ganancias}</td>
-                  <td className="px-3 py-3 text-center font-medium text-slate-700">{equipo.empates}</td>
-                  <td className="px-3 py-3 text-center font-medium text-slate-700">{equipo.derrotas}</td>
-                  <td className="px-3 py-3 text-center font-medium text-slate-700">{equipo.golesAFavor}</td>
-                  <td className="px-3 py-3 text-center font-medium text-slate-700">{equipo.golesEnContra}</td>
+                  <td className="px-3 py-3 text-center font-medium text-slate-700">
+                    {equipo.partidosJugados}
+                  </td>
+                  <td className="px-3 py-3 text-center font-medium text-slate-700">
+                    {equipo.ganancias}
+                  </td>
+                  <td className="px-3 py-3 text-center font-medium text-slate-700">
+                    {equipo.empates}
+                  </td>
+                  <td className="px-3 py-3 text-center font-medium text-slate-700">
+                    {equipo.derrotas}
+                  </td>
+                  <td className="px-3 py-3 text-center font-medium text-slate-700">
+                    {equipo.golesAFavor}
+                  </td>
+                  <td className="px-3 py-3 text-center font-medium text-slate-700">
+                    {equipo.golesEnContra}
+                  </td>
                   <td className="px-3 py-3 text-center">
                     <span
                       className={
@@ -203,41 +257,4 @@ function TablaGrupoCard({
       </div>
     </section>
   );
-}
-
-function TeamFlag({
-  bandera,
-  codigo,
-  nombre,
-}: {
-  bandera?: string | null;
-  codigo?: string | null;
-  nombre: string;
-}) {
-  const value = bandera?.trim();
-  const src = resolveBanderaSrc(value, codigo);
-  const flagClassName = "h-8 w-12 shrink-0 object-contain";
-  const flagWrapperClassName =
-    "flex h-8 w-12 shrink-0 items-center justify-center overflow-hidden";
-
-  if (!value) {
-    return <span className={`${flagWrapperClassName} bg-slate-50 text-lg`}>🏳️</span>;
-  }
-
-  if (src) {
-    return (
-      <span className={flagWrapperClassName}>
-        <Image
-          src={src}
-          alt={`Bandera de ${nombre}`}
-          width={48}
-          height={32}
-          unoptimized
-          className={flagClassName}
-        />
-      </span>
-    );
-  }
-
-  return <span className={`${flagWrapperClassName} bg-white px-1 text-xl`}>{value}</span>;
 }

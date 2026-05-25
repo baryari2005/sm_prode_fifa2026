@@ -5,6 +5,16 @@ type FixturePronosticosResponse = {
   data?: PartidoConRelaciones[];
 };
 
+export class PronosticosApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "PronosticosApiError";
+    this.status = status;
+  }
+}
+
 export type BulkPronosticoInput = {
   partidoId: string;
   golesLocal: number;
@@ -33,7 +43,10 @@ export async function getFixturePronosticos(): Promise<PartidoConRelaciones[]> {
   const res = await fetch("/api/pronosticos/fixture", {
     method: "GET",
     cache: "no-store",
-    headers: getAuthHeaders(),
+    headers: {
+      "Cache-Control": "no-cache",
+      ...getAuthHeaders(),
+    },
   });
 
   const data = (await res.json()) as FixturePronosticosResponse & {
@@ -41,7 +54,10 @@ export async function getFixturePronosticos(): Promise<PartidoConRelaciones[]> {
   };
 
   if (!res.ok) {
-    throw new Error(data.message || "Error al cargar fixture de pronósticos");
+    throw new PronosticosApiError(
+      data.message || "Error al cargar fixture de pronosticos",
+      res.status
+    );
   }
 
   return data.data || [];
@@ -65,7 +81,10 @@ export async function upsertPronostico(input: {
   const data = (await res.json()) as PrediccionPartido & { message?: string };
 
   if (!res.ok) {
-    throw new Error(data.message || "Error al guardar el pronóstico");
+    throw new PronosticosApiError(
+      data.message || "Error al guardar el pronostico",
+      res.status
+    );
   }
 
   return data;
@@ -91,11 +110,14 @@ export async function bulkUpsertPronosticos(
   };
 
   if (!res.ok) {
-    throw new Error(data.message || "Error al guardar los pronósticos");
+    throw new PronosticosApiError(
+      data.message || "Error al guardar los pronosticos",
+      res.status
+    );
   }
 
   return {
-    message: data.message ?? "Pronósticos guardados correctamente",
+    message: data.message ?? "Pronosticos guardados correctamente",
     savedCount: data.savedCount ?? 0,
     skippedCount: data.skippedCount ?? 0,
     errors: data.errors ?? [],

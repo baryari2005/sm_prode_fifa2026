@@ -1,5 +1,5 @@
-import { SupportPageClient } from "@/features/support/components/SupportPageClient";
+import { redirect } from "next/navigation";
 
 export default function SupportPage() {
-  return <SupportPageClient />;
+  redirect("/ayuda/usuario");
 }

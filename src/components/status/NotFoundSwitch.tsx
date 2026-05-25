@@ -29,7 +29,7 @@ export function NotFoundSwitch2() {
       code="404"
       title="Página no encontrada"
       description="La URL que ingresaste no existe o todavía no está disponible."
-      imageSrc="/images/robot-404.png"
+      imageSrc="/error-404.png"
       primaryAction={{ label: "Ir al login", href: "/login" }}
       secondaryAction={{ label: "Volver al inicio", href: "/" }}
     />

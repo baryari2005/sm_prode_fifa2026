@@ -39,6 +39,8 @@ model Usuario {
   legajo Legajo?
   prediccionesPartido PrediccionPartido[]
   rankingProde        RankingUsuario?
+  liveEventsCreados   PartidoEventoLive[]  @relation("PartidoEventoLiveCreatedBy")
+  liveAudits          PartidoLiveAudit[]
 
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -233,6 +235,7 @@ model Seleccion {
   partidosLocal   Partido[] @relation("PartidoLocal")
   partidosVisitante Partido[] @relation("PartidoVisitante")
   jugadores      JugadorSeleccion[]
+  eventosLive    PartidoEventoLive[] @relation("PartidoEventoLiveEquipo")
 
   activo    Boolean @default(true)
   createdAt DateTime @default(now())
@@ -298,6 +301,8 @@ model Partido {
 
   resultado    Resultado?
   predicciones PrediccionPartido[]
+  eventosLive  PartidoEventoLive[]
+  liveAudits   PartidoLiveAudit[]
 
   activo    Boolean @default(true)
   createdAt DateTime @default(now())
@@ -364,6 +369,7 @@ model JugadorSeleccion {
   activo        Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  eventosLive   PartidoEventoLive[]
 
   @@index([seleccionId])
   @@index([nombre])
@@ -422,16 +428,77 @@ model RankingUsuario {
   updatedAt         DateTime @updatedAt
 }
 
+model PartidoEventoLive {
+  id              String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  partidoId        String                 @db.Uuid
+  partido          Partido                @relation(fields: [partidoId], references: [id], onDelete: Cascade)
+  tipo             PartidoEventoLiveTipo
+  equipoId         String?                @db.Uuid
+  equipo           Seleccion?             @relation("PartidoEventoLiveEquipo", fields: [equipoId], references: [id], onDelete: SetNull)
+  jugadorId        String?                @db.Uuid
+  jugador          JugadorSeleccion?      @relation(fields: [jugadorId], references: [id], onDelete: SetNull)
+  minuto           Int?
+  descripcion      String?
+  source           PartidoEventoLiveSource
+  externalEventId  String?
+  confirmedManual  Boolean                @default(false)
+  protected        Boolean                @default(false)
+  createdById      String?                @db.Uuid
+  createdBy        Usuario?               @relation("PartidoEventoLiveCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt        DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime               @updatedAt @db.Timestamptz(6)
+
+  @@index([partidoId, tipo])
+  @@index([equipoId])
+  @@index([jugadorId])
+  @@index([source])
+  @@index([externalEventId])
+  @@index([protected])
+  @@index([confirmedManual])
+}
+
+model PartidoLiveAudit {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  partidoId      String   @db.Uuid
+  partido        Partido  @relation(fields: [partidoId], references: [id], onDelete: Cascade)
+  userId         String   @db.Uuid
+  user           Usuario  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accion         String
+  valorAnterior  Json?
+  valorNuevo     Json?
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([partidoId, createdAt])
+  @@index([userId, createdAt])
+  @@index([accion])
+}
+
 enum EstadoPartido {
   PENDIENTE     // antes del partido
   EN_JUEGO      // partido en curso
   FINALIZADO    // partido terminado
   SUSPENDIDO    // partido suspendido
   CANCELADO     // partido cancelado
+  ENTRETIEMPO   // Entre tiempo
 }
 
 enum AciertoTipo {
   EXACTO
   TENDENCIA
   NINGUNO
+}
+
+enum PartidoEventoLiveTipo {
+  GOL
+  TARJETA_AMARILLA
+  TARJETA_ROJA
+  CAMBIO
+  ESTADO
+  VAR
+  OTRO
+}
+
+enum PartidoEventoLiveSource {
+  API
+  MANUAL
 }

@@ -13,33 +13,34 @@ import { axiosInstance } from "@/lib/axios";
 export default function PaisesPage() {
   const canVerPaises = useCan("paises", "ver");
   const canCrearPaises = useCan("paises", "crear");
+  const canEditarPaises = useCan("paises", "editar");
 
   const [search] = useState("");
   const [refreshToken, setRefreshToken] = useState(0);
-  const [syncingApi, setSyncingApi] = useState(false);
+  const [updatingLanguage, setUpdatingLanguage] = useState(false);
 
   if (!canVerPaises) {
     return <AccessDenied403Page />;
   }
 
-  async function handleSyncFromApi() {
+  async function handleUpdateLanguage() {
     try {
-      setSyncingApi(true);
+      setUpdatingLanguage(true);
       const response = await axiosInstance.post<{
         message?: string;
-        meta?: { updated?: number; created?: number };
-      }>("/paises/import-api");
+        meta?: { actualizadas?: number; sinCambios?: number };
+      }>("/paises/modificar-idioma");
 
       toast.success(
         response.data.message ||
-          "Selecciones sincronizadas correctamente desde la API"
+          "Los nombres de las selecciones se actualizaron a español"
       );
       setRefreshToken((value) => value + 1);
     } catch (error) {
       console.error(error);
-      toast.error("No se pudieron sincronizar las selecciones desde la API");
+      toast.error("No se pudo modificar el idioma de las selecciones");
     } finally {
-      setSyncingApi(false);
+      setUpdatingLanguage(false);
     }
   }
 
@@ -49,8 +50,10 @@ export default function PaisesPage() {
         <CardContent className="space-y-6 p-4 md:p-6">
           <PaisHeader
             cantCreate={!canCrearPaises}
-            syncingApi={syncingApi}
-            onSyncFromApi={() => void handleSyncFromApi()}
+            updatingLanguage={updatingLanguage}
+            onUpdateLanguage={
+              canEditarPaises ? () => void handleUpdateLanguage() : undefined
+            }
           />
           <PaisList search={search} refresh={refreshToken} />
         </CardContent>

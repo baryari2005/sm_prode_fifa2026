@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import type { Prisma, Seleccion as PrismaSeleccion } from "@prisma/client";
 import type { PaisCreateInput, PaisUpdateInput, Pais } from "../types/types";
+import { getNombreSeleccionEnEspanol } from "../lib/selecciones-es";
 
 const SORT_FIELDS = [
   "nombre",
@@ -204,4 +205,58 @@ export function handlePaisError(err: unknown): {
   }
 
   return { message: "Error al procesar la solicitud", status: 400 };
+}
+
+export async function actualizarNombresPaisesAEspanol() {
+  const selecciones = await prisma.seleccion.findMany({
+    orderBy: { nombre: "asc" },
+  });
+
+  let actualizadas = 0;
+  const resultados: Array<{
+    id: string;
+    codigo: string;
+    nombreAnterior: string;
+    nombreNuevo: string;
+    estado: "actualizada" | "sin_cambios";
+  }> = [];
+
+  for (const seleccion of selecciones) {
+    const nombreNuevo = getNombreSeleccionEnEspanol({
+      codigo: seleccion.codigo,
+      nombre: seleccion.nombre,
+    });
+
+    if (!nombreNuevo || nombreNuevo === seleccion.nombre) {
+      resultados.push({
+        id: seleccion.id,
+        codigo: seleccion.codigo,
+        nombreAnterior: seleccion.nombre,
+        nombreNuevo: seleccion.nombre,
+        estado: "sin_cambios",
+      });
+      continue;
+    }
+
+    await prisma.seleccion.update({
+      where: { id: seleccion.id },
+      data: { nombre: nombreNuevo },
+    });
+
+    actualizadas += 1;
+    resultados.push({
+      id: seleccion.id,
+      codigo: seleccion.codigo,
+      nombreAnterior: seleccion.nombre,
+      nombreNuevo,
+      estado: "actualizada",
+    });
+  }
+
+  return {
+    total: selecciones.length,
+    actualizadas,
+    sinCambios: selecciones.length - actualizadas,
+    resultados,
+  };
 }

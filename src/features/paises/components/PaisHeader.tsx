@@ -1,14 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Info, Plus } from "lucide-react";
+import { Globe, Info, Languages, Plus, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 export function PaisHeader({
     cantCreate,
+    updatingLanguage = false,
+    onUpdateLanguage,
 }: {
     cantCreate: boolean;
-    syncingApi?: boolean;
-    onSyncFromApi?: () => void;
+    updatingLanguage?: boolean;
+    onUpdateLanguage?: () => void;
 }) {
     return (
         <>
@@ -28,16 +30,27 @@ export function PaisHeader({
                     </div>
 
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:items-center">
-                        {/* <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onSyncFromApi}
-                            disabled={syncingApi}
-                            className="h-11 rounded-2xl border-slate-200 bg-white"
-                        >
-                            <RefreshCw className={`w-4 h-4 mr-2 ${syncingApi ? "animate-spin" : ""}`} />
-                            {syncingApi ? "Sincronizando..." : "Importar teamId API"}
-                        </Button> */}
+                        {onUpdateLanguage ? (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={onUpdateLanguage}
+                                disabled={updatingLanguage}
+                                className="h-11 rounded-2xl border-slate-200 bg-white"
+                            >
+                                {updatingLanguage ? (
+                                    <>
+                                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                                        Modificando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Languages className="mr-2 h-4 w-4" />
+                                        Modificar idioma
+                                    </>
+                                )}
+                            </Button>
+                        ) : null}
                         {!cantCreate && (
                             <Link href="/admin/paises/nuevo">
                                 <Button

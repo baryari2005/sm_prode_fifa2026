@@ -118,7 +118,8 @@ export function useResultadoPartidoPage() {
   );
 
   const canSubmit = canEditar && partido !== null;
-  const isLiveLocked = resultado?.estado === "EN_JUEGO";
+  const isLiveLocked =
+    resultado?.estado === "EN_JUEGO" || resultado?.estado === "ENTRETIEMPO";
   const canEditCurrentResult = canSubmit && !isLiveLocked;
 
   const headerDescription = useMemo(() => {
