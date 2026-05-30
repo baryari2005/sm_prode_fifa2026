@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
-import type { GoalDetail, TeamLineup, TeamStats } from "../types/fixture-details";
+import type {
+  GoalDetail,
+  MatchIncident,
+  TeamLineup,
+  TeamStats,
+} from "../types/fixture-details";
 import type { FixturePhaseSlug } from "../constants/fixture-phase-filter.constants";
 import type {
   Fase,
@@ -35,6 +40,13 @@ function parseGoalDetails(value: Prisma.JsonValue | null | undefined): GoalDetai
   return value as unknown as GoalDetail[];
 }
 
+function parseIncidencias(
+  value: Prisma.JsonValue | null | undefined
+): MatchIncident[] | null {
+  if (!Array.isArray(value)) return null;
+  return value as unknown as MatchIncident[];
+}
+
 function toJsonInput(value: unknown) {
   return value === null || value === undefined
     ? Prisma.JsonNull
@@ -66,6 +78,9 @@ function normalizePartido(partido: Partido): Partido {
       detalleGolesVisitante: parseGoalDetails(
         partido.resultado.detalleGolesVisitante as Prisma.JsonValue | null | undefined
       ),
+      incidencias: parseIncidencias(
+        partido.resultado.incidencias as Prisma.JsonValue | null | undefined
+      ),
     },
   };
 }
@@ -90,6 +105,9 @@ function normalizeResultado(resultado: Resultado): Resultado {
     ),
     detalleGolesVisitante: parseGoalDetails(
       resultado.detalleGolesVisitante as Prisma.JsonValue | null | undefined
+    ),
+    incidencias: parseIncidencias(
+      resultado.incidencias as Prisma.JsonValue | null | undefined
     ),
   };
 }
@@ -221,6 +239,7 @@ export async function createResultado(
       alineacionVisitante: toJsonInput(data.alineacionVisitante),
       detalleGolesLocal: toJsonInput(data.detalleGolesLocal),
       detalleGolesVisitante: toJsonInput(data.detalleGolesVisitante),
+      incidencias: toJsonInput(data.incidencias),
     },
     include: {
       partido: {
@@ -272,6 +291,10 @@ export async function updateResultado(
 
   if (Object.prototype.hasOwnProperty.call(data, "detalleGolesVisitante")) {
     updateData.detalleGolesVisitante = toJsonInput(data.detalleGolesVisitante);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(data, "incidencias")) {
+    updateData.incidencias = toJsonInput(data.incidencias);
   }
 
   const resultado = await prisma.resultado.update({

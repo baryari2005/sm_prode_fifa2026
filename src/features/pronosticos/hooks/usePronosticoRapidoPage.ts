@@ -16,6 +16,7 @@ import {
 import {
   getFaseNombre,
   hasMatchStartedForPrediction,
+  isPredictionBlocked,
   isPredictionClosed,
 } from "@/features/partidos/utils/partidos-ui.helpers";
 import {
@@ -50,6 +51,7 @@ export function usePronosticoRapidoPage() {
   >({});
   const [errors, setErrors] = useState<PronosticoRapidoErrors>({});
   const [saving, setSaving] = useState(false);
+  const [showOnlyPending, setShowOnlyPending] = useState(true);
 
   const {
     partidos,
@@ -62,7 +64,9 @@ export function usePronosticoRapidoPage() {
   } = usePronosticosPage();
 
   const faseParam = searchParams.get("fase") ?? "";
-  const faseActiva = faseParam ? getFixturePhaseSlugFromText(faseParam) : null;
+  const faseActiva = faseParam
+    ? getFixturePhaseSlugFromText(faseParam)
+    : "grupos";
   const faseActivaLabel = faseActiva
     ? getFixturePhaseLabel(faseActiva)
     : "Todas las fases";
@@ -118,24 +122,42 @@ export function usePronosticoRapidoPage() {
   }, [partidosAgrupadosPorFase, mostrandoFaseGrupos]);
 
   const partidosAgrupadosVisibles = useMemo(() => {
-    if (!mostrandoFaseGrupos) return partidosAgrupadosPorFase;
+    const gruposBase = !mostrandoFaseGrupos
+      ? partidosAgrupadosPorFase
+      : grupoSeleccionado === null
+        ? partidosAgrupadosPorFase
+        : partidosAgrupadosPorFase
+            .map((grupoFecha) => ({
+              ...grupoFecha,
+              partidos: grupoFecha.partidos.filter((partido) => {
+                const partidoRapido = partido as PartidoPronosticoRapido;
+                const grupo = getGrupoFilterValue(partidoRapido);
 
-    if (grupoSeleccionado === null) {
-      return partidosAgrupadosPorFase;
+                return grupo === grupoSeleccionado;
+              }),
+            }))
+            .filter((grupoFecha) => grupoFecha.partidos.length > 0);
+
+    if (!showOnlyPending) {
+      return gruposBase;
     }
 
-    return partidosAgrupadosPorFase
+    return gruposBase
       .map((grupoFecha) => ({
         ...grupoFecha,
         partidos: grupoFecha.partidos.filter((partido) => {
           const partidoRapido = partido as PartidoPronosticoRapido;
-          const grupo = getGrupoFilterValue(partidoRapido);
 
-          return grupo === grupoSeleccionado;
+          return !isPredictionBlocked(partidoRapido);
         }),
       }))
       .filter((grupoFecha) => grupoFecha.partidos.length > 0);
-  }, [partidosAgrupadosPorFase, mostrandoFaseGrupos, grupoSeleccionado]);
+  }, [
+    grupoSeleccionado,
+    partidosAgrupadosPorFase,
+    mostrandoFaseGrupos,
+    showOnlyPending,
+  ]);
 
   const modifiedEntries = useMemo(() => {
     return Object.entries(values).filter(([partidoId, currentValue]) => {
@@ -174,11 +196,13 @@ export function usePronosticoRapidoPage() {
       return;
     }
 
-    if (
-      grupoSeleccionado !== null &&
-      !gruposDisponibles.includes(grupoSeleccionado)
-    ) {
+    if (gruposDisponibles.length === 0) {
       setGrupoSeleccionado(null);
+      return;
+    }
+
+    if (!grupoSeleccionado || !gruposDisponibles.includes(grupoSeleccionado)) {
+      setGrupoSeleccionado(gruposDisponibles[0] ?? null);
     }
   }, [mostrandoFaseGrupos, gruposDisponibles, grupoSeleccionado]);
 
@@ -327,6 +351,7 @@ export function usePronosticoRapidoPage() {
     gruposDisponibles,
     grupoSeleccionado,
     hasVisibleLiveMatches,
+    showOnlyPending,
     partidosAgrupadosVisibles,
     values,
     errors,
@@ -334,6 +359,7 @@ export function usePronosticoRapidoPage() {
     loadData,
     setBusqueda,
     setGrupoSeleccionado,
+    setShowOnlyPending,
     handlePhaseChange,
     updateScore,
     handleSaveAll,

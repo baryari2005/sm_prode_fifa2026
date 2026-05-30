@@ -4,6 +4,7 @@ import {
   DEFAULT_TEAM_LINEUP,
   DEFAULT_TEAM_STATS,
 } from "@/features/partidos/types/fixture-details";
+import { buildIncidenciasFromResultado } from "./resultado-incidencias.helpers";
 
 import type {
   TeamLineup,
@@ -66,6 +67,7 @@ export function createInitialState(
 
     detalleGolesLocal: resultado?.detalleGolesLocal ?? [],
     detalleGolesVisitante: resultado?.detalleGolesVisitante ?? [],
+    incidencias: buildIncidenciasFromResultado(resultado),
   };
 }
 

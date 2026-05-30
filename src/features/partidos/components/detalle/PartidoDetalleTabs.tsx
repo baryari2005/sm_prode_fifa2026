@@ -31,20 +31,22 @@ export function PartidoDetalleTabs({
 }: PartidoDetalleTabsProps) {
   return (
     <Tabs defaultValue="estadisticas" className="space-y-4">
-      <TabsList className="h-auto rounded-2xl border border-slate-200/80 bg-white/90 p-1 shadow-sm">
-        <TabsTrigger
-          value="estadisticas"
-          className="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#008C93] data-[state=active]:to-[#00A6B2] data-[state=active]:text-white data-[state=active]:shadow-sm"
-        >
-          Estadisticas
-        </TabsTrigger>
-        <TabsTrigger
-          value="alineaciones"
-          className="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#008C93] data-[state=active]:to-[#00A6B2] data-[state=active]:text-white data-[state=active]:shadow-sm"
-        >
-          Alineaciones
-        </TabsTrigger>
-      </TabsList>
+      <div className="overflow-x-auto pb-1">
+        <TabsList className="h-auto min-w-[320px] rounded-[24px] border border-white/10 bg-[#132238]/72 p-1.5 shadow-none">
+          <TabsTrigger
+            value="estadisticas"
+            className="rounded-2xl px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white/62 data-[state=active]:bg-[#5993B6] data-[state=active]:text-white data-[state=active]:shadow-[0_10px_24px_rgba(89,147,182,0.24)]"
+          >
+            Estadisticas
+          </TabsTrigger>
+          <TabsTrigger
+            value="alineaciones"
+            className="rounded-2xl px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white/62 data-[state=active]:bg-[#FAB438] data-[state=active]:text-[#1E2C46] data-[state=active]:shadow-[0_10px_24px_rgba(250,180,56,0.24)]"
+          >
+            Alineaciones
+          </TabsTrigger>
+        </TabsList>
+      </div>
 
       <TabsContent value="estadisticas">
         <PartidoStatsCard

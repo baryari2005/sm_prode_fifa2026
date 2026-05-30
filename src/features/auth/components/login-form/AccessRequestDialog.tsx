@@ -1,23 +1,24 @@
 "use client";
 
+import Image from "next/image";
 import type { SubmitHandler, UseFormReturn } from "react-hook-form";
-import { Info, RefreshCw, LockKeyhole, Plus } from "lucide-react";
+import {
+  LogIn,
+  ShieldCheck,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
-
+import { Badge } from "@/components/ui/badge";
+import { brandImages } from "@/config/brand-images";
 import type { RegisterSchemaValues } from "@/features/auth/schemas/schemas";
 import { formatMessage } from "@/utils/formatters";
 
-import { ErrorBannerInput } from "../ErrorBannerInput";
-import { RegisterFields } from "./RegisterFields";
+import { RegisterAccessPanel } from "./RegisterAccessPanel";
 
 type Props = {
   open: boolean;
@@ -38,135 +39,165 @@ export function AccessRequestDialog({
   onDismissRegisterError,
   isLoading,
 }: Props) {
+  const hasFieldErrors = Object.keys(registerForm.formState.errors).length > 0;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="
           flex
-          h-[calc(100dvh-2rem)]
-          w-[calc(100vw-1.5rem)]
+          h-[min(92dvh,860px)]
+          w-[min(1180px,94vw)]
           !max-w-[1180px]
           flex-col
           overflow-hidden
-          rounded-[2rem]
+          rounded-[2.2rem]
           border
           border-white/10
-          bg-[#071827]
+          bg-[#1E2C46]
           p-0
           text-white
-          shadow-[0_32px_100px_rgba(0,0,0,0.62)]
-          sm:h-[calc(100dvh-3rem)]
-          sm:w-[calc(100vw-3rem)]
-          sm:!max-w-[1180px]
-          lg:w-[min(92vw,1180px)]
+          shadow-[0_32px_100px_rgba(0,0,0,0.42)]
+          backdrop-blur-xl
+          [&>button]:right-5
+          [&>button]:top-5
+          [&>button]:rounded-full
+          [&>button]:border
+          [&>button]:border-white/12
+          [&>button]:bg-white/[0.04]
+          [&>button]:p-1
+          [&>button]:text-white/70
+          [&>button]:opacity-100
         "
       >
-        <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[#39A935]/16 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-28 -left-24 h-56 w-56 rounded-full bg-[#F7B731]/10 blur-3xl" />
+        <div className="absolute inset-0 brand-pattern-bg brand-pattern-bg-cover" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_18%,rgba(250,180,56,0.14),transparent_18%),radial-gradient(circle_at_48%_60%,rgba(89,147,182,0.16),transparent_30%)]" />
 
         <form
           onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
           className="
-            relative
-            flex
+            relative z-10
+            grid
             min-h-0
             flex-1
-            flex-col
-            [&_input]:border-white/22
-            [&_input]:bg-white/10
+            gap-8
+            overflow-hidden
+            p-6
+            lg:grid-cols-[0.88fr_1.08fr]
+            lg:items-stretch
+            lg:p-8
+            xl:p-10
+            [&_label]:font-medium
+            [&_label]:text-white/76
+            [&_input]:border-white/14
+            [&_input]:bg-white/[0.1]
             [&_input]:text-white
-            [&_input]:placeholder:text-white/35
+            [&_input]:placeholder:text-white/42
+            [&_[data-slot='select-trigger']]:border-white/14
+            [&_[data-slot='select-trigger']]:bg-white/[0.1]
+            [&_[data-slot='select-trigger']]:text-white
           "
         >
-          {/* HEADER FIJO */}
-          <div className="shrink-0 border-b border-white/10 px-5 pt-5 pb-4 sm:px-8 sm:pt-7">
-            <DialogHeader className="text-left">
-              <DialogTitle className="flex items-center text-2xl tracking-tight text-white sm:text-2xl">
-                <LockKeyhole className="mr-2 h-6 w-6" />
-                Solicitar acceso
-              </DialogTitle>
+          <div className="hidden min-h-0 h-full flex-col justify-between lg:flex">
+            <div className="space-y-7">
+              <div className="space-y-4">
+                <Badge className="brand-badge px-4 py-1.5 text-[11px] uppercase tracking-[0.24em]">
+                  Orgullo de barrio
+                </Badge>
 
-              <Separator className="mt-3 bg-white/20 shadow-sm" />
+                <div className="space-y-4">
+                  <h2 className="brand-hero-title max-w-[500px] text-4xl !tracking-[0.04em] text-white xl:text-5xl">
+                    Tu barrio tambien
+                    <br />
+                    <span className="text-[#5993B6]">juega el Mundial.</span>
+                  </h2>
 
-              <DialogDescription className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-white/62">
-                Completá tus datos para crear una solicitud de acceso. Tu usuario
-                quedará pendiente hasta que un administrador lo revise y apruebe.
-                <Info className="ml-1 inline h-4 w-4 text-white/50" />
-              </DialogDescription>
-            </DialogHeader>
+                  <p className="max-w-[440px] text-base leading-7 text-white/78">
+                    Solicita tu acceso al Prode Mundial 2026,
+                    espera la aprobación y empezá a competir con identidad
+                    local.
+                  </p>
+                </div>
+              </div>
 
-            {registerTopError && (
-              <div className="mt-4">
-                <ErrorBannerInput
-                  message={registerTopError}
-                  onClose={onDismissRegisterError}
+              <div className="space-y-4">
+                <FeatureItem
+                  icon={ShieldCheck}
+                  title="Solicitud pendiente"
+                  description="Tu cuenta quedara en revision hasta que un administrador la apruebe."
+                />
+                <FeatureItem
+                  icon={Sparkles}
+                  title="Misma identidad del login"
+                  description="Un flujo claro, premium y alineado a Mas Mundial / Mas San Miguel."
+                />
+                <FeatureItem
+                  icon={UserRound}
+                  title="Pensado para tu grupo"
+                  description="Entra al prode, representa a tu barrio y vive el Mundial con tu comunidad."
                 />
               </div>
-            )}
-          </div>
-
-          {/* CONTENIDO CON SCROLL */}
-          <div
-            className="
-              min-h-0
-              flex-1
-              overflow-y-auto
-              px-5
-              py-5
-              pr-3
-              sm:px-8
-              sm:pr-5
-            "
-          >
-            <div className="pr-2">
-              <RegisterFields form={registerForm} />
             </div>
-          </div>
 
-          {/* FOOTER FIJO */}
-          <div
-            className="
-              shrink-0
-              border-t
-              border-white/10
-              bg-[#071827]/95
-              px-5
-              py-4
-              backdrop-blur
-              sm:px-8
-            "
-          >
-            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-              <Button
+            <div className="flex justify-center">
+              <Image
+                src={brandImages.prode.orgulloBarrioWordmark}
+                alt="Orgullo"
+                width={120}
+                height={120}
+                priority
+                className="relative z-20 object-contain drop-shadow-[0_28px_80px_rgba(0,0,0,0.65)] opacity-50"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 pt-6">
+              <button
                 type="button"
-                variant="ghost"
-                className="rounded-2xl text-white/75 hover:bg-white/10 hover:text-white"
                 onClick={() => onOpenChange(false)}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#AEEBFF] transition hover:text-white"
               >
-                Cancelar
-              </Button>
+                <LogIn className="h-4 w-4" />
+                Volver al login
+              </button>
 
-              <Button
-                type="submit"
-                className="rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <span className="inline-flex items-center gap-2">
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                    {formatMessage("Enviando solicitud...")}
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Enviar solicitud
-                  </span>
-                )}
-              </Button>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/72">
+                Pasion mundial
+              </div>
             </div>
           </div>
+          <RegisterAccessPanel
+            registerForm={registerForm}
+            registerTopError={registerTopError}
+            hasFieldErrors={hasFieldErrors}
+            isLoading={isLoading}
+            onDismissRegisterError={onDismissRegisterError}
+            onOpenChange={onOpenChange}
+            formatMessage={formatMessage}
+          />
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function FeatureItem({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: typeof ShieldCheck;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10 text-[#FAB438]">
+        <Icon className="h-5 w-5" />
+      </div>
+      <div>
+        <p className="text-base font-semibold text-white">{title}</p>
+        <p className="mt-1 text-sm leading-6 text-white/70">{description}</p>
+      </div>
+    </div>
   );
 }

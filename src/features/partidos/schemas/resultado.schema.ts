@@ -21,6 +21,34 @@ export const goalDetailSchema = z.object({
   penal: z.boolean().default(false),
 });
 
+export const matchIncidentSchema = z.object({
+  id: z.string().min(1),
+  tipo: z.enum([
+    "gol",
+    "tarjeta_amarilla",
+    "tarjeta_roja",
+    "cambio",
+    "lesion",
+    "penal",
+    "var",
+  ]),
+  minuto: z.number().int().min(0).max(130),
+  equipo: z.enum(["local", "visitante", "general"]),
+  jugadorId: z.string().uuid().nullable().optional(),
+  jugadorNombre: z.string().nullable().optional(),
+  asistidorId: z.string().uuid().nullable().optional(),
+  asistidorNombre: z.string().nullable().optional(),
+  jugadorSaleId: z.string().uuid().nullable().optional(),
+  jugadorSaleNombre: z.string().nullable().optional(),
+  jugadorEntraId: z.string().uuid().nullable().optional(),
+  jugadorEntraNombre: z.string().nullable().optional(),
+  descripcion: z.string().nullable().optional(),
+  penal: z.boolean().optional(),
+  varResultado: z.string().nullable().optional(),
+  lesionTipo: z.string().nullable().optional(),
+  createdAt: z.string().nullable().optional(),
+});
+
 export const teamStatsSchema = z.object({
   shots: z.number().int().min(0).default(0),
   shotsOnTarget: z.number().int().min(0).default(0),
@@ -56,6 +84,7 @@ export const resultadoCreateSchema = z.object({
   alineacionVisitante: teamLineupSchema.optional(),
   detalleGolesLocal: z.array(goalDetailSchema).optional(),
   detalleGolesVisitante: z.array(goalDetailSchema).optional(),
+  incidencias: z.array(matchIncidentSchema).optional(),
 });
 
 export const resultadoUpdateSchema = z.object({
@@ -72,4 +101,5 @@ export const resultadoUpdateSchema = z.object({
   alineacionVisitante: teamLineupSchema.nullable().optional(),
   detalleGolesLocal: z.array(goalDetailSchema).nullable().optional(),
   detalleGolesVisitante: z.array(goalDetailSchema).nullable().optional(),
+  incidencias: z.array(matchIncidentSchema).nullable().optional(),
 });

@@ -5,7 +5,6 @@ import { AlertTriangle, Loader2, Save, Target, Trophy, type LucideIcon } from "l
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ResultMetricCard } from "@/components/ui/result-metric-card";
 import {
   Select,
   SelectContent,
@@ -46,7 +45,7 @@ type ScoreCardProps = {
 };
 
 function ScoreCard({
-  icon,
+  icon: Icon,
   title,
   description,
   value,
@@ -54,35 +53,36 @@ function ScoreCard({
   onChange,
 }: ScoreCardProps) {
   return (
-    <ResultMetricCard
-      icono={icon}
-      titulo={title}
-      descripcion={description}
-      className="min-h-full"
-      resultado={
-        <div className="mt-1 space-y-2">
-          <Label className="text-xs uppercase tracking-[0.18em] text-slate-500">
-            Puntaje
-          </Label>
+    <article className="rounded-[24px] border border-white/10 bg-white/[0.06] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/[0.1]">
+      <div className="grid h-11 w-11 place-items-center rounded-[18px] bg-[#5993B6]/18 text-[#AEEBFF]">
+        <Icon className="h-5 w-5" />
+      </div>
 
-          {disabled ? (
-            <div className="flex h-14 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-center text-2xl font-extrabold text-slate-950">
-              {value}
-            </div>
-          ) : (
-            <Input
-              type="text"
-              inputMode="numeric"
-              value={value}
-              disabled={disabled}
-              onFocus={(event) => event.target.select()}
-              onChange={(event) => onChange?.(Number(event.target.value || 0))}
-              className="h-14 rounded-2xl border-slate-200 bg-white text-center text-2xl font-extrabold text-slate-950"
-            />
-          )}
-        </div>
-      }
-    />
+      <p className="mt-4 text-sm font-semibold text-white">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-white/68">{description}</p>
+
+      <div className="mt-4 space-y-2">
+        <Label className="text-xs uppercase tracking-[0.18em] text-white/58">
+          Puntaje
+        </Label>
+
+        {disabled ? (
+          <div className="flex h-14 items-center justify-center rounded-2xl border border-white/10 bg-[#425675]/55 text-center text-2xl font-extrabold text-white">
+            {value}
+          </div>
+        ) : (
+          <Input
+            type="text"
+            inputMode="numeric"
+            value={value}
+            disabled={disabled}
+            onFocus={(event) => event.target.select()}
+            onChange={(event) => onChange?.(Number(event.target.value || 0))}
+            className="h-14 text-center text-2xl font-extrabold text-white"
+          />
+        )}
+      </div>
+    </article>
   );
 }
 
@@ -138,32 +138,32 @@ export function ReglaPuntajeForm({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm md:p-5">
+      <section className="rounded-[24px] border border-white/10 bg-white/[0.05] p-4 shadow-sm md:p-5">
         <div className="mb-4 flex items-start gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#5993B6]/18 text-[#AEEBFF]">
             <Trophy className="h-5 w-5" />
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-lg font-bold tracking-tight text-slate-950">
+            <h2 className="text-lg font-bold tracking-tight text-white">
               Seleccion de fase
             </h2>
-            <p className="text-sm text-slate-500">
-              Elegi la fase que queres configurar antes de definir los puntajes.
+            <p className="text-sm text-white/68">
+              Elige la fase que quieres configurar antes de definir los puntajes.
             </p>
           </div>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,0.9fr)]">
           <div className="space-y-2">
-            <Label>Fase</Label>
+            <Label className="text-white">Fase</Label>
 
             <Select
               value={values.faseId ? String(values.faseId) : ""}
               onValueChange={(value) => onChange("faseId", Number(value))}
               disabled={saving}
             >
-              <SelectTrigger className="h-12 rounded-2xl bg-white">
+              <SelectTrigger className="h-12 w-full rounded-2xl">
                 <SelectValue placeholder="Seleccionar fase" />
               </SelectTrigger>
 
@@ -177,40 +177,40 @@ export function ReglaPuntajeForm({
             </Select>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+          <div className="rounded-[22px] border border-white/10 bg-[#425675]/40 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#AEEBFF]">
               Reglas activas
             </p>
-            <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">
+            <p className="mt-2 text-3xl font-extrabold tracking-tight text-white">
               {reglaActual ? "Cargadas" : "Nuevas"}
             </p>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-white/68">
               {reglaActual
-                ? "Esta fase ya tiene una configuracion guardada y podes actualizarla mientras siga habilitada."
+                ? "Esta fase ya tiene una configuracion guardada y puedes actualizarla mientras siga habilitada."
                 : "Todavia no hay una configuracion registrada para esta fase."}
             </p>
           </div>
         </div>
       </section>
 
-      {loadingRegla && (
-        <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+      {loadingRegla ? (
+        <div className="flex items-center gap-2 rounded-[22px] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white/72">
           <Loader2 className="h-4 w-4 animate-spin" />
           Cargando configuracion de puntaje...
         </div>
-      )}
+      ) : null}
 
-      {reglaActual?.bloqueada && (
-        <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      {reglaActual?.bloqueada ? (
+        <div className="flex items-start gap-3 rounded-[22px] border border-[#FAB438]/18 bg-[#FAB438]/10 px-4 py-3 text-sm text-[#FFE4A3]">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <p className="font-semibold">Edicion no disponible</p>
-            <p className="mt-1">
+            <p className="mt-1 text-white/72">
               Esta fase ya comenzo. Las reglas de puntaje no pueden modificarse.
             </p>
           </div>
         </div>
-      )}
+      ) : null}
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_320px]">
         <div className="space-y-4">
@@ -235,17 +235,17 @@ export function ReglaPuntajeForm({
           </div>
         </div>
 
-        <aside className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <aside className="rounded-[24px] border border-white/10 bg-white/[0.05] p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#5993B6]/18 text-[#AEEBFF]">
               <Target className="h-5 w-5" />
             </div>
 
             <div>
-              <h3 className="text-lg font-bold tracking-tight text-slate-950">
+              <h3 className="text-lg font-bold tracking-tight text-white">
                 Resumen
               </h3>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-white/68">
                 Revision rapida antes de guardar.
               </p>
             </div>
@@ -253,11 +253,14 @@ export function ReglaPuntajeForm({
 
           <div className="mt-5 space-y-3">
             {scoreMetrics.map((item) => (
-              <div key={`summary-${item.key}`} className="rounded-2xl bg-slate-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              <div
+                key={`summary-${item.key}`}
+                className="rounded-[20px] border border-white/10 bg-[#425675]/40 px-4 py-3"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#AEEBFF]">
                   {item.summaryTitle}
                 </p>
-                <p className="mt-1 text-2xl font-extrabold text-slate-950">
+                <p className="mt-1 text-2xl font-extrabold text-white">
                   {item.value}
                 </p>
               </div>

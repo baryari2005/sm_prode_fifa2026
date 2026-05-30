@@ -20,15 +20,13 @@ type PlayerRowProps = {
   yellow: boolean;
   red: boolean;
   substituted: boolean;
-
   draggable?: boolean;
   isDragging?: boolean;
-
+  compact?: boolean;
   onDragStart?: () => void;
   onDragEnd?: () => void;
   onDragOver?: (event: DragEvent<HTMLDivElement>) => void;
   onDrop?: (event: DragEvent<HTMLDivElement>) => void;
-
   onGoalsChange: (value: number) => void;
   onYellowChange: (checked: boolean) => void;
   onRedChange: (checked: boolean) => void;
@@ -49,6 +47,7 @@ export function PlayerRow({
   substituted,
   draggable,
   isDragging,
+  compact = false,
   onDragStart,
   onDragEnd,
   onDragOver,
@@ -66,58 +65,80 @@ export function PlayerRow({
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className={`rounded-[1.15rem] border border-slate-200/90 bg-white p-3 shadow-[0_6px_18px_rgba(15,23,42,0.04)] transition ${
+      className={`rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition ${
         draggable ? "cursor-grab active:cursor-grabbing" : ""
       } ${isDragging ? "opacity-70" : ""}`}
     >
-      <div className="grid gap-3 lg:grid-cols-[minmax(210px,1fr)_90px_1fr_auto] lg:items-center">
-        <div className="flex min-w-0 items-center gap-3">
-          <PlayerJerseyAvatar
-            imageUrl={imageUrl}
-            teamCode={teamCode}
-            teamName={teamName}
-            number={playerNumber}
-            className="h-12 w-12 rounded-xl"
-          />
+      {compact ? (
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <PlayerJerseyAvatar
+              imageUrl={imageUrl}
+              teamCode={teamCode}
+              teamName={teamName}
+              number={playerNumber}
+              className="h-12 w-12 rounded-xl"
+            />
 
-          <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-slate-950">
-              {playerName} {playerNumber ? `#${playerNumber}` : ""}
-            </p>
-
-            <p className="text-xs font-semibold text-[#008C93]">{playerRole}</p>
+            <div className="min-w-0">
+              <p className="truncate text-base font-bold text-white">
+                {playerName}
+              </p>
+              <p className="text-sm font-semibold text-[#AEEBFF]">{playerRole}</p>
+            </div>
           </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onRemove}
+            className="h-9 w-9 rounded-xl text-white/48 hover:bg-white/[0.08] hover:text-rose-300"
+            aria-label={`Eliminar ${playerName}`}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
+      ) : (
+        <div className="grid gap-3 lg:grid-cols-[minmax(210px,1fr)_90px_1fr_auto] lg:items-center">
+          <div className="flex min-w-0 items-center gap-3">
+            <PlayerJerseyAvatar
+              imageUrl={imageUrl}
+              teamCode={teamCode}
+              teamName={teamName}
+              number={playerNumber}
+              className="h-12 w-12 rounded-xl"
+            />
 
-        <NumberField label="Goles" value={goals} onChange={onGoalsChange} />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-white">
+                {playerName} {playerNumber ? `#${playerNumber}` : ""}
+              </p>
 
-        <div className="grid gap-2 sm:grid-cols-3">
-          <BooleanField
-            label="Amarilla"
-            checked={yellow}
-            onChange={onYellowChange}
-          />
+              <p className="text-xs font-semibold text-[#AEEBFF]">{playerRole}</p>
+            </div>
+          </div>
 
-          <BooleanField label="Roja" checked={red} onChange={onRedChange} />
+          <NumberField label="Goles" value={goals} onChange={onGoalsChange} />
 
-          <BooleanField
-            label="Cambio"
-            checked={substituted}
-            onChange={onSubstitutedChange}
-          />
+          <div className="grid gap-2 sm:grid-cols-3">
+            <BooleanField label="Amarilla" checked={yellow} onChange={onYellowChange} />
+            <BooleanField label="Roja" checked={red} onChange={onRedChange} />
+            <BooleanField label="Cambio" checked={substituted} onChange={onSubstitutedChange} />
+          </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onRemove}
+            className="h-9 w-9 rounded-xl text-white/48 hover:bg-white/[0.08] hover:text-rose-300"
+            aria-label={`Eliminar ${playerName}`}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={onRemove}
-          className="h-9 w-9 rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-600"
-          aria-label={`Eliminar ${playerName}`}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
+      )}
     </div>
   );
 }

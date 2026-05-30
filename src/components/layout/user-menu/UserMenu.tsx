@@ -46,7 +46,7 @@ export function UserMenu() {
         <DropdownMenuContent
           align="end"
           sideOffset={8}
-           className="w-[320px] overflow-hidden rounded border border-[#E5EAF0] bg-white p-0 shadow-[0_20px_60px_rgba(15,23,42,0.18)]"
+          className="w-[320px] overflow-hidden rounded-[22px] border border-white/10 bg-[#10233B]/96 p-0 text-white shadow-[0_24px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl"
         >
           <UserMenuHeader
             avatarUrl={avatarUrl}
@@ -54,7 +54,7 @@ export function UserMenu() {
             email={email}
           />
 
-          <DropdownMenuSeparator className="m-0" />
+          <DropdownMenuSeparator className="m-0 bg-white/8" />
 
           <MenuItemWithSubtitle
             icon={LockKeyhole}
@@ -75,13 +75,13 @@ export function UserMenu() {
             onClick={() => setOpenAvatar(true)}
           />
 
-          <DropdownMenuSeparator className="m-0" />
+          <DropdownMenuSeparator className="m-0 bg-white/8" />
 
           <DropdownMenuItem
             onClick={() => logout()}
-            className="cursor-pointer py-3 rounded-none"
+            className="cursor-pointer rounded-none py-3 text-white transition focus:bg-white/[0.06] focus:text-white"
           >
-            <LogOut className="mr-2 h-4 w-4" />
+            <LogOut className="mr-2 h-4 w-4 text-[#FAB438]" />
             <span>Salir</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

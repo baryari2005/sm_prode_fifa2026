@@ -86,6 +86,18 @@ export const buildActionsColumn = <T extends RowWithId>({
       return null;
     }
 
-    return <TableActions id={String(id)} actions={actions} />;
+    return (
+      <TableActions
+        id={String(id)}
+        actions={actions}
+        theme={
+          component === "users"
+            ? "users-brand"
+            : component === "roles"
+              ? "roles-brand"
+              : "default"
+        }
+      />
+    );
   },
 });

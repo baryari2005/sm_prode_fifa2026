@@ -109,3 +109,24 @@ export async function runLiveTool(payload: {
     throw new Error(getApiErrorMessage(error, "No se pudo ejecutar la acción técnica."));
   }
 }
+
+export async function recalculateRankingManually() {
+  try {
+    const response = await axiosInstance.post("/ranking/recalculate");
+    return response.data as {
+      message?: string;
+      data?: {
+        source: "live-control";
+        totalUsuariosRecalculados: number;
+        totalPartidosConsiderados: number;
+        totalPrediccionesProcesadas: number;
+        executedAt: string;
+        triggeredByUserId: string;
+      };
+    };
+  } catch (error) {
+    throw new Error(
+      getApiErrorMessage(error, "No se pudo recalcular el ranking."),
+    );
+  }
+}

@@ -82,8 +82,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(ok("Puntos recalculados.", result));
       }
       case "recalculate_ranking": {
-        await recalculateRankingFromPredictions();
-        return NextResponse.json(ok("Ranking recalculado."));
+        const result = await recalculateRankingFromPredictions();
+        return NextResponse.json(ok("Ranking recalculado.", result));
       }
       case "cleanup_duplicate_events": {
         if (!parsed.partidoId) {
@@ -285,6 +285,16 @@ export async function POST(req: NextRequest) {
       (err.message === "FORBIDDEN" || err.message === "LIVE_CONTROL_FORBIDDEN")
     ) {
       return NextResponse.json({ message: "Acceso denegado." }, { status: 403 });
+    }
+
+    if (
+      err instanceof Error &&
+      err.message === "RANKING_RECALCULATION_IN_PROGRESS"
+    ) {
+      return NextResponse.json(
+        { message: "Ya hay un recalculo de ranking en curso." },
+        { status: 409 },
+      );
     }
 
     console.error("POST /api/admin/live-control/tools error:", err);

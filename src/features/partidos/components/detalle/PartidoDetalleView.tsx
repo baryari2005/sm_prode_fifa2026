@@ -1,8 +1,7 @@
-import { Card, CardContent } from "@/components/ui/card";
-
 import type { PartidoDetalleViewModel } from "@/features/partidos/types/partido-detalle.types";
 
 import { PartidoDetalleHeader } from "./PartidoDetalleHeader";
+import { PartidoDetalleSurface } from "./PartidoDetalleSurface";
 import { PartidoDetalleTabs } from "./PartidoDetalleTabs";
 
 type PartidoDetalleViewProps = {
@@ -17,13 +16,13 @@ export function PartidoDetalleView({
   showAdminActions = false,
 }: PartidoDetalleViewProps) {
   return (
-    <Card
-      className="border-white/70 bg-white shadow-sm"
+    <div
       data-readonly={readonly ? "true" : "false"}
       data-show-admin-actions={showAdminActions ? "true" : "false"}
     >
-      <CardContent className="space-y-6 p-4 md:p-6">
+      <PartidoDetalleSurface contentClassName="space-y-6 p-4 md:p-6">
         <PartidoDetalleHeader
+          partidoId={detalle.partidoId}
           local={detalle.local.nombre}
           visitante={detalle.visitante.nombre}
           marcador={detalle.marcador}
@@ -45,7 +44,7 @@ export function PartidoDetalleView({
           lineupLocal={detalle.lineupLocal}
           lineupVisitante={detalle.lineupVisitante}
         />
-      </CardContent>
-    </Card>
+      </PartidoDetalleSurface>
+    </div>
   );
 }

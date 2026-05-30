@@ -4,9 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
-import { Card, CardContent } from "@/components/ui/card";
-import { ImportarPartidosHeader } from "@/features/partidos/components/ImportarPartidosHeader";
-import { PartidosImportacionApi } from "@/features/partidos/components/PartidosImportacionApi";
+import { FixtureImportOverview } from "@/features/partidos/components/FixtureImportOverview";
 import type { FixturePhaseSlug } from "@/features/partidos/constants/fixture-phase-filter.constants";
 import {
   cargarPartidosDesdeApiDetallado,
@@ -44,19 +42,13 @@ export default function PartidosImportarPage() {
   }
 
   return (
-    <div className="grid gap-6">
-      <Card className="border-white/70 bg-white shadow-sm">
-        <CardContent className="space-y-6 p-4 md:p-6">
-          <ImportarPartidosHeader
-            canImport={canCrearPartidos}
-            importing={importing}
-            selectedPhase={selectedPhase}
-            onPhaseChange={setSelectedPhase}
-            onImport={() => void handleImport()}
-          />
-          <PartidosImportacionApi result={result} />
-        </CardContent>
-      </Card>
-    </div>
+    <FixtureImportOverview
+      canImport={canCrearPartidos}
+      importing={importing}
+      selectedPhase={selectedPhase}
+      result={result}
+      onPhaseChange={setSelectedPhase}
+      onImport={() => void handleImport()}
+    />
   );
 }

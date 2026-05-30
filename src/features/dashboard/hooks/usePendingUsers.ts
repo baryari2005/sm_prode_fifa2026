@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/axios";
 
-export function usePendingUsers(enabled = false, pollIntervalMs = 30000) {
+export function usePendingUsers(
+  enabled = false,
+  pollIntervalMs = 30000,
+  refreshToken?: unknown,
+) {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(enabled);
 
@@ -39,7 +43,7 @@ export function usePendingUsers(enabled = false, pollIntervalMs = 30000) {
       alive = false;
       window.clearInterval(intervalId);
     };
-  }, [enabled, pollIntervalMs]);
+  }, [enabled, pollIntervalMs, refreshToken]);
 
   return { count, loading };
 }

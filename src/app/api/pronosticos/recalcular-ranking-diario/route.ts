@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { prisma } from "@/lib/db";
 import { requireAuth, requirePermission } from "@/lib/server-auth";
-import { recalcularPronosticosFinalizadosEnRango } from "@/features/partidos/services/pronosticos.service";
+import { recalculateRanking } from "@/features/pronosticos/services/ranking-recalculation.service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -59,23 +58,25 @@ export async function POST(req: NextRequest) {
 
     const range = resolveDailyRange(req);
 
-    const result = await prisma.$transaction((tx) =>
-      recalcularPronosticosFinalizadosEnRango(tx, {
-        fechaDesde: range.fechaDesde,
-        fechaHasta: range.fechaHasta,
-        soloNoCalculados: range.onlyPending,
-      }),
-    );
+    const result = await recalculateRanking({
+      source: "cron",
+      fechaDesde: range.fechaDesde,
+      fechaHasta: range.fechaHasta,
+      soloNoCalculados: range.onlyPending,
+      force: !range.onlyPending,
+    });
 
     return NextResponse.json({
-      message: `Recalculo diario completado para ${range.label}. ${result.partidosProcesados} partidos, ${result.prediccionesProcesadas} predicciones y ${result.usuariosActualizados} usuarios actualizados.`,
+      message: `Recalculo diario completado para ${range.label}. ${result.totalPartidosConsiderados} partidos, ${result.totalPrediccionesProcesadas} predicciones y ${result.totalUsuariosRecalculados} usuarios actualizados.`,
       meta: {
         fechaDesde: range.fechaDesde?.toISOString() ?? null,
         fechaHasta: range.fechaHasta?.toISOString() ?? null,
         soloNoCalculados: range.onlyPending,
-        partidosProcesados: result.partidosProcesados,
-        prediccionesProcesadas: result.prediccionesProcesadas,
-        usuariosActualizados: result.usuariosActualizados,
+        partidosProcesados: result.totalPartidosConsiderados,
+        prediccionesProcesadas: result.totalPrediccionesProcesadas,
+        usuariosActualizados: result.totalUsuariosRecalculados,
+        source: result.source,
+        executedAt: result.executedAt,
       },
     });
   } catch (err: unknown) {
@@ -90,6 +91,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { message: "No tenes permisos para recalcular ranking." },
         { status: 403 },
+      );
+    }
+
+    if (
+      err instanceof Error &&
+      err.message === "RANKING_RECALCULATION_IN_PROGRESS"
+    ) {
+      return NextResponse.json(
+        { message: "Ya hay un recalculo de ranking en curso." },
+        { status: 409 },
       );
     }
 

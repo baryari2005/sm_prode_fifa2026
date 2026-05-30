@@ -4,16 +4,21 @@ import { useMemo, useState } from "react";
 
 import { useCan } from "@/hooks/useCan";
 import { GenericListWithTable } from "@/components/data-display/table/GenericListWithTable";
-import { GenericDataTable } from "@/components/data-display/table/GenericDataTable";
 
 import {
   getReglasCruceColumns,
   type ReglaCruceRow,
 } from "./columns";
+import { ReglasCrucesDataTable } from "./ReglasCrucesDataTable";
 
 interface Props {
   search?: string;
   refresh?: string | number | boolean | null | undefined;
+  onDataResolved?: (payload: {
+    items: ReglaCruceRow[];
+    total: number;
+    pageCount: number;
+  }) => void;
 }
 
 type PaginatedResponse<T> = {
@@ -25,7 +30,7 @@ type PaginatedResponse<T> = {
   };
 };
 
-export function ReglasCruceList({ search = "", refresh }: Props) {
+export function ReglasCruceList({ search = "", refresh, onDataResolved }: Props) {
   const [refreshVersion, setRefreshVersion] = useState(0);
 
   const endpoint = "/reglas-cruces";
@@ -76,8 +81,9 @@ export function ReglasCruceList({ search = "", refresh }: Props) {
           pageCount: typed.meta?.pageCount,
         };
       }}
+      onDataResolved={onDataResolved}
       DataTableComponent={(props) => (
-        <GenericDataTable
+        <ReglasCrucesDataTable
           {...props}
           searchPlaceholder="Buscar por partido, fase o estadio"
         />

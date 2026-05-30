@@ -1,10 +1,11 @@
 "use client";
 
-import { type UseFormReturn } from "react-hook-form";
-import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { type UseFormReturn } from "react-hook-form";
+import { Eye, EyeOff, Lock, User } from "lucide-react";
+
 import { IconInput } from "@/components/forms/IconInput";
+import { Input } from "@/components/ui/input";
 
 export type LoginFormValues = {
   userId: string;
@@ -37,7 +38,7 @@ export function LoginFields({ form }: Props) {
               autoComplete="username"
               {...register("userId")}
               aria-invalid={!!errors.userId}
-              className="h-11 rounded border pl-9 pr-3"
+              className="h-11 rounded border !pl-9 pr-5"
             />
           }
         />
@@ -53,7 +54,7 @@ export function LoginFields({ form }: Props) {
           rightAdornment={
             <button
               type="button"
-              onClick={() => setShow((s) => !s)}
+              onClick={() => setShow((current) => !current)}
               className="absolute inset-y-0 right-0 flex items-center pr-3"
               aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"}
             >
@@ -71,7 +72,7 @@ export function LoginFields({ form }: Props) {
               autoComplete="current-password"
               {...register("password")}
               aria-invalid={!!errors.password}
-              className="h-11 rounded border pl-9 pr-10"
+              className="h-11 rounded border !pl-9 pr-10"
             />
           }
         />

@@ -1,6 +1,7 @@
 import { DEFAULT_TEAM_STATS } from "@/features/partidos/types/fixture-details";
 
 import type {
+  MatchIncident,
   TeamLineup,
 } from "@/features/partidos/types/fixture-details";
 
@@ -38,4 +39,5 @@ export type PartidoDetalleViewModel = {
 
   lineupLocal: TeamLineup;
   lineupVisitante: TeamLineup;
+  incidencias?: MatchIncident[];
 };

@@ -33,11 +33,12 @@ export function SidebarNavIcon({
   onClick,
 }: Props) {
   const iconSize = collapsed ? 22 : 18;
+  const hasBadge = Boolean(badgeCount && badgeCount > 0);
 
   const content = (
     <div
       className={`
-        relative flex items-center w-full rounded-none
+        relative flex w-full items-center
         ${collapsed ? "justify-center" : "gap-3"}
       `}
     >
@@ -47,23 +48,24 @@ export function SidebarNavIcon({
       />
 
       {!collapsed && (
-        <span className="text-sm font-medium whitespace-nowrap">
+        <span className="whitespace-nowrap text-sm font-semibold">
           {title}
         </span>
       )}
 
-      {badgeCount && badgeCount > 0 && (
+      {hasBadge && (
         <span
           className={`
             absolute
-            ${collapsed ? "-top-1 -right-1" : "right-3"}
-            bg-red-600
-            text-white
+            ${collapsed ? "-right-1 -top-1" : "right-2.5"}
+            rounded-full
+            border border-[#FAB438]/18
+            bg-[#FAB438]/14
+            text-[#FFE4A3]
             text-[10px]
             px-1.5
             py-0.5
-            rounded-none
-            font-semibold
+            font-black
           `}
         >
           {badgeCount}
@@ -78,16 +80,14 @@ export function SidebarNavIcon({
       onClick={onClick}
       asChild={!!href}
       className={`
-        relative w-full text-white
-        transition-all duration-200
-        rounded-none
+        relative w-full rounded-xl text-white transition-all duration-200
         ${collapsed
-          ? "flex items-center justify-center h-12 px-0"
-          : "flex items-center justify-start px-3 h-11"}
-        ${active ? "bg-white/15" : ""}
+          ? "flex h-12 items-center justify-center px-0"
+          : "flex h-11 items-center justify-start px-3"}
+        ${active ? "bg-[#5993B6]/18 text-white shadow-[0_10px_22px_rgba(89,147,182,0.12)]" : "border border-transparent"}
         ${highlight
           ? "bg-red-500/20 hover:bg-red-500/30"
-          : "hover:bg-white/10 hover:text-[#FDBB30]"}
+          : "hover:bg-white/[0.06] hover:text-[#AEEBFF]"}
       `}
     >
       {href ? <Link href={href}>{content}</Link> : content}
@@ -102,7 +102,7 @@ export function SidebarNavIcon({
         <TooltipTrigger asChild>{button}</TooltipTrigger>
         <TooltipContent
           side="right"
-          className="bg-black text-white text-xs px-2 py-1 rounded-md shadow-md"
+          className="rounded-md border border-white/10 bg-[#061B33] px-2 py-1 text-xs text-white shadow-md"
         >
           {title}
         </TooltipContent>

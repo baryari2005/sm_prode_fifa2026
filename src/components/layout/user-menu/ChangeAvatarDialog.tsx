@@ -2,15 +2,23 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {  
-  ImagePlus,
+import {
   FileImage,
+  ImagePlus,
   RefreshCw,
   Save,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 
+import {
+  BrandDialogFrame,
+  BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME,
+  BRAND_DIALOG_CONTENT_CLASSNAME,
+  BRAND_DIALOG_FOOTER_CLASSNAME,
+  BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME,
+} from "@/components/ui/brand-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -19,20 +27,18 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import {
   DialogFormSection,
   DialogHero,
   DialogHighlightCard,
   DialogMutedNote,
-  DialogShell,
 } from "@/components/ui/dialog-shell";
 import { AvatarUploader } from "@/features/settings/components/AvatarUploader";
 import { useAvatarStaging } from "@/features/users/hooks/useAvatarStaging";
 import { pathFromPublicUrl } from "@/features/users/lib/utils";
+import { changeMyAvatar } from "@/lib/api/account";
 import { useAuth } from "@/stores/auth";
 import { formatMessage } from "@/utils/formatters";
-import { changeMyAvatar } from "@/lib/api/account";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
@@ -41,6 +47,14 @@ export function ChangeAvatarDialog({ open, onOpenChange }: Props) {
   const { tmpPath, setTmpPath, commit } = useAvatarStaging();
   const oldKey = pathFromPublicUrl(user?.avatarUrl);
   const [saving, setSaving] = useState(false);
+  const avatarFallback =
+    [user?.nombre, user?.apellido]
+      .filter(Boolean)
+      .map((value) => value?.trim().charAt(0).toUpperCase())
+      .join("")
+      .slice(0, 2) ||
+    user?.email?.slice(0, 2).toUpperCase() ||
+    "US";
 
   useEffect(() => {
     if (open) setTmpPath(null);
@@ -81,43 +95,55 @@ export function ChangeAvatarDialog({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-0 shadow-2xl">
+      <DialogContent className={BRAND_DIALOG_CONTENT_CLASSNAME}>
         <DialogTitle className="sr-only">Cambiar avatar</DialogTitle>
         <DialogDescription className="sr-only">
           Dialog para actualizar tu avatar de acceso.
         </DialogDescription>
 
-        <DialogShell>
+        <BrandDialogFrame>
           <DialogHero
-            icon={<FileImage className="h-6 w-6 text-white" />}
-            title="Cambiar avatar"
+            icon={<FileImage className="h-6 w-6 text-[#FAB438]" />}
+            title={
+              <span className="font-brand text-[1.85rem] leading-[0.94] tracking-[0.03em] text-white">
+                Cambiar avatar
+              </span>
+            }
             description="Actualizá tu imagen de perfil con una experiencia visual alineada al resto de acciones de cuenta."
+            className="border-b border-white/10 from-[#1E2C46] via-[#243754] to-[#10233B] px-6 py-6"
+            iconClassName="border border-white/10 bg-white/[0.08] ring-0 shadow-[0_12px_30px_rgba(2,6,23,0.28)]"
           />
 
           <DialogFormSection>
             <DialogHighlightCard
-              icon={<ImagePlus className="h-5 w-5 text-sky-600" />}
+              icon={<ImagePlus className="h-5 w-5 text-[#AEEBFF]" />}
               title="Subí una nueva imagen"
               description="Elegí un avatar claro y reconocible. El cambio se aplicará a tu perfil después de guardar."
+              className="border border-[#5993B6]/20 bg-[#5993B6]/10"
+              titleClassName="text-[#EAF8FF]"
+              descriptionClassName="text-white/74"
             />
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="rounded-[24px] border border-white/10 bg-white/[0.05] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
               <AvatarUploader
                 currentUrl={user?.avatarUrl}
-                onTempUploaded={({ tmpPath: nextTmpPath }) => setTmpPath(nextTmpPath)}
+                fallbackText={avatarFallback}
+                onTempUploaded={({ tmpPath: nextTmpPath }) =>
+                  setTmpPath(nextTmpPath)
+                }
               />
             </div>
 
-            <DialogMutedNote>
+            <DialogMutedNote className="border border-white/8 bg-white/[0.05]">
               Por seguridad, después de actualizar tu avatar vas a tener que
               iniciar sesión nuevamente.
             </DialogMutedNote>
           </DialogFormSection>
 
-          <DialogFooter className="gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:justify-end">
+          <DialogFooter className={BRAND_DIALOG_FOOTER_CLASSNAME}>
             <DialogClose asChild>
               <Button
-                className="h-11 rounded-xl border-slate-200 px-5 font-bold"
+                className={BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME}
                 variant="outline"
               >
                 <X className="mr-2 h-4 w-4" />
@@ -128,7 +154,7 @@ export function ChangeAvatarDialog({ open, onOpenChange }: Props) {
             <Button
               onClick={onSave}
               disabled={saving || !tmpPath}
-              className="h-11 rounded-xl bg-sky-600 px-5 font-black text-white shadow-lg shadow-sky-600/20 transition hover:bg-sky-700"
+              className={BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME}
             >
               {saving ? (
                 <span className="inline-flex items-center gap-2">
@@ -136,14 +162,14 @@ export function ChangeAvatarDialog({ open, onOpenChange }: Props) {
                   {formatMessage("Guardando...")}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-2">                  
+                <span className="inline-flex items-center gap-2">
                   <Save className="h-4 w-4" />
                   Guardar avatar
                 </span>
               )}
             </Button>
           </DialogFooter>
-        </DialogShell>
+        </BrandDialogFrame>
       </DialogContent>
     </Dialog>
   );

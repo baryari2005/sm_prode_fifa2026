@@ -217,18 +217,31 @@ export function PartidoCard({
               ) : null}
 
               {allowPronostico && canViewPartidoDetalle ? (
-                <Button // 
-                  asChild
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className={secondaryActionButtonClassName}
-                >
-                  <Link href={`/pronosticos/partidos/${partido.id}/detalle`}>
+                onVerDetalle ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onVerDetalle}
+                    className={secondaryActionButtonClassName}
+                  >
                     <Eye className="mr-1.5 h-3.5 w-3.5" />
-                    Ver detalle
-                  </Link>
-                </Button>
+                    Ver detalles
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className={secondaryActionButtonClassName}
+                  >
+                    <Link href={`/pronosticos/partidos/${partido.id}/detalle`}>
+                      <Eye className="mr-1.5 h-3.5 w-3.5" />
+                      Ver detalles
+                    </Link>
+                  </Button>
+                )
               ) : null}
 
               {allowPronostico && !tieneResultadoFinal ? (
@@ -275,12 +288,9 @@ export function PartidoCard({
                   variant="outline"
                   size="sm"
                   onClick={onCargarFormaciones}
-                  disabled={tieneResultadoEnJuego}
                   className={secondaryActionButtonClassName}
                 >
-                  {tieneResultadoEnJuego
-                    ? "Formaciones bloqueadas"
-                    : "Cargar Formaciones"}
+                  Cargar Formaciones
                 </Button>
               ) : null}
 
@@ -290,12 +300,9 @@ export function PartidoCard({
                   variant="outline"
                   size="sm"
                   onClick={onGestionarResultado}
-                  disabled={tieneResultadoEnJuego}
                   className={secondaryActionButtonClassName}
                 >
-                  {tieneResultadoEnJuego
-                    ? "Resultado bloqueado"
-                    : "Cargar Resultado"}
+                  Cargar Resultado
                 </Button>
               ) : null}
             </div>

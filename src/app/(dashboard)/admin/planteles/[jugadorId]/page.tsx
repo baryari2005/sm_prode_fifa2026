@@ -6,7 +6,7 @@ import { PencilLine } from "lucide-react";
 import { toast } from "sonner";
 
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
-import Loading from "@/app/(dashboard)/loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCan } from "@/hooks/useCan";
 import { axiosInstance } from "@/lib/axios";
@@ -61,7 +61,7 @@ export default function EditarJugadorPlantelPage() {
     void loadData();
   }, [canEditar, params.jugadorId, returnTo, router]);
 
-  if (loading) return <Loading />;
+  if (loading) return <DashboardLoading source="Admin planteles detalle" />;
   if (!canEditar) return <AccessDenied403Page />;
   if (!jugador) return null;
 

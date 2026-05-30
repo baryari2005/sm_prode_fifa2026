@@ -6,7 +6,8 @@ import {
 } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
-import { recalcularPronosticosDePartido, recomputarRankingUsuariosPorIds } from "@/features/partidos/services/pronosticos.service";
+import { recalcularPronosticosDePartido } from "@/features/partidos/services/pronosticos.service";
+import { recalculateRanking } from "@/features/pronosticos/services/ranking-recalculation.service";
 import type {
   ApiGoalCandidate,
   LiveActionResponse,
@@ -1328,15 +1329,9 @@ export async function recalculatePointsForMatch(partidoId: string) {
 }
 
 export async function recalculateRankingFromPredictions() {
-  const usuarios = await prisma.prediccionPartido.findMany({
-    select: { usuarioId: true },
-    distinct: ["usuarioId"],
+  return recalculateRanking({
+    source: "live-control",
+    force: true,
+    soloNoCalculados: false,
   });
-
-  return prisma.$transaction((tx) =>
-    recomputarRankingUsuariosPorIds(
-      tx,
-      usuarios.map((item) => item.usuarioId),
-    ),
-  );
 }

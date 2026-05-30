@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 
-import Loading from "@/app/(dashboard)/loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
 import { useCan } from "@/hooks/useCan";
 
@@ -33,7 +33,7 @@ export default function PronosticoPartidoDetallePage() {
   }
 
   if (loading) {
-    return <Loading />;
+    return <DashboardLoading source="Pronosticos detalle partido" />;
   }
 
   if (!detalle) {

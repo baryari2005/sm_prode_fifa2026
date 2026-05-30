@@ -2,6 +2,7 @@ import { EstadoPartido } from "@prisma/client";
 
 import type {
   GoalDetail,
+  MatchIncident,
   TeamLineup,
   TeamStats,
 } from "@/features/partidos/types/fixture-details";
@@ -20,6 +21,7 @@ export type ResultadoFormState = {
   alineacionVisitante: TeamLineup;
   detalleGolesLocal: GoalDetail[];
   detalleGolesVisitante: GoalDetail[];
+  incidencias: MatchIncident[];
 };
 
 export type ResultadoSide = "local" | "visitante";

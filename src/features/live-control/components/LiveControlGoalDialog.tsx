@@ -1,21 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { Save, ShieldCheck, TimerReset, X } from "lucide-react";
 
+import {
+  BrandDialogFrame,
+  BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME,
+  BRAND_DIALOG_CONTENT_CLASSNAME,
+  BRAND_DIALOG_FOOTER_CLASSNAME,
+  BRAND_DIALOG_LABEL_CLASSNAME,
+  BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME,
+} from "@/components/ui/brand-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DialogFormSection,
+  DialogHero,
+  DialogHighlightCard,
+  DialogMutedNote,
+} from "@/components/ui/dialog-shell";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  LIVE_CONTROL_TEXTAREA_CLASSNAME,
+} from "@/features/live-control/components/LiveControlSurface";
 
 type Props = {
   partidoId: string;
@@ -69,56 +86,116 @@ export function LiveControlGoalDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" size="sm" className="rounded-full">
+        <Button type="button" size="sm" className="rounded-2xl">
           {triggerLabel}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Cargar gol manual</DialogTitle>
-          <DialogDescription>
-            El evento queda protegido como manual y entra en la reconciliación del próximo sync.
-          </DialogDescription>
-        </DialogHeader>
 
-        <div className="grid gap-4 py-2">
-          <div className="grid gap-2">
-            <Label>Equipo</Label>
-            <Select value={team} onValueChange={(value) => setTeam(value as "LOCAL" | "VISITANTE")}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="LOCAL">Local</SelectItem>
-                <SelectItem value="VISITANTE">Visitante</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      <DialogContent className={BRAND_DIALOG_CONTENT_CLASSNAME}>
+        <DialogTitle className="sr-only">Cargar gol manual</DialogTitle>
+        <DialogDescription className="sr-only">
+          Dialog para registrar un gol manual sobre el partido seleccionado.
+        </DialogDescription>
 
-          <div className="grid gap-2">
-            <Label>Minuto</Label>
-            <Input value={minute} onChange={(event) => setMinute(event.target.value)} inputMode="numeric" />
-          </div>
+        <BrandDialogFrame>
+          <DialogHero
+            icon={<ShieldCheck className="h-6 w-6 text-[#FAB438]" />}
+            title={
+              <span className="font-brand text-[1.85rem] leading-[0.94] tracking-[0.03em] text-white">
+                Cargar gol manual
+              </span>
+            }
+            description="El evento queda protegido como manual y entra en la reconciliacion del proximo sync."
+            className="border-b border-white/10 from-[#1E2C46] via-[#243754] to-[#10233B] px-6 py-6"
+            iconClassName="border border-white/10 bg-white/[0.08] ring-0 shadow-[0_12px_30px_rgba(2,6,23,0.28)]"
+          />
 
-          <div className="grid gap-2">
-            <Label>Jugador ID opcional</Label>
-            <Input value={playerId} onChange={(event) => setPlayerId(event.target.value)} />
-          </div>
+          <DialogFormSection>
+            <DialogHighlightCard
+              icon={<TimerReset className="h-5 w-5 text-[#FFE4A3]" />}
+              title="Carga protegida"
+              description="Mantene minuto, equipo y observacion consistentes para que la reconciliacion posterior no pierda contexto."
+              className="border border-[#FAB438]/22 bg-[#FAB438]/10"
+              titleClassName="text-[#FFF2C8]"
+              descriptionClassName="text-white/74"
+            />
 
-          <div className="grid gap-2">
-            <Label>Observación</Label>
-            <Textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={3} />
-          </div>
-        </div>
+            <div className="grid gap-4 py-1">
+              <div className="grid gap-2">
+                <Label className={BRAND_DIALOG_LABEL_CLASSNAME}>Equipo</Label>
+                <Select
+                  value={team}
+                  onValueChange={(value) =>
+                    setTeam(value as "LOCAL" | "VISITANTE")
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LOCAL">Local</SelectItem>
+                    <SelectItem value="VISITANTE">Visitante</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-            Cancelar
-          </Button>
-          <Button type="button" onClick={() => void handleSubmit()} disabled={saving}>
-            {saving ? "Guardando..." : "Guardar gol"}
-          </Button>
-        </DialogFooter>
+              <div className="grid gap-2">
+                <Label className={BRAND_DIALOG_LABEL_CLASSNAME}>Minuto</Label>
+                <Input
+                  value={minute}
+                  onChange={(event) => setMinute(event.target.value)}
+                  inputMode="numeric"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label className={BRAND_DIALOG_LABEL_CLASSNAME}>
+                  Jugador ID opcional
+                </Label>
+                <Input
+                  value={playerId}
+                  onChange={(event) => setPlayerId(event.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label className={BRAND_DIALOG_LABEL_CLASSNAME}>Observacion</Label>
+                <Textarea
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  rows={3}
+                  className={LIVE_CONTROL_TEXTAREA_CLASSNAME}
+                />
+              </div>
+            </div>
+
+            <DialogMutedNote className="border border-white/8 bg-white/[0.05]">
+              La carga manual conserva el mismo payload y el mismo handler que
+              ya usa el panel.
+            </DialogMutedNote>
+          </DialogFormSection>
+
+          <DialogFooter className={BRAND_DIALOG_FOOTER_CLASSNAME}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              className={BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME}
+            >
+              <X className="h-4 w-4" />
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={() => void handleSubmit()}
+              disabled={saving}
+              className={BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME}
+            >
+              <Save className="h-4 w-4" />
+              {saving ? "Guardando..." : "Guardar gol"}
+            </Button>
+          </DialogFooter>
+        </BrandDialogFrame>
       </DialogContent>
     </Dialog>
   );

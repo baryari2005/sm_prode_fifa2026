@@ -2,6 +2,12 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  DASHBOARD_TOP_LINE,
+  DASHBOARD_TOP_LINE_GLOW,
+  DASHBOARD_TOP_LINE_HAIR,
+  DASHBOARD_TOP_LINE_SWEEP,
+} from "@/features/dashboard/components/home/dashboard-home.styles";
 import type { RankingRowDTO } from "@/features/pronosticos/services/ranking.service";
 
 type Props = {
@@ -20,9 +26,9 @@ export function MyRankingSummary({ data }: Props) {
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
       <SummaryCard
-        title="Mi posición"
+        title="Mi posicion"
         value={resumen.posicion ? `#${resumen.posicion}` : "-"}
         detail="ranking general"
         tone="gold"
@@ -31,7 +37,7 @@ export function MyRankingSummary({ data }: Props) {
         title="Puntos totales"
         value={`${resumen.puntosTotales}`}
         detail="acumulados"
-        tone="green"
+        tone="sky"
       />
       <SummaryCard
         title="Exactos"
@@ -43,7 +49,7 @@ export function MyRankingSummary({ data }: Props) {
         title="Tendencias"
         value={`${resumen.aciertosTendencia}`}
         detail={`${resumen.partidosCalificados}/${resumen.partidosPronosticados} calificados`}
-        tone="purple"
+        tone="cyan"
       />
     </div>
   );
@@ -58,23 +64,34 @@ function SummaryCard({
   title: string;
   value: string;
   detail: string;
-  tone: "green" | "gold" | "blue" | "purple";
+  tone: "sky" | "gold" | "blue" | "cyan";
 }) {
   const badgeStyles = {
-    green: "bg-[#EEF6EF] text-[#39A935]",
-    gold: "bg-[#FFF7E1] text-[#B77900]",
-    blue: "bg-[#EFF6FF] text-[#2563EB]",
-    purple: "bg-[#F3E8FF] text-[#7C3AED]",
+    sky: "border-sky-100/18 bg-sky-200/10 text-sky-100",
+    gold: "border-yellow-300/20 bg-yellow-300/10 text-yellow-200",
+    blue: "border-blue-200/18 bg-blue-300/10 text-blue-100",
+    cyan: "border-cyan-200/18 bg-cyan-300/10 text-cyan-100",
   };
 
   return (
-    <Card className="border-[#E5EAF0] bg-white shadow-[0_14px_35px_rgba(15,23,42,0.08)]">
-      <CardContent className="space-y-3 p-5">
-        <Badge className={`rounded-full px-3 py-1 text-xs font-black hover:bg-transparent ${badgeStyles[tone]}`}>
+    <Card className="group relative overflow-hidden rounded-[24px] border-white/10 bg-[#1E2C46] py-0 text-white shadow-[0_18px_48px_rgba(2,6,23,0.18)]">
+      <div className={`${DASHBOARD_TOP_LINE} rounded-t-[24px]`}>
+        <div className="h-full w-full bg-gradient-to-r from-[#5993B6] via-[#5993B6] to-[#FAB438] transition-all duration-300 group-hover:brightness-125" />
+        <div className={DASHBOARD_TOP_LINE_SWEEP} />
+        <div className={DASHBOARD_TOP_LINE_GLOW} />
+        <div className={DASHBOARD_TOP_LINE_HAIR} />
+      </div>
+
+      <CardContent className="relative z-10 space-y-2.5 p-4 pt-5">
+        <Badge
+          className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.16em] hover:bg-transparent ${badgeStyles[tone]}`}
+        >
           {title}
         </Badge>
-        <p className="text-3xl font-black tracking-tight text-[#172033]">{value}</p>
-        <p className="text-sm font-semibold text-[#9CA3AF]">{detail}</p>
+        <p className="text-[2.05rem] font-black leading-none tracking-tight text-white md:text-[2.2rem]">
+          {value}
+        </p>
+        <p className="text-xs font-semibold leading-5 text-white/58">{detail}</p>
       </CardContent>
     </Card>
   );

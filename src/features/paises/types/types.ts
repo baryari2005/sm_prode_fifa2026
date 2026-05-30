@@ -6,6 +6,7 @@ export type Pais = {
   bandera?: string; // emoji de bandera
   grupo?: string; // ej: "A", "B", "C"
   confederacion?: string; // ej: "CONMEBOL", "UEFA", "CAF"
+  puntos?: number;
   activo: boolean;
   createdAt: Date;
   updatedAt: Date;

@@ -26,9 +26,15 @@ export const registerSchema = z.object({
   cuil: z.string().min(11, "Ingrese un CUIL válido"),
   celular: z.string().min(8, "Ingrese un celular válido"),
   domicilio: z.string().min(1, "Ingrese su domicilio"),
-  localidad: z.enum(LOCALIDAD_OPCIONES, {
-    message: "Seleccione una localidad",
-  }),
+  localidad: z
+    .string()
+    .min(1, "Seleccione un partido")
+    .refine((value) => LOCALIDAD_OPCIONES.includes(value as (typeof LOCALIDAD_OPCIONES)[number]), {
+      message: "Seleccione un partido valido",
+    })
+    .refine((value) => value !== "No Aplica", {
+      message: "Seleccione un partido",
+    }),
   codigoPostal: z.string().min(1, "Ingrese el código postal"),
   fechaNacimiento: z
     .string()

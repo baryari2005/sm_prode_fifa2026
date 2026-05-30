@@ -22,24 +22,26 @@ export default async function AyudaUsuarioPage() {
         title={USER_HELP_INTRO.title}
         description={USER_HELP_INTRO.description}
         icon={CircleHelp}
+        variant="dark"
+        topAccentVariant="help"
       />
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <Badge className="h-auto w-full min-w-0 items-start justify-start gap-2 whitespace-normal rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-left text-sm font-semibold leading-5 text-emerald-800">
+        <Badge className="h-auto w-full min-w-0 items-start justify-start gap-2 whitespace-normal rounded-2xl border border-[#5993B6]/24 bg-[#1E2C46] px-4 py-3 text-left text-sm font-semibold leading-5 text-white shadow-[0_14px_34px_rgba(2,6,23,0.16)] hover:bg-[#1E2C46]">
           <Target className="mt-0.5 h-4 w-4 shrink-0" />
           <span className="min-w-0 break-words">
             Cargá tus pronósticos antes del cierre.
           </span>
         </Badge>
 
-        <Badge className="h-auto w-full min-w-0 items-start justify-start gap-2 whitespace-normal rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-left text-sm font-semibold leading-5 text-sky-800">
+        <Badge className="h-auto w-full min-w-0 items-start justify-start gap-2 whitespace-normal rounded-2xl border border-[#5993B6]/24 bg-[#1E2C46] px-4 py-3 text-left text-sm font-semibold leading-5 text-white shadow-[0_14px_34px_rgba(2,6,23,0.16)] hover:bg-[#1E2C46]">
           <Medal className="mt-0.5 h-4 w-4 shrink-0" />
           <span className="min-w-0 break-words">
             El ranking se actualiza con resultados oficiales.
           </span>
         </Badge>
 
-        <Badge className="h-auto w-full min-w-0 items-start justify-start gap-2 whitespace-normal rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-left text-sm font-semibold leading-5 text-amber-800 sm:col-span-2 xl:col-span-1">
+        <Badge className="h-auto w-full min-w-0 items-start justify-start gap-2 whitespace-normal rounded-2xl border border-[#FAB438]/24 bg-[#FAB438]/10 px-4 py-3 text-left text-sm font-semibold leading-5 text-[#FFE4A3] shadow-[0_14px_34px_rgba(2,6,23,0.16)] hover:bg-[#FAB438]/10 sm:col-span-2 xl:col-span-1">
           <Trophy className="mt-0.5 h-4 w-4 shrink-0" />
           <span className="min-w-0 break-words">
             El objetivo es sumar puntos y subir posiciones.
@@ -49,7 +51,12 @@ export default async function AyudaUsuarioPage() {
 
       <section className="grid items-start gap-5 xl:grid-cols-2">
         {sections.map((section) => (
-          <HelpSectionCard key={section.title} section={section} />
+          <HelpSectionCard
+            key={section.title}
+            section={section}
+            variant="dark"
+            topAccentVariant="help"
+          />
         ))}
       </section>
 
@@ -57,6 +64,8 @@ export default async function AyudaUsuarioPage() {
         title="Preguntas frecuentes"
         description="Respuestas rápidas a las dudas más comunes de los participantes."
         items={USER_HELP_FAQS}
+        variant="dark"
+        topAccentVariant="help"
       />
     </div>
   );

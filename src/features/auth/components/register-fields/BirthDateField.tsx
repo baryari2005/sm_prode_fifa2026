@@ -12,12 +12,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
 import { RegisterFieldsSectionProps } from "../../types/registerFields.types";
 import { fromYmdLocal, toYmdLocal } from "../helpers/registerFields.helpers";
 
-
 export function BirthDateField({ form }: RegisterFieldsSectionProps) {
-  const { control } = form;
+  const {
+    control,
+    formState: { errors },
+  } = form;
 
   return (
     <div className="min-w-0 space-y-1">
@@ -37,7 +40,11 @@ export function BirthDateField({ form }: RegisterFieldsSectionProps) {
                 <Button
                   variant="outline"
                   type="button"
-                  className="h-11 w-full min-w-0 justify-start rounded-2xl border-white/22 bg-white/10 px-3 text-left text-white"
+                  className={`h-11 w-full min-w-0 justify-start rounded-2xl bg-white/10 px-3 text-left text-white ${
+                    errors.fechaNacimiento
+                      ? "border-destructive ring-destructive/20"
+                      : "border-white/22"
+                  }`}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-white/55" />
 
@@ -65,6 +72,11 @@ export function BirthDateField({ form }: RegisterFieldsSectionProps) {
           );
         }}
       />
+      {errors.fechaNacimiento?.message ? (
+        <p className="text-xs font-semibold text-red-300">
+          {errors.fechaNacimiento.message}
+        </p>
+      ) : null}
     </div>
   );
 }

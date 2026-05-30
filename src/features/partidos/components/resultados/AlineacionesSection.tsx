@@ -64,10 +64,10 @@ export function AlineacionesSection({
   return (
     <SectionCard
       title="Alineaciones de los equipos"
-      description="Define formaciones, titulares, suplentes y eventos individuales para cada selección."
+      description="Definí formaciones, titulares, suplentes y eventos individuales para cada selección."
     >
       <div className="space-y-4">
-        <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-2 shadow-sm">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
           <div className="grid grid-cols-2 gap-2">
             <TeamTabButton
               label={localNombre}
@@ -117,8 +117,8 @@ function TeamTabButton({
       onClick={onClick}
       className={`flex h-10 min-w-0 items-center justify-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${
         active
-          ? "bg-[#008C93] text-white shadow-sm"
-          : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+          ? "bg-[#5993B6] text-white shadow-sm"
+          : "bg-white/[0.05] text-white/68 hover:bg-white/[0.1] hover:text-white"
       }`}
     >
       {flagUrl ? (
@@ -128,7 +128,7 @@ function TeamTabButton({
           width={36}
           height={24}
           unoptimized
-          className="h-6 w-9 shrink-0 object-cover shadow-sm"
+          className="h-6 w-9 shrink-0 object-cover drop-shadow-[0_8px_16px_rgba(2,8,23,0.32)]"
         />
       ) : null}
 

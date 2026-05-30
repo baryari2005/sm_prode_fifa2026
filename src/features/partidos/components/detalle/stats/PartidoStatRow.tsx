@@ -29,7 +29,7 @@ export function PartidoStatRow({
   });
 
   return (
-    <div className="grid grid-cols-[72px_1fr_72px] items-center gap-3  px-4 py-2 shadow-sm shadow-slate-200/30 transition hover:border-slate-300 md:grid-cols-[96px_1fr_96px]">
+    <div className="grid grid-cols-[72px_1fr_72px] items-center gap-3 rounded-[20px] border border-white/8 bg-[#0E1D30]/72 px-4 py-3 transition hover:border-[#5993B6]/24 md:grid-cols-[96px_1fr_96px]">
       <TeamStatBadge
         value={localValue}
         unit={unit}
@@ -37,7 +37,7 @@ export function PartidoStatRow({
         side="local"
       />
 
-      <div className="text-center text-base font-medium text-slate-950 md:text-lg">
+      <div className="text-center text-sm font-semibold uppercase tracking-[0.14em] text-white/74 md:text-[0.95rem]">
         {label}
       </div>
 

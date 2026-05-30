@@ -42,15 +42,15 @@ export function PartidoScoreboard({
       />
 
       <div className="flex items-center justify-center">
-        <div className="flex min-w-[112px] flex-col items-center justify-center rounded-2xl border border-[#008C93]/15 bg-gradient-to-b from-[#E8FBFC] via-white to-[#F7FAFC] px-4 py-3 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-          <span className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-[#008C93]/70">
+        <div className="flex min-w-[168px] flex-col items-center justify-center rounded-[28px] border border-white/10 bg-[#081523] px-5 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+          <span className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-white/48">
             {etiquetaSuperior}
           </span>
-          <p className="text-3xl font-black leading-none tracking-[-0.04em] text-slate-950 md:text-[2.15rem]">
+          <p className="font-brand text-[2.55rem] leading-none tracking-[0.05em] text-white md:text-[2.85rem]">
             {marcador}
           </p>
           {etiquetaInferior ? (
-            <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
+            <span className="mt-2 inline-flex rounded-full border border-[#5993B6]/18 bg-[#5993B6]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#AEEBFF]">
               {etiquetaInferior}
             </span>
           ) : null}

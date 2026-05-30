@@ -2,18 +2,20 @@
 "use client";
 
 import { useRef, useState, type DragEvent } from "react";
-import { Button } from "@/components/ui/button";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { getAxiosMessage } from "@/lib/errors/getAxiosErrorMessage";
+import { toast } from "sonner";
 
 type Props = {
   currentUrl?: string | null;
   onTempUploaded: (p: { tmpPath: string; publicUrl: string }) => void;
-  maxKB?: number;   // 200
-  minSize?: number; // 128
-  maxSide?: number; // 512
+  maxKB?: number;
+  minSize?: number;
+  maxSide?: number;
   disabled?: boolean;
+  fallbackText?: string;
 };
 
 type CompressOpts = {
@@ -42,7 +44,7 @@ async function loadImage(src: string): Promise<HTMLImageElement> {
 
 async function compressToJpeg(
   img: HTMLImageElement,
-  { maxSide, maxBytes, minQuality = 0.6, step = 0.05 }: CompressOpts
+  { maxSide, maxBytes, minQuality = 0.6, step = 0.05 }: CompressOpts,
 ): Promise<Blob> {
   const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
   const w = Math.max(1, Math.round(img.width * scale));
@@ -58,14 +60,14 @@ async function compressToJpeg(
   let blob: Blob | null = null;
   while (q >= (minQuality ?? 0.6)) {
     blob = await new Promise<Blob | null>((ok) =>
-      canvas.toBlob((b) => ok(b), "image/jpeg", q)
+      canvas.toBlob((b) => ok(b), "image/jpeg", q),
     );
     if (blob && blob.size <= maxBytes) break;
     q -= step ?? 0.05;
   }
   if (!blob) {
     blob = await new Promise<Blob | null>((ok) =>
-      canvas.toBlob((b) => ok(b), "image/jpeg", minQuality ?? 0.6)
+      canvas.toBlob((b) => ok(b), "image/jpeg", minQuality ?? 0.6),
     );
   }
   return blob!;
@@ -77,6 +79,7 @@ export function AvatarUploader({
   maxKB = 200,
   minSize = 128,
   maxSide = 512,
+  fallbackText = "US",
 }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | undefined>(currentUrl ?? undefined);
@@ -101,13 +104,19 @@ export function AvatarUploader({
         return;
       }
 
-      const blob = await compressToJpeg(img, { maxSide, maxBytes: maxKB * 1024 });
+      const blob = await compressToJpeg(img, {
+        maxSide,
+        maxBytes: maxKB * 1024,
+      });
       const uploadFile = new File([blob], "avatar.jpg", { type: "image/jpeg" });
 
       const fd = new FormData();
       fd.append("file", uploadFile);
 
-      const resp = await fetch("/api/media/avatars/upload", { method: "POST", body: fd });
+      const resp = await fetch("/api/media/avatars/upload", {
+        method: "POST",
+        body: fd,
+      });
       const json = await resp.json();
 
       if (!resp.ok) throw new Error(json.error || "Error al subir");
@@ -141,15 +150,17 @@ export function AvatarUploader({
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-3">
-        <Avatar className="h-12 w-12">
+    <div className="space-y-3">
+      <div className="flex items-center gap-4">
+        <Avatar className="h-16 w-16 border border-[#5993B6]/24 bg-[#10233B] shadow-[0_16px_36px_rgba(2,6,23,0.22)]">
           <AvatarImage src={preview} />
-          <AvatarFallback>?</AvatarFallback>
+          <AvatarFallback className="bg-[#10233B] text-sm font-black tracking-[0.16em] text-[#EAF8FF]">
+            {fallbackText}
+          </AvatarFallback>
         </Avatar>
 
         <div className="space-y-1">
-          <div className="text-sm text-muted-foreground">Cambiar avatar</div>
+          <div className="text-sm font-semibold text-white">Cambiar avatar</div>
           <div className="flex items-center gap-2">
             <input
               ref={inputRef}
@@ -158,26 +169,36 @@ export function AvatarUploader({
               className="hidden"
               onChange={(e) => handleFile(e.target.files?.[0])}
             />
-            <Button type="button" variant="secondary" className="h-11 rounded" onClick={pick} disabled={uploading}>
-              {uploading ? "Subiendo…" : "Seleccionar imagen"}
+            <Button
+              type="button"
+              variant="secondary"
+              className="h-11 rounded-2xl border border-[#5993B6]/24 bg-white/[0.08] px-4 text-white shadow-none hover:bg-white/[0.12]"
+              onClick={pick}
+              disabled={uploading}
+            >
+              {uploading ? "Subiendo..." : "Seleccionar imagen"}
             </Button>
           </div>
-          <div className="text-xs text-muted-foreground">JPG/PNG • máx. {maxKB}KB • mín. {minSize}×{minSize}px</div>
+          <div className="text-xs text-white/58">
+            JPG/PNG • máx. {maxKB}KB • mín. {minSize}×{minSize}px
+          </div>
         </div>
       </div>
 
       <div
-        className={`rounded-2xl border-2 border-dashed p-4 text-center transition cursor-pointer ${
-          dragActive ? "border-blue-500 bg-blue-50" : "border-slate-500 bg-background"
+        className={`cursor-pointer rounded-[24px] border-2 border-dashed p-4 text-center transition ${
+          dragActive
+            ? "border-[#5993B6] bg-[#5993B6]/12"
+            : "border-white/14 bg-[#091829]/72"
         }`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
       >
-        <p className="text-sm font-medium">
+        <p className="text-sm font-semibold text-white">
           Arrastrá y soltá una imagen aquí para cambiar tu avatar
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-white/58">
           También podés usar el botón de seleccionar imagen.
         </p>
       </div>

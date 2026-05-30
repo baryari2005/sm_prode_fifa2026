@@ -1,12 +1,15 @@
-import { ChartNoAxesColumnIcon, Info } from "lucide-react";
+import { CalendarClock, ChartNoAxesColumnIcon, Info, Radio, ShieldCheck, TimerReset } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { LiveRefreshBadge } from "@/components/live-refresh-badge";
-
-import { CardDescription, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 import type { PartidoDetalleHeaderProps } from "@/features/partidos/types/partido-detalle-header.types";
 import { buildPartidoInfo } from "@/features/partidos/helpers/partido-detalle-header.helpers";
 
+import {
+  PARTIDO_DETALLE_INNER_PANEL_CLASSNAME,
+  PARTIDO_DETALLE_SUBCARD_CLASSNAME,
+} from "./PartidoDetalleSurface";
 import { PartidoScoreboard } from "./PartidoScoreboard";
 
 export function PartidoDetalleHeader({
@@ -31,76 +34,156 @@ export function PartidoDetalleHeader({
     grupo,
     jornada,
   });
+  const resumenItems = [
+    {
+      label: "Estado del partido",
+      value: estado,
+      icon: Radio,
+      toneClassName: "bg-[#5993B6]/18 text-[#AEEBFF]",
+    },
+    {
+      label: "Fase / grupo",
+      value: [fase, grupo].filter(Boolean).join(" · ") || "Sin datos",
+      icon: ShieldCheck,
+      toneClassName: "bg-[#FAB438]/12 text-[#FFE4A3]",
+    },
+    {
+      label: "Fecha y hora",
+      value: fechaTexto ?? "Sin fecha",
+      icon: CalendarClock,
+      toneClassName: "bg-white/10 text-white",
+    },
+    {
+      label: "Marcador",
+      value: marcador,
+      icon: TimerReset,
+      toneClassName: "bg-emerald-400/14 text-emerald-200",
+    },
+  ];
 
   return (
-    <div className="border-b border-slate-100 pb-6">
-      <div className="space-y-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex min-w-0 items-start gap-3">
-            <div className="min-w-0 space-y-1">
-              <CardTitle className="flex items-center gap-2 text-xl md:text-2xl">
-                <ChartNoAxesColumnIcon className="h-6 w-6 shrink-0" />
-                Estadisticas del partido
-              </CardTitle>
+    <div className="border-b border-white/10 pb-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(300px,0.95fr)] xl:items-stretch">
+        <div className={cn(PARTIDO_DETALLE_SUBCARD_CLASSNAME, "space-y-6 rounded-[28px] bg-[#1A2942]/52 p-5 md:p-6")}>
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#FAB438]/28 bg-[#FAB438]/12 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-[#FFE4A3]">
+            Detalle del partido
+          </div>
 
-              <CardDescription className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-                <span>Alineaciones y estadisticas del partido.</span>
-                <Info className="h-4 w-4 text-slate-400" />
-                {autoRefreshEnabled ? (
-                  <LiveRefreshBadge
-                    isRefreshing={isRefreshing}
-                    nextRefreshIn={nextRefreshIn}
-                    lastRefreshAt={lastRefreshAt}
-                    shortText
-                    className="inline-flex max-w-full items-center rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700 hover:bg-sky-50"
-                  />
-                ) : null}
-              </CardDescription>
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge className="rounded-full border-[#5993B6]/18 bg-[#5993B6]/10 text-[#AEEBFF] hover:bg-[#5993B6]/10">
+                Kicker
+              </Badge>
+              <Badge className="rounded-full border-white/10 bg-white/[0.06] text-white/74 hover:bg-white/[0.06]">
+                {competencia}
+              </Badge>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#AEEBFF]">
+                Detalle del partido
+              </p>
+              <h1 className="flex items-center gap-3 text-[2.1rem] font-bold leading-[0.98] tracking-[-0.05em] text-white md:text-[2.45rem]">
+                <ChartNoAxesColumnIcon className="h-7 w-7 shrink-0 text-[#FAB438]" />
+                Alineaciones y estadisticas
+              </h1>
+              <p className="max-w-3xl text-sm leading-6 text-white/78 md:text-[0.95rem]">
+                Consulta el estado del encuentro, las estadisticas del partido y
+                la informacion de los planteles.
+              </p>
             </div>
           </div>
 
-          <Badge className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 hover:bg-slate-100">
-            {estado}
-          </Badge>
-        </div>
-
-        <div className="group relative overflow-hidden rounded-[1.9rem] border border-slate-200/90 bg-gradient-to-br from-white via-white to-slate-50 shadow-[0_20px_55px_rgba(15,23,42,0.09)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#008C93]/35 hover:shadow-[0_26px_60px_rgba(15,23,42,0.14)]">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#008C93] via-[#00A6B2] to-[#7DD3FC]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,140,147,0.08),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(125,211,252,0.08),transparent_30%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-
-          <div className="relative p-4 md:p-6">
-            <div className="mb-4 flex items-center justify-between gap-3 text-sm">
-              <div className="min-w-0 flex-1">
-                <span className="font-medium text-slate-800">
-                  {competencia}
-                </span>
-
-                {fechaTexto && (
-                  <span className="ml-2 text-slate-500">{fechaTexto}</span>
-                )}
-              </div>
-
-              {/* <span className="shrink-0 text-sm font-medium text-slate-700">
-                {estado}
-              </span> */}
-            </div>
-
-            <PartidoScoreboard
-              local={local}
-              visitante={visitante}
-              marcador={marcador}
-              escudoLocalUrl={escudoLocalUrl}
-              escudoVisitanteUrl={escudoVisitanteUrl}
-              estado={estado}
-            />
-
-            {partidoInfo && (
-              <div className="mt-4 text-center text-sm text-slate-500">
-                {partidoInfo}
-              </div>
-            )}
+          <div className="flex flex-wrap items-center gap-2 text-sm text-white/68">
+            <span className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-2">
+              <Info className="h-4 w-4 text-[#AEEBFF]" />
+              Alineaciones y estadisticas del partido.
+            </span>
+            {autoRefreshEnabled ? (
+              <LiveRefreshBadge
+                isRefreshing={isRefreshing}
+                nextRefreshIn={nextRefreshIn}
+                lastRefreshAt={lastRefreshAt}
+                shortText
+                className="inline-flex max-w-full items-center rounded-2xl border border-[#5993B6]/18 bg-[#5993B6]/10 px-3 py-2 text-xs font-semibold text-[#AEEBFF] hover:bg-[#5993B6]/10"
+              />
+            ) : null}
           </div>
         </div>
+
+        <aside className={cn(PARTIDO_DETALLE_SUBCARD_CLASSNAME, "space-y-3 rounded-[28px] bg-[#132238]/62 p-4 md:p-5")}>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#AEEBFF]">
+                Resumen lateral
+              </p>
+              <p className="mt-1 text-sm text-white/68">
+                Lectura rapida del partido.
+              </p>
+            </div>
+            <Badge className="rounded-full border-[#5993B6]/18 bg-[#5993B6]/10 text-[#AEEBFF] hover:bg-[#5993B6]/10">
+              {estado}
+            </Badge>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+            {resumenItems.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <div
+                  key={item.label}
+                  className={cn(PARTIDO_DETALLE_SUBCARD_CLASSNAME, "flex items-start gap-3 p-3.5")}
+                >
+                  <span
+                    className={cn(
+                      "grid h-11 w-11 shrink-0 place-items-center rounded-2xl",
+                      item.toneClassName,
+                    )}
+                  >
+                    <Icon className="h-4.5 w-4.5" />
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[12px] font-black uppercase tracking-[0.16em] text-white/58">
+                      {item.label}
+                    </span>
+                    <span className="mt-1 block text-sm font-semibold leading-5 text-white">
+                      {item.value}
+                    </span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </aside>
+      </div>
+
+      <div className={cn(PARTIDO_DETALLE_INNER_PANEL_CLASSNAME, "mt-5 p-4 md:p-6")}>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm">
+          <div className="min-w-0 flex-1">
+            <span className="font-semibold text-white">{competencia}</span>
+
+            {fechaTexto ? (
+              <span className="ml-2 text-white/58">{fechaTexto}</span>
+            ) : null}
+          </div>
+
+          {partidoInfo ? (
+            <span className="inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-white/74">
+              {partidoInfo}
+            </span>
+          ) : null}
+        </div>
+
+        <PartidoScoreboard
+          local={local}
+          visitante={visitante}
+          marcador={marcador}
+          escudoLocalUrl={escudoLocalUrl}
+          escudoVisitanteUrl={escudoVisitanteUrl}
+          estado={estado}
+        />
       </div>
     </div>
   );

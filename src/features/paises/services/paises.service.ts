@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import type { Prisma, Seleccion as PrismaSeleccion } from "@prisma/client";
 import type { PaisCreateInput, PaisUpdateInput, Pais } from "../types/types";
+import { getConfederacionSeleccion } from "../lib/confederaciones";
 import { getNombreSeleccionEnEspanol } from "../lib/selecciones-es";
 
 const SORT_FIELDS = [
@@ -257,6 +258,78 @@ export async function actualizarNombresPaisesAEspanol() {
     total: selecciones.length,
     actualizadas,
     sinCambios: selecciones.length - actualizadas,
+    resultados,
+  };
+}
+
+export async function completarConfederacionesPaises() {
+  const selecciones = await prisma.seleccion.findMany({
+    orderBy: { nombre: "asc" },
+  });
+
+  let actualizadas = 0;
+  let sinCambios = 0;
+  let sinMapeo = 0;
+
+  const resultados: Array<{
+    id: string;
+    codigo: string;
+    nombre: string;
+    confederacionAnterior: string | null;
+    confederacionNueva: string | null;
+    estado: "actualizada" | "sin_cambios" | "sin_mapeo";
+  }> = [];
+
+  for (const seleccion of selecciones) {
+    const confederacionNueva = getConfederacionSeleccion(seleccion.codigo);
+
+    if (!confederacionNueva) {
+      sinMapeo += 1;
+      resultados.push({
+        id: seleccion.id,
+        codigo: seleccion.codigo,
+        nombre: seleccion.nombre,
+        confederacionAnterior: seleccion.confederacion,
+        confederacionNueva: null,
+        estado: "sin_mapeo",
+      });
+      continue;
+    }
+
+    if (seleccion.confederacion === confederacionNueva) {
+      sinCambios += 1;
+      resultados.push({
+        id: seleccion.id,
+        codigo: seleccion.codigo,
+        nombre: seleccion.nombre,
+        confederacionAnterior: seleccion.confederacion,
+        confederacionNueva,
+        estado: "sin_cambios",
+      });
+      continue;
+    }
+
+    await prisma.seleccion.update({
+      where: { id: seleccion.id },
+      data: { confederacion: confederacionNueva },
+    });
+
+    actualizadas += 1;
+    resultados.push({
+      id: seleccion.id,
+      codigo: seleccion.codigo,
+      nombre: seleccion.nombre,
+      confederacionAnterior: seleccion.confederacion,
+      confederacionNueva,
+      estado: "actualizada",
+    });
+  }
+
+  return {
+    total: selecciones.length,
+    actualizadas,
+    sinCambios,
+    sinMapeo,
     resultados,
   };
 }

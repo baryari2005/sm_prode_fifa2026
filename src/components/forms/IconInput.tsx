@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 
-export function IconInput({  
+export function IconInput({
   leftIcon,
   rightAdornment,
   input,
@@ -14,10 +14,12 @@ export function IconInput({
 }) {
   return (
     <div className="relative">
-      <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+      <span className="pointer-events-none absolute inset-y-0 left-0 z-10 flex w-11 items-center justify-center">
         {leftIcon}
       </span>
+
       {input}
+
       {rightAdornment}
     </div>
   );

@@ -3,14 +3,12 @@
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import Loading from "@/app/(dashboard)/loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
 import { useCan } from "@/hooks/useCan";
 
 import { usePartidoDetallePage } from "@/features/partidos/hooks/usePartidoDetallePage";
-import { PartidoDetalleHeader } from "@/features/partidos/components/detalle/PartidoDetalleHeader";
-import { PartidoDetalleTabs } from "@/features/partidos/components/detalle/PartidoDetalleTabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { PartidoDetalleDashboardView } from "@/features/partidos/components/dashboard/PartidoDetalleDashboardView";
 import { useLiveAutoRefresh } from "@/hooks/useLiveAutoRefresh";
 
 export default function PartidoDetallePage() {
@@ -51,7 +49,7 @@ export default function PartidoDetallePage() {
   }
 
   if (loading) {
-    return <Loading />;
+    return <DashboardLoading badgeLabel="Landing detalle partido" />;
   }
 
   if (!detalle) {
@@ -59,39 +57,13 @@ export default function PartidoDetallePage() {
   }
 
   return (
-    <Card className="border-white/70 bg-white shadow-sm">
-      <CardContent className="space-y-6 p-4 md:p-6">
-        <PartidoDetalleHeader
-          partidoId={detalle.partidoId}
-          local={detalle.local.nombre}
-          visitante={detalle.visitante.nombre}
-          marcador={detalle.marcador}
-          seleccionLocalId={detalle.local.id}
-          seleccionVisitanteId={detalle.visitante.id}
-          escudoLocalUrl={detalle.local.escudoUrl}
-          escudoVisitanteUrl={detalle.visitante.escudoUrl}
-          competencia={detalle.competencia}
-          fechaTexto={detalle.fechaTexto}
-          estado={detalle.estado}
-          fase={detalle.fase}
-          grupo={detalle.grupo}
-          jornada={detalle.jornada}
-          autoRefreshEnabled={autoRefreshEnabled}
-          nextRefreshIn={nextRefreshIn}
-          isRefreshing={isRefreshing || refreshing}
-          lastRefreshAt={lastRefreshAt}
-          onBack={() => router.push("/admin/partidos")}
-        />
-
-        <PartidoDetalleTabs
-          local={detalle.local}
-          visitante={detalle.visitante}
-          statsLocal={detalle.statsLocal}
-          statsVisitante={detalle.statsVisitante}
-          lineupLocal={detalle.lineupLocal}
-          lineupVisitante={detalle.lineupVisitante}
-        />
-      </CardContent>
-    </Card>
+    <PartidoDetalleDashboardView
+      detalle={detalle}
+      autoRefreshEnabled={autoRefreshEnabled}
+      nextRefreshIn={nextRefreshIn}
+      isRefreshing={isRefreshing || refreshing}
+      lastRefreshAt={lastRefreshAt}
+      onBack={() => router.push("/admin/partidos")}
+    />
   );
 }

@@ -1,18 +1,11 @@
 "use client";
 
-import { RefreshCw } from "lucide-react";
-
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
-import Loading from "@/app/(dashboard)/loading";
-
-import { ResultadoManualHeader } from "@/features/partidos/components/resultados/ResultadoManualHeader";
-import { ResultadoResumenEditableCard } from "@/features/partidos/components/resultados/ResultadoResumenEditableCard";
-import { ResultadoTabs } from "@/features/partidos/components/resultados/ResultadoTabs";
 
 import { useResultadoPartidoPage } from "@/features/partidos/hooks/useResultadoPartidoPage";
+import { ResultadoPartidoDashboardView } from "@/features/partidos/components/components/resultados/ResultadoPartidoDashboardView";
+
 
 export default function ResultadoPartidoPage() {
   const {
@@ -26,37 +19,29 @@ export default function ResultadoPartidoPage() {
     loading,
     saving,
     importingStats,
-    importingGoals,
 
     canVer,
-    isLiveLocked,
+    persistedResultLocked,
     canEditCurrentResult,
 
     localNombre,
     visitanteNombre,
-    localCodigo,
-    visitanteCodigo,
     escudoLocalUrl,
     escudoVisitanteUrl,
-    headerDescription,
 
     updateForm,
     updateLocalStat,
     updateVisitanteStat,
-    updateLocalLineup,
-    updateVisitanteLineup,
-    updateLocalGoalDetails,
-    updateVisitanteGoalDetails,
+    updateIncidencias,
 
     handleImportStats,
-    handleImportGoals,
     handleSave,
 
     cancel,
   } = useResultadoPartidoPage();
 
   if (loading) {
-    return <Loading />;
+    return <DashboardLoading badgeLabel="Loading estadisticas..." />;
   }
 
   if (!canVer) {
@@ -79,79 +64,28 @@ export default function ResultadoPartidoPage() {
     : undefined;
 
   return (
-    <Card className="border-white/70 bg-white shadow-sm">
-      <CardContent className="space-y-6 p-4 md:p-6">
-        <ResultadoManualHeader headerDescription={headerDescription} />
-
-        {isLiveLocked ? (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
-            El partido esta en juego. La edicion manual del resultado queda bloqueada hasta que salga de ese estado.
-          </div>
-        ) : null}
-
-        <div className={isLiveLocked ? "pointer-events-none opacity-60" : ""}>
-          <ResultadoResumenEditableCard
-            competencia="Mundial 2026"
-            fechaTexto={fechaTexto}
-            local={{
-              nombre: localNombre,
-              escudoUrl: escudoLocalUrl,
-            }}
-            visitante={{
-              nombre: visitanteNombre,
-              escudoUrl: escudoVisitanteUrl,
-            }}
-            form={form}
-            plantelLocal={plantelLocal}
-            plantelVisitante={plantelVisitante}
-            importing={importingGoals}
-            onChange={updateForm}
-            onLocalGoalsChange={updateLocalGoalDetails}
-            onVisitanteGoalsChange={updateVisitanteGoalDetails}
-            onImportGoals={handleImportGoals}
-          />
-        </div>
-
-        <div className={isLiveLocked ? "pointer-events-none opacity-60" : ""}>
-          <ResultadoTabs
-            localNombre={localNombre}
-            visitanteNombre={visitanteNombre}
-            localCodigo={localCodigo}
-            visitanteCodigo={visitanteCodigo}
-            localBanderaUrl={escudoLocalUrl}
-            visitanteBanderaUrl={escudoVisitanteUrl}
-            estadisticasLocal={form.estadisticasLocal}
-            estadisticasVisitante={form.estadisticasVisitante}
-            alineacionLocal={form.alineacionLocal}
-            alineacionVisitante={form.alineacionVisitante}
-            plantelLocal={plantelLocal}
-            plantelVisitante={plantelVisitante}
-            importingStats={importingStats}
-            onImportStats={handleImportStats}
-            onLocalStatChange={updateLocalStat}
-            onVisitanteStatChange={updateVisitanteStat}
-            onLocalLineupChange={updateLocalLineup}
-            onVisitanteLineupChange={updateVisitanteLineup}
-          />
-        </div>
-
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={cancel}>
-            Cancelar
-          </Button>
-
-          <Button onClick={handleSave} disabled={!canEditCurrentResult || saving}>
-            {saving ? (
-              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
-            {saving
-              ? "Guardando..."
-              : resultado
-                ? "Actualizar resultado"
-                : "Guardar resultado"}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <ResultadoPartidoDashboardView
+      partido={partido}
+      resultado={resultado}
+      form={form}
+      plantelLocal={plantelLocal}
+      plantelVisitante={plantelVisitante}
+      saving={saving}
+      importingStats={importingStats}
+      isResultLocked={persistedResultLocked}
+      canEditCurrentResult={canEditCurrentResult}
+      localNombre={localNombre}
+      visitanteNombre={visitanteNombre}
+      escudoLocalUrl={escudoLocalUrl}
+      escudoVisitanteUrl={escudoVisitanteUrl}      
+      fechaTexto={fechaTexto}
+      updateForm={updateForm}
+      updateLocalStat={updateLocalStat}
+      updateVisitanteStat={updateVisitanteStat}
+      updateIncidencias={updateIncidencias}
+      handleImportStats={handleImportStats}
+      handleSave={handleSave}
+      cancel={cancel}
+    />
   );
 }

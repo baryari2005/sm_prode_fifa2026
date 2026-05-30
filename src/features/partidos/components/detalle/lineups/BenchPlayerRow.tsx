@@ -25,7 +25,7 @@ export function BenchPlayerRow({
 }: BenchPlayerRowProps) {
   if (align === "right") {
     return (
-      <div className="flex items-center justify-end gap-3 px-4 py-2 text-right">
+      <div className="flex items-center justify-end gap-3 bg-[#0E1D30]/52 px-4 py-3 text-right">
         <PlayerInfo player={player} align="right" />
 
         <PlayerActionBadges
@@ -46,7 +46,7 @@ export function BenchPlayerRow({
   }
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2">
+    <div className="flex items-center gap-3 bg-[#0E1D30]/52 px-4 py-3">
       <PlayerAvatar
         imageUrl={player.fotoUrl ?? player.avatarUrl ?? null}
         teamCode={teamCode}
@@ -97,18 +97,18 @@ function PlayerInfo({
 }) {
   return (
     <div
-      className={`flex min-w-0 flex-1 items-center gap-2 text-sm text-slate-600 ${
+      className={`flex min-w-0 flex-1 items-center gap-2 text-sm text-white/62 ${
         align === "right" ? "justify-end" : "justify-start"
       }`}
     >
-      <p className="truncate text-sm font-semibold text-slate-950 md:text-base">
+      <p className="truncate text-sm font-semibold text-white md:text-base">
         {player.nombre}
       </p>
 
       {player.substituted && (
         <span className="inline-flex shrink-0 items-center gap-1 text-xs">
           {player.substitutionMinute ? `${player.substitutionMinute}'` : ""}
-          <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+          <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400/16 text-emerald-200">
             <ArrowUp className="h-3 w-3" />
           </span>
         </span>

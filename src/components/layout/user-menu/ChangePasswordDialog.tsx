@@ -12,6 +12,16 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import {
+  BrandDialogFrame,
+  BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME,
+  BRAND_DIALOG_CONTENT_CLASSNAME,
+  BRAND_DIALOG_FOOTER_CLASSNAME,
+  BRAND_DIALOG_ICON_BUTTON_CLASSNAME,
+  BRAND_DIALOG_INPUT_CLASSNAME,
+  BRAND_DIALOG_LABEL_CLASSNAME,
+  BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME,
+} from "@/components/ui/brand-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,13 +36,12 @@ import {
   DialogHero,
   DialogHighlightCard,
   DialogMutedNote,
-  DialogShell,
 } from "@/components/ui/dialog-shell";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { changePassword } from "@/lib/api/account";
-import { formatMessage } from "@/utils/formatters";
 import { useAuth } from "@/stores/auth";
+import { formatMessage } from "@/utils/formatters";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
@@ -94,24 +103,33 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-0 shadow-2xl">
+      <DialogContent className={BRAND_DIALOG_CONTENT_CLASSNAME}>
         <DialogTitle className="sr-only">Editar clave</DialogTitle>
         <DialogDescription className="sr-only">
           Dialog para cambiar tu clave de acceso.
         </DialogDescription>
 
-        <DialogShell>
+        <BrandDialogFrame>
           <DialogHero
-            icon={<KeyRoundIcon className="h-6 w-6 text-white" />}
-            title="Editar clave"
+            icon={<KeyRoundIcon className="h-6 w-6 text-[#FAB438]" />}
+            title={
+              <span className="font-brand text-[1.85rem] leading-[0.94] tracking-[0.03em] text-white">
+                Editar clave
+              </span>
+            }
             description="Actualizá tu contraseña de acceso y confirmá la nueva clave antes de guardarla."
+            className="border-b border-white/10 from-[#1E2C46] via-[#243754] to-[#10233B] px-6 py-6"
+            iconClassName="border border-white/10 bg-white/[0.08] ring-0 shadow-[0_12px_30px_rgba(2,6,23,0.28)]"
           />
 
           <DialogFormSection>
             <DialogHighlightCard
-              icon={<ShieldCheck className="h-5 w-5 text-sky-600" />}
+              icon={<ShieldCheck className="h-5 w-5 text-[#AEEBFF]" />}
               title="Cambio seguro"
               description="Usá una contraseña de al menos 6 caracteres y verificá que ambas claves nuevas coincidan."
+              className="border border-[#5993B6]/20 bg-[#5993B6]/10"
+              titleClassName="text-[#EAF8FF]"
+              descriptionClassName="text-white/74"
             />
 
             <PasswordField
@@ -153,16 +171,16 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
               }
             />
 
-            <DialogMutedNote>
+            <DialogMutedNote className="border border-white/8 bg-white/[0.05]">
               Cuando guardes la nueva contraseña, la sesión actual se cerrará
               para que vuelvas a ingresar con la clave actualizada.
             </DialogMutedNote>
           </DialogFormSection>
 
-          <DialogFooter className="gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:justify-end">
+          <DialogFooter className={BRAND_DIALOG_FOOTER_CLASSNAME}>
             <DialogClose asChild>
               <Button
-                className="h-11 rounded-xl border-slate-200 px-5 font-bold"
+                className={BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME}
                 variant="outline"
               >
                 <X className="mr-2 h-4 w-4" />
@@ -173,7 +191,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
             <Button
               onClick={onSubmit}
               disabled={!canSave}
-              className="h-11 rounded-xl bg-sky-600 px-5 font-black text-white shadow-lg shadow-sky-600/20 hover:bg-sky-700"
+              className={BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME}
             >
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
@@ -188,7 +206,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
               )}
             </Button>
           </DialogFooter>
-        </DialogShell>
+        </BrandDialogFrame>
       </DialogContent>
     </Dialog>
   );
@@ -211,7 +229,7 @@ function PasswordField({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-sm font-semibold text-slate-800">{label}</Label>
+      <Label className={BRAND_DIALOG_LABEL_CLASSNAME}>{label}</Label>
 
       <div className="relative">
         <Input
@@ -219,7 +237,7 @@ function PasswordField({
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="mt-1 h-11 rounded-xl border-slate-200 bg-white pr-10"
+          className={`${BRAND_DIALOG_INPUT_CLASSNAME} mt-1 pr-10`}
           onKeyDown={(e) => {
             if (e.key === "Enter") (e.target as HTMLInputElement).blur();
           }}
@@ -229,7 +247,7 @@ function PasswordField({
           type="button"
           aria-label={visible ? "Ocultar clave" : "Mostrar clave"}
           onClick={onToggleVisible}
-          className="absolute inset-y-0 right-2 my-auto grid h-8 w-8 place-items-center rounded-lg hover:bg-slate-100"
+          className={BRAND_DIALOG_ICON_BUTTON_CLASSNAME}
           tabIndex={-1}
         >
           {visible ? (

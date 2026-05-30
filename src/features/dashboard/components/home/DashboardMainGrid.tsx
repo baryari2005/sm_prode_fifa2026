@@ -59,7 +59,7 @@ export function DashboardMainGrid({
   const actionLabel = showAdminFixtureActions
     ? "Ver fixture completo"
     : canAccessPronosticos
-      ? "Ver todos los pronósticos"
+      ? "Ver todos"
       : null;
 
   const canOpenLiveMatch = showAdminFixtureActions || canAccessPronosticos;

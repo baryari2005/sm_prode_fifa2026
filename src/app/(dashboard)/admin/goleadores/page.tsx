@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useCan } from "@/hooks/useCan";
 
 import { Card, CardContent } from "@/components/ui/card";
-import Loading from "../../loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import AccessDenied403Page from "../../403/page";
 
 import { GoleadoresHeader } from "@/features/goleadores/components/GoleadoresHeader";
@@ -40,7 +40,7 @@ export default function GoleadoresPage() {
   }
 
   if (loading) {
-    return <Loading />;
+    return <DashboardLoading source="Admin goleadores" />;
   }
 
   return (

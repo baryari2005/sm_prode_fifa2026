@@ -92,6 +92,37 @@ export type GoalDetail = {
   penal: boolean;
 };
 
+export type IncidentType =
+  | "gol"
+  | "tarjeta_amarilla"
+  | "tarjeta_roja"
+  | "cambio"
+  | "lesion"
+  | "penal"
+  | "var";
+
+export type IncidentTeamSide = "local" | "visitante" | "general";
+
+export type MatchIncident = {
+  id: string;
+  tipo: IncidentType;
+  minuto: number;
+  equipo: IncidentTeamSide;
+  jugadorId?: string | null;
+  jugadorNombre?: string | null;
+  asistidorId?: string | null;
+  asistidorNombre?: string | null;
+  jugadorSaleId?: string | null;
+  jugadorSaleNombre?: string | null;
+  jugadorEntraId?: string | null;
+  jugadorEntraNombre?: string | null;
+  descripcion?: string | null;
+  penal?: boolean;
+  varResultado?: string | null;
+  lesionTipo?: string | null;
+  createdAt?: string | null;
+};
+
 export const DEFAULT_TEAM_STATS: TeamStats = {
   shots: 0,
   shotsOnTarget: 0,

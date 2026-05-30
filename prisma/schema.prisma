@@ -334,6 +334,7 @@ model Resultado {
   alineacionVisitante Json?
   detalleGolesLocal Json?
   detalleGolesVisitante Json?
+  incidencias Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

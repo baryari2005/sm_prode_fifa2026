@@ -1,5 +1,10 @@
 import { AciertoTipo, EstadoPartido } from "@prisma/client";
-import type { GoalDetail, TeamLineup, TeamStats } from "./fixture-details";
+import type {
+  GoalDetail,
+  MatchIncident,
+  TeamLineup,
+  TeamStats,
+} from "./fixture-details";
 
 export type Seleccion = {
   id: string;
@@ -70,6 +75,7 @@ export type Resultado = {
   alineacionVisitante?: TeamLineup | null;
   detalleGolesLocal?: GoalDetail[] | null;
   detalleGolesVisitante?: GoalDetail[] | null;
+  incidencias?: MatchIncident[] | null;
 
   createdAt: Date;
   updatedAt: Date;
@@ -164,6 +170,7 @@ export type ResultadoCreateInput = {
   alineacionVisitante?: TeamLineup | null;
   detalleGolesLocal?: GoalDetail[] | null;
   detalleGolesVisitante?: GoalDetail[] | null;
+  incidencias?: MatchIncident[] | null;
 };
 
 export type ResultadoUpdateInput = {
@@ -180,6 +187,7 @@ export type ResultadoUpdateInput = {
   alineacionVisitante?: TeamLineup | null;
   detalleGolesLocal?: GoalDetail[] | null;
   detalleGolesVisitante?: GoalDetail[] | null;
+  incidencias?: MatchIncident[] | null;
 };
 
 export type JugadorSeleccionCreateInput = {

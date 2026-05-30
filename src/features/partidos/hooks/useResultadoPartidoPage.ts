@@ -24,10 +24,15 @@ import {
   applyLineupTotals,
   createInitialState,
 } from "@/features/partidos/helpers/resultado-manual.helpers";
+import {
+  buildGoalIncidenciasFromLegacy,
+  deriveResultadoFieldsFromIncidencias,
+} from "@/features/partidos/helpers/resultado-incidencias.helpers";
 import { resolveBanderaSrc } from "@/lib/flags";
 
 import type {
   GoalDetail,
+  MatchIncident,
   TeamLineup,
   TeamStats,
 } from "@/features/partidos/types/fixture-details";
@@ -41,6 +46,44 @@ import type {
 import type {
   ResultadoFormState,
 } from "@/features/partidos/types/resultado-manual.types";
+
+function buildFormStateFromSavedResultado(
+  saved: Resultado,
+  previousForm: ResultadoFormState
+) {
+  const savedIncidencias = saved.incidencias ?? [];
+  const previousIncidencias = previousForm.incidencias;
+
+  const nextIncidencias =
+    savedIncidencias.length >= previousIncidencias.length
+      ? savedIncidencias
+      : previousIncidencias;
+
+  const derived = deriveResultadoFieldsFromIncidencias({
+    incidencias: nextIncidencias,
+    alineacionLocal:
+      saved.alineacionLocal ?? previousForm.alineacionLocal,
+    alineacionVisitante:
+      saved.alineacionVisitante ?? previousForm.alineacionVisitante,
+    estadisticasLocal:
+      saved.estadisticasLocal ?? previousForm.estadisticasLocal,
+    estadisticasVisitante:
+      saved.estadisticasVisitante ?? previousForm.estadisticasVisitante,
+  });
+
+  return {
+    ...createInitialState(saved),
+    incidencias: derived.incidencias,
+    detalleGolesLocal: derived.detalleGolesLocal,
+    detalleGolesVisitante: derived.detalleGolesVisitante,
+    golesLocal: derived.golesLocal,
+    golesVisitante: derived.golesVisitante,
+    alineacionLocal: derived.alineacionLocal,
+    alineacionVisitante: derived.alineacionVisitante,
+    estadisticasLocal: derived.estadisticasLocal,
+    estadisticasVisitante: derived.estadisticasVisitante,
+  };
+}
 
 export function useResultadoPartidoPage() {
   const params = useParams<{ id: string }>();
@@ -118,9 +161,8 @@ export function useResultadoPartidoPage() {
   );
 
   const canSubmit = canEditar && partido !== null;
-  const isLiveLocked =
-    resultado?.estado === "EN_JUEGO" || resultado?.estado === "ENTRETIEMPO";
-  const canEditCurrentResult = canSubmit && !isLiveLocked;
+  const persistedResultLocked = resultado?.estado === "FINALIZADO";
+  const canEditCurrentResult = canSubmit && !persistedResultLocked;
 
   const headerDescription = useMemo(() => {
     if (!partido) return "";
@@ -164,14 +206,63 @@ export function useResultadoPartidoPage() {
   }
 
   function updateLocalGoalDetails(detalle: GoalDetail[]) {
-    updateForm({
-      detalleGolesLocal: detalle,
+    setForm((current) => {
+      const nextIncidencias = [
+        ...current.incidencias.filter(
+          (incidencia) =>
+            !(incidencia.tipo === "gol" && incidencia.equipo === "local")
+        ),
+        ...buildGoalIncidenciasFromLegacy(detalle, "local"),
+      ].sort((a, b) => a.minuto - b.minuto);
+
+      return {
+        ...current,
+        detalleGolesLocal: detalle,
+        incidencias: nextIncidencias,
+      };
     });
   }
 
   function updateVisitanteGoalDetails(detalle: GoalDetail[]) {
-    updateForm({
-      detalleGolesVisitante: detalle,
+    setForm((current) => {
+      const nextIncidencias = [
+        ...current.incidencias.filter(
+          (incidencia) =>
+            !(incidencia.tipo === "gol" && incidencia.equipo === "visitante")
+        ),
+        ...buildGoalIncidenciasFromLegacy(detalle, "visitante"),
+      ].sort((a, b) => a.minuto - b.minuto);
+
+      return {
+        ...current,
+        detalleGolesVisitante: detalle,
+        incidencias: nextIncidencias,
+      };
+    });
+  }
+
+  function updateIncidencias(incidencias: MatchIncident[]) {
+    setForm((current) => {
+      const derived = deriveResultadoFieldsFromIncidencias({
+        incidencias,
+        alineacionLocal: current.alineacionLocal,
+        alineacionVisitante: current.alineacionVisitante,
+        estadisticasLocal: current.estadisticasLocal,
+        estadisticasVisitante: current.estadisticasVisitante,
+      });
+
+      return {
+        ...current,
+        incidencias: derived.incidencias,
+        detalleGolesLocal: derived.detalleGolesLocal,
+        detalleGolesVisitante: derived.detalleGolesVisitante,
+        golesLocal: derived.golesLocal,
+        golesVisitante: derived.golesVisitante,
+        alineacionLocal: derived.alineacionLocal,
+        alineacionVisitante: derived.alineacionVisitante,
+        estadisticasLocal: derived.estadisticasLocal,
+        estadisticasVisitante: derived.estadisticasVisitante,
+      };
     });
   }
 
@@ -205,14 +296,12 @@ export function useResultadoPartidoPage() {
 
       const { detalleGolesLocal, detalleGolesVisitante } =
         mapRowsToGoalDetails(rows);
+      const importedIncidencias = [
+        ...buildGoalIncidenciasFromLegacy(detalleGolesLocal, "local"),
+        ...buildGoalIncidenciasFromLegacy(detalleGolesVisitante, "visitante"),
+      ];
 
-      setForm((current) => ({
-        ...current,
-        detalleGolesLocal,
-        detalleGolesVisitante,
-        golesLocal: detalleGolesLocal.length || current.golesLocal,
-        golesVisitante: detalleGolesVisitante.length || current.golesVisitante,
-      }));
+      updateIncidencias(importedIncidencias);
 
       toast.success("Detalle de goles importado");
     } catch (error) {
@@ -224,50 +313,62 @@ export function useResultadoPartidoPage() {
   }
 
   async function handleSave() {
+    console.log("[resultado] handleSave:start", {
+      partidoId,
+      canSubmit,
+      persistedResultLocked,
+      saving,
+      hasResultado: Boolean(resultado),
+      incidenciasCount: form.incidencias.length,
+      golesLocal: form.golesLocal,
+      golesVisitante: form.golesVisitante,
+      detalleGolesLocalCount: form.detalleGolesLocal.length,
+      detalleGolesVisitanteCount: form.detalleGolesVisitante.length,
+      estado: form.estado,
+    });
+
     if (!canSubmit) return;
-    if (isLiveLocked) {
-      toast.error("No se puede modificar el resultado porque el partido esta en juego");
+    if (persistedResultLocked) {
+      toast.error(
+        "No se puede modificar el resultado porque el partido esta finalizado"
+      );
       return;
     }
 
     try {
       setSaving(true);
 
+      const derivedPayload = deriveResultadoFieldsFromIncidencias({
+        incidencias: form.incidencias,
+        alineacionLocal: form.alineacionLocal,
+        alineacionVisitante: form.alineacionVisitante,
+        estadisticasLocal: form.estadisticasLocal,
+        estadisticasVisitante: form.estadisticasVisitante,
+      });
+
       const payload = {
         partidoId,
-
-        golesLocal: form.golesLocal,
-        golesVisitante: form.golesVisitante,
-
         penalesLocal:
           form.penalesLocal.trim() === "" ? null : Number(form.penalesLocal),
-
         penalesVisitante:
           form.penalesVisitante.trim() === ""
             ? null
             : Number(form.penalesVisitante),
-
         estado: form.estado,
-
         tiempoJuego:
           form.tiempoJuego.trim() === "" ? null : Number(form.tiempoJuego),
-
         observaciones: form.observaciones.trim() || null,
-
-        estadisticasLocal: form.estadisticasLocal,
-        estadisticasVisitante: form.estadisticasVisitante,
-
-        alineacionLocal: form.alineacionLocal,
-        alineacionVisitante: form.alineacionVisitante,
-
-        detalleGolesLocal: form.detalleGolesLocal,
-        detalleGolesVisitante: form.detalleGolesVisitante,
+        ...derivedPayload,
       };
+
+      console.log("[resultado] handleSave:payload", payload);
 
       const saved = await saveResultado(resultado, payload);
 
+      console.log("[resultado] handleSave:saved", saved);
+
       setResultado(saved);
-      setForm(createInitialState(saved));
+      setForm(buildFormStateFromSavedResultado(saved, form));
 
       toast.success("Resultado guardado correctamente");
     } catch (error) {
@@ -300,7 +401,7 @@ export function useResultadoPartidoPage() {
     canVer,
     canEditar,
     canSubmit,
-    isLiveLocked,
+    persistedResultLocked,
     canEditCurrentResult,
 
     localNombre,
@@ -318,6 +419,7 @@ export function useResultadoPartidoPage() {
     updateVisitanteLineup,
     updateLocalGoalDetails,
     updateVisitanteGoalDetails,
+    updateIncidencias,
 
     handleImportStats,
     handleImportGoals,

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { RefreshCw, Save, UserPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { formatMessage } from "@/utils/formatters";
 
 import { UserFormFields } from "./UserFormFields";
@@ -21,6 +22,7 @@ type Props = {
     rol?: { id: number };
   };
   onSuccess?: (id: string) => void;
+  className?: string;
 };
 
 function isFieldError(value: unknown): value is FieldError {
@@ -43,7 +45,7 @@ function getFirstFieldError(
   return null;
 }
 
-export function UserForm({ mode, defaultValues, onSuccess }: Props) {
+export function UserForm({ mode, defaultValues, onSuccess, className }: Props) {
   const { form, onSubmit, submitting, roles, loadingRoles, setTmpPath } =
     useUserForm({ mode, defaultValues, onSuccess });
 
@@ -87,7 +89,7 @@ export function UserForm({ mode, defaultValues, onSuccess }: Props) {
   return (
     <form
       id="user-form"
-      className="w-full"
+      className={cn("w-full", className)}
       onSubmit={form.handleSubmit(onSubmit, onInvalid)}
       noValidate
     >
@@ -104,8 +106,7 @@ export function UserForm({ mode, defaultValues, onSuccess }: Props) {
         <Button
           type="submit"
           size="lg"
-          // className="h-11 w-full rounded bg-[#008C93] hover:bg-[#007381] cursor-pointer"
-          className="h-11 w-full rounded-2xl bg-[#39A935] text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
+          className="h-11 w-full rounded-2xl border border-[#F7CF74] bg-[#FAB438] text-[0.98rem] font-semibold tracking-[0.02em] text-[#1E2C46] shadow-[0_18px_40px_rgba(250,180,56,0.24)] transition hover:bg-[#FFD166] hover:shadow-[0_22px_46px_rgba(250,180,56,0.3)]"
           disabled={submitting}
           aria-disabled={submitting}
         >

@@ -1,14 +1,23 @@
 // src/app/layout.tsx
 
 import "./globals.css";
+import Image from "next/image";
 import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import { Smartphone, MonitorSmartphone } from "lucide-react";
+import { brandImages } from "@/config/brand-images";
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-app-sans",
+  display: "swap",
+});
+
+const cheddar = localFont({
+  src: "../../public/fonts/cheddar-gothic-sans.otf",
+  variable: "--font-brand-display",
   display: "swap",
 });
 
@@ -19,7 +28,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={poppins.variable}>
+    <html lang="es" className={`${poppins.variable} ${cheddar.variable}`}>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <div className="lg:hidden">
           <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-6 py-10 text-white">
@@ -54,7 +63,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
         </div>
 
-        <div className="hidden lg:block">{children}</div>
+        <div className="pointer-events-none fixed inset-0 z-0 hidden overflow-hidden lg:block">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(117,215,255,0.08),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(246,200,95,0.06),transparent_22%)]" />
+          <div className="absolute right-[-6%] top-1/2 h-[72vh] w-[72vh] -translate-y-1/2 opacity-[0.06]">
+            <Image
+              src={brandImages.institucional.masSanMiguelLogo}
+              alt=""
+              fill
+              priority
+              aria-hidden="true"
+              className="object-contain blur-[1px]"
+            />
+          </div>
+        </div>
+
+        <div className="relative z-10 hidden lg:block">{children}</div>
         <Toaster />
       </body>
     </html>

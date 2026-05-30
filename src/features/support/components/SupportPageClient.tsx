@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EMPTY_PERMISSIONS } from "@/features/auth/constants/empty-permissions";
 import { useAuth } from "@/stores/auth";
 import { getVisibleHelpGuides } from "../lib/visible-help-guides";
 import { type HelpGuide } from "../lib/help-guides";
@@ -70,7 +71,9 @@ function GuideCard({ guide }: { guide: HelpGuide }) {
 }
 
 export function SupportPageClient() {
-  const permissions = useAuth((state) => state.user?.permisos ?? []);
+  const permissions = useAuth(
+    (state) => state.user?.permisos ?? EMPTY_PERMISSIONS
+  );
 
   const visibleGuides = useMemo(() => {
     return getVisibleHelpGuides(permissions);

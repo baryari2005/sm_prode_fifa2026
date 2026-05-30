@@ -10,7 +10,7 @@ import {
 const LEGEND_ITEMS = [
   {
     label: "Gol",
-    icon: <CircleDot className="h-4 w-4 text-slate-900" />,
+    icon: <CircleDot className="h-4 w-4 text-[#AEEBFF]" />,
   },
   {
     label: "Gol en contra",
@@ -27,7 +27,7 @@ const LEGEND_ITEMS = [
   {
     label: "Entra",
     icon: (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-400/16 text-emerald-200">
         <ArrowUp className="h-3 w-3" />
       </span>
     ),
@@ -35,7 +35,7 @@ const LEGEND_ITEMS = [
   {
     label: "Sale",
     icon: (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-100 text-rose-700">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-400/16 text-rose-200">
         <ArrowDown className="h-3 w-3" />
       </span>
     ),
@@ -52,18 +52,18 @@ const LEGEND_ITEMS = [
 
 export function LineupLegendCard() {
   return (
-    <div className="w-full max-w-none rounded-3xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-cyan-50 p-4 shadow-sm">
-      <p className="mb-3 ml-2 text-xs font-bold uppercase tracking-[0.22em] text-slate-700">
+    <div className="w-full max-w-none rounded-3xl border border-white/10 bg-[#0E1D30]/72 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <p className="mb-3 ml-2 text-xs font-bold uppercase tracking-[0.22em] text-[#AEEBFF]">
         Referencias
       </p>
 
-      <div className="ml-2 grid grid-cols-2 gap-3 text-xs font-medium text-slate-600 md:grid-cols-4">
+      <div className="ml-2 grid grid-cols-2 gap-3 text-xs font-medium text-white/68 md:grid-cols-4">
         {LEGEND_ITEMS.map((item) => (
           <div key={item.label} className="flex items-center gap-2">
             <span className="flex h-5 w-5 shrink-0 items-center justify-center">
               {item.icon}
             </span>
-            <span className="text-slate-700">{item.label}</span>
+            <span className="text-white/78">{item.label}</span>
           </div>
         ))}
       </div>

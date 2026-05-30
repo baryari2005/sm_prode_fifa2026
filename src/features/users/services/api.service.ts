@@ -27,7 +27,17 @@ type UpsertUserDto = {
 };
 
 export async function listRoles(): Promise<Role[]> {
-  const { data } = await axiosInstance.get("/roles");
+  const { data } = await axiosInstance.get("/roles", {
+    headers: {
+      "Cache-Control": "no-cache",
+    },
+    params: {
+      page: 1,
+      pageSize: 100,
+      sortBy: "nombre",
+      sortDir: "asc",
+    },
+  });
   return data?.data ?? data ?? [];
 }
 

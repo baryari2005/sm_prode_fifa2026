@@ -1,13 +1,11 @@
 "use client";
 
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
-import Loading from "@/app/(dashboard)/loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import { useCan } from "@/hooks/useCan";
 
-import { ReglaPuntajeForm } from "@/features/reglas-puntaje/components/ReglaPuntajeForm";
+import { ReglasPuntajeOverview } from "@/features/reglas-puntaje/components/ReglasPuntajeOverview";
 import { useReglasPuntajePage } from "@/features/reglas-puntaje/hooks/useReglasPuntajePage";
-import { Card, CardContent } from "@/components/ui/card";
-import { ReglasPuntajeHeader } from "@/features/reglas-puntaje/components/ReglaPuntajeHeader";
 
 export default function ReglasPuntajePage() {
   const canVer = useCan("reglas-puntaje", "ver");
@@ -28,28 +26,20 @@ export default function ReglasPuntajePage() {
 
   if (!canVer) return <AccessDenied403Page />;
 
-  if (loadingInicial) return <Loading />;
+  if (loadingInicial) return <DashboardLoading source="Admin reglas puntaje" />;
 
   return (
-    <div className="grid gap-6">
-      <Card className="border-white/70 bg-white shadow-sm">
-        <CardContent className="space-y-6 p-4 md:p-6">
-          <ReglasPuntajeHeader
-            faseNombre={selectedFase?.nombre ?? null}
-            bloqueada={Boolean(reglaActual?.bloqueada)}
-          />
-          <ReglaPuntajeForm
-            fases={fases}
-            values={values}
-            reglaActual={reglaActual}
-            loadingRegla={loadingRegla}
-            saving={saving}
-            isFormDisabled={isFormDisabled || !canEditar}
-            onChange={updateField}
-            onSubmit={submit}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <ReglasPuntajeOverview
+      canEditar={canEditar}
+      fases={fases}
+      values={values}
+      reglaActual={reglaActual}
+      selectedFase={selectedFase}
+      loadingRegla={loadingRegla}
+      saving={saving}
+      isFormDisabled={isFormDisabled}
+      onChange={updateField}
+      onSubmit={submit}
+    />
   );
 }

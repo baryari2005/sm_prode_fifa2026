@@ -13,6 +13,17 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import {
+  BrandDialogFrame,
+  BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME,
+  BRAND_DIALOG_CONTENT_CLASSNAME,
+  BRAND_DIALOG_ERROR_CLASSNAME,
+  BRAND_DIALOG_FOOTER_CLASSNAME,
+  BRAND_DIALOG_ICON_BUTTON_CLASSNAME,
+  BRAND_DIALOG_INPUT_CLASSNAME,
+  BRAND_DIALOG_LABEL_CLASSNAME,
+  BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME,
+} from "@/components/ui/brand-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,7 +38,6 @@ import {
   DialogHero,
   DialogHighlightCard,
   DialogMutedNote,
-  DialogShell,
 } from "@/components/ui/dialog-shell";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -89,32 +99,41 @@ export function ChangeEmailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-0 shadow-2xl">
+      <DialogContent className={BRAND_DIALOG_CONTENT_CLASSNAME}>
         <DialogTitle className="sr-only">Editar email</DialogTitle>
         <DialogDescription className="sr-only">
           Dialog para cambiar tu correo electrónico personal.
         </DialogDescription>
 
-        <DialogShell>
+        <BrandDialogFrame>
           <DialogHero
-            icon={<Mail className="h-6 w-6 text-white" />}
-            title="Editar email"
+            icon={<Mail className="h-6 w-6 text-[#FAB438]" />}
+            title={
+              <span className="font-brand text-[1.85rem] leading-[0.94] tracking-[0.03em] text-white">
+                Editar email
+              </span>
+            }
             description="Actualizá el correo vinculado a tu cuenta y confirmá la operación con tu clave actual."
+            className="border-b border-white/10 from-[#1E2C46] via-[#243754] to-[#10233B] px-6 py-6"
+            iconClassName="border border-white/10 bg-white/[0.08] ring-0 shadow-[0_12px_30px_rgba(2,6,23,0.28)]"
           />
 
           <DialogFormSection>
             <DialogHighlightCard
-              icon={<CheckCircle2 className="h-5 w-5 text-sky-600" />}
+              icon={<CheckCircle2 className="h-5 w-5 text-[#AEEBFF]" />}
               title="Email actual"
               description={
-                <span className="break-all font-medium text-sky-950">
+                <span className="break-all font-medium text-white">
                   {currentEmail}
                 </span>
               }
+              className="border border-[#5993B6]/20 bg-[#5993B6]/10"
+              titleClassName="text-[#EAF8FF]"
+              descriptionClassName="text-white/86"
             />
 
             <div className="space-y-1.5">
-              <Label className="text-sm font-semibold text-slate-800">
+              <Label className={BRAND_DIALOG_LABEL_CLASSNAME}>
                 Correo electrónico nuevo
               </Label>
               <Input
@@ -124,17 +143,19 @@ export function ChangeEmailDialog({
                 onChange={(e) =>
                   setValues((prev) => ({ ...prev, email: e.target.value }))
                 }
-                className={`h-11 rounded-xl border-slate-200 bg-white ${
-                  emailError ? "border-red-500 focus-visible:ring-red-500" : ""
+                className={`${BRAND_DIALOG_INPUT_CLASSNAME} ${
+                  emailError
+                    ? "border-rose-400/70 focus-visible:border-rose-300 focus-visible:ring-rose-300/25"
+                    : ""
                 }`}
               />
               {emailError ? (
-                <p className="text-xs text-red-600">{emailError}</p>
+                <p className={BRAND_DIALOG_ERROR_CLASSNAME}>{emailError}</p>
               ) : null}
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-sm font-semibold text-slate-800">
+              <Label className={BRAND_DIALOG_LABEL_CLASSNAME}>
                 Clave actual
               </Label>
               <div className="relative">
@@ -145,7 +166,7 @@ export function ChangeEmailDialog({
                   onChange={(e) =>
                     setValues((prev) => ({ ...prev, password: e.target.value }))
                   }
-                  className="h-11 rounded-xl border-slate-200 bg-white pr-10"
+                  className={`${BRAND_DIALOG_INPUT_CLASSNAME} pr-10`}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") onSubmit();
                   }}
@@ -154,7 +175,7 @@ export function ChangeEmailDialog({
                   type="button"
                   aria-label={showPw ? "Ocultar clave" : "Mostrar clave"}
                   onClick={() => setShowPw((prev) => !prev)}
-                  className="absolute inset-y-0 right-2 my-auto grid h-8 w-8 place-items-center rounded-lg hover:bg-slate-100"
+                  className={BRAND_DIALOG_ICON_BUTTON_CLASSNAME}
                   tabIndex={-1}
                 >
                   {showPw ? (
@@ -166,16 +187,16 @@ export function ChangeEmailDialog({
               </div>
             </div>
 
-            <DialogMutedNote>
+            <DialogMutedNote className="border border-white/8 bg-white/[0.05]">
               Para proteger tu cuenta, cuando confirmes el cambio vas a tener
               que iniciar sesión nuevamente.
             </DialogMutedNote>
           </DialogFormSection>
 
-          <DialogFooter className="gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:justify-end">
+          <DialogFooter className={BRAND_DIALOG_FOOTER_CLASSNAME}>
             <DialogClose asChild>
               <Button
-                className="h-11 rounded-xl border-slate-200 px-5 font-bold"
+                className={BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME}
                 variant="outline"
               >
                 <X className="mr-2 h-4 w-4" />
@@ -186,7 +207,7 @@ export function ChangeEmailDialog({
             <Button
               onClick={onSubmit}
               disabled={!canSave}
-              className="h-11 rounded-xl bg-sky-600 px-5 font-black text-white shadow-lg shadow-sky-600/20 hover:bg-sky-700"
+              className={BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME}
             >
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
@@ -201,7 +222,7 @@ export function ChangeEmailDialog({
               )}
             </Button>
           </DialogFooter>
-        </DialogShell>
+        </BrandDialogFrame>
       </DialogContent>
     </Dialog>
   );

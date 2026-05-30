@@ -25,11 +25,8 @@ async function ensureResultadoEditable(partidoId: string) {
     throw new Error("PARTIDO_NOT_FOUND");
   }
 
-  if (
-    resultado?.estado === "EN_JUEGO" ||
-    resultado?.estado === "ENTRETIEMPO"
-  ) {
-    throw new Error("RESULTADO_LIVE_LOCKED");
+  if (resultado?.estado === "FINALIZADO") {
+    throw new Error("RESULTADO_FINAL_LOCKED");
   }
 }
 
@@ -117,11 +114,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (err instanceof Error && err.message === "RESULTADO_LIVE_LOCKED") {
+    if (err instanceof Error && err.message === "RESULTADO_FINAL_LOCKED") {
       return NextResponse.json(
         {
           message:
-            "No se puede modificar el resultado porque el partido ya esta en juego.",
+            "No se puede modificar el resultado porque el partido esta finalizado.",
         },
         { status: 409 }
       );
@@ -183,11 +180,11 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    if (err instanceof Error && err.message === "RESULTADO_LIVE_LOCKED") {
+    if (err instanceof Error && err.message === "RESULTADO_FINAL_LOCKED") {
       return NextResponse.json(
         {
           message:
-            "No se puede modificar el resultado porque el partido ya esta en juego.",
+            "No se puede modificar el resultado porque el partido esta finalizado.",
         },
         { status: 409 }
       );

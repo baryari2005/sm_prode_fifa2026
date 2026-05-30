@@ -266,6 +266,12 @@ const PERMISOS = [
     icono: "listOrdered",
   },
   {
+    modulo: "ranking",
+    accion: "recalcular",
+    descripcion: "Permite recalcular manualmente el ranking del Prode.",
+    icono: "refreshCcw",
+  },
+  {
     modulo: "ayuda",
     accion: "ver_usuario",
     descripcion: "Permite acceder a la ayuda para usuarios del Prode.",

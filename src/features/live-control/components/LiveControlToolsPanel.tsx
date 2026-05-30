@@ -1,14 +1,20 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ActivitySquare, TerminalSquare } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  LIVE_CONTROL_SECONDARY_BUTTON_CLASSNAME,
+  LIVE_CONTROL_SUBCARD_CLASSNAME,
+  LIVE_CONTROL_TEXTAREA_CLASSNAME,
+  LiveControlSurface,
+} from "@/features/live-control/components/LiveControlSurface";
 import {
   buildFormationSlots,
   buildSuggestedLineupFromSlots,
@@ -426,46 +432,60 @@ export function LiveControlToolsPanel({
   };
 
   return (
-    <Card className="rounded-[28px] border-white/70 bg-white shadow-sm">
-      <CardHeader>
-        <CardTitle>Herramientas tecnicas</CardTitle>
-        <CardDescription>
-          Consola interna para ejecutar acciones rapidas, ver payload y revisar la respuesta tipo API.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
-        <div className="space-y-4">
-          <div className="grid gap-2">
-            <Label>Partido</Label>
-            <Select value={selectedMatchId ?? ""} onValueChange={onSelectMatch}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona un partido" />
-              </SelectTrigger>
-              <SelectContent>
-                {matches.map((match) => (
-                  <SelectItem key={match.id} value={match.id}>
-                    {match.seleccionLocal?.nombre} vs {match.seleccionVisitante?.nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <LiveControlSurface contentClassName="p-4 md:p-5">
+      <div className="space-y-5">
+        <div className="space-y-2 border-b border-white/10 pb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge className="rounded-full border-[#5993B6]/18 bg-[#5993B6]/10 text-[#AEEBFF] hover:bg-[#5993B6]/10">
+              Consola privada
+            </Badge>
+            <Badge className="rounded-full border-[#FAB438]/18 bg-[#FAB438]/10 text-[#FFE4A3] hover:bg-[#FAB438]/10">
+              Herramientas tecnicas
+            </Badge>
           </div>
+          <p className="font-brand text-[1.65rem] leading-none tracking-[0.04em] text-white">
+            Herramientas tecnicas
+          </p>
+          <p className="max-w-3xl text-sm leading-6 text-white/72">
+            Consola interna para ejecutar acciones rapidas, ver payload y revisar
+            la respuesta tipo API.
+          </p>
+        </div>
 
-          <div className="grid gap-2">
-            <Label>Accion</Label>
-            <Select value={action} onValueChange={setAction}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ACTION_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+          <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} space-y-4 p-4 md:p-5`}>
+            <div className="grid gap-2">
+              <Label>Partido</Label>
+              <Select value={selectedMatchId ?? ""} onValueChange={onSelectMatch}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un partido" />
+                </SelectTrigger>
+                <SelectContent>
+                  {matches.map((match) => (
+                    <SelectItem key={match.id} value={match.id}>
+                      {match.seleccionLocal?.nombre} vs{" "}
+                      {match.seleccionVisitante?.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Accion</Label>
+              <Select value={action} onValueChange={setAction}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACTION_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
           {(action === "create_manual_goal" ||
             action === "set_live" ||
@@ -528,6 +548,7 @@ export function LiveControlToolsPanel({
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
                   rows={3}
+                  className={LIVE_CONTROL_TEXTAREA_CLASSNAME}
                 />
               </div>
             </div>
@@ -609,6 +630,7 @@ export function LiveControlToolsPanel({
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
                   rows={3}
+                  className={LIVE_CONTROL_TEXTAREA_CLASSNAME}
                 />
               </div>
             </div>
@@ -696,8 +718,8 @@ export function LiveControlToolsPanel({
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                <p className="mb-3 text-xs font-semibold text-slate-700">Titulares por esquema</p>
+              <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} p-3`}>
+                <p className="mb-3 text-xs font-semibold text-white/72">Titulares por esquema</p>
                 <div className="grid gap-3 md:grid-cols-2">
                   {currentFormationSlots.map((slot) => (
                     <div key={slot.id} className="grid gap-2">
@@ -736,6 +758,7 @@ export function LiveControlToolsPanel({
                 <Button
                   type="button"
                   variant="outline"
+                  className={LIVE_CONTROL_SECONDARY_BUTTON_CLASSNAME}
                   onClick={() => handleAddPlayer("titulares")}
                   disabled={!selectedPlayerId}
                 >
@@ -744,6 +767,7 @@ export function LiveControlToolsPanel({
                 <Button
                   type="button"
                   variant="outline"
+                  className={LIVE_CONTROL_SECONDARY_BUTTON_CLASSNAME}
                   onClick={() => handleAddPlayer("suplentes")}
                   disabled={!selectedPlayerId}
                 >
@@ -751,20 +775,22 @@ export function LiveControlToolsPanel({
                 </Button>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                <p className="mb-2 text-xs font-semibold text-slate-700">Titulares</p>
+              <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} p-3`}>
+                <p className="mb-2 text-xs font-semibold text-white/72">Titulares</p>
                 <div className="flex flex-wrap gap-2">
                   {lineupPlayers[lineupSide].titulares.length === 0 ? (
-                    <span className="text-xs text-slate-500">Sin titulares cargados.</span>
+                    <span className="text-xs text-white/52">Sin titulares cargados.</span>
                   ) : (
                     lineupPlayers[lineupSide].titulares.map((player, index) => (
                       <button
                         key={`${player.jugadorId}-${index}`}
                         type="button"
-                        className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs text-slate-700"
+                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0E1D30]/72 px-3 py-1 text-xs text-white/82"
                         onClick={() => handleRemovePlayer("titulares", player.jugadorId)}
                       >
-                        <Badge variant="outline">{player.numero ?? "S/N"}</Badge>
+                        <Badge className="rounded-full border-white/12 bg-white/[0.08] text-white/82 hover:bg-white/[0.08]">
+                          {player.numero ?? "S/N"}
+                        </Badge>
                         {player.nombre}
                       </button>
                     ))
@@ -772,20 +798,22 @@ export function LiveControlToolsPanel({
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                <p className="mb-2 text-xs font-semibold text-slate-700">Suplentes</p>
+              <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} p-3`}>
+                <p className="mb-2 text-xs font-semibold text-white/72">Suplentes</p>
                 <div className="flex flex-wrap gap-2">
                   {lineupPlayers[lineupSide].suplentes.length === 0 ? (
-                    <span className="text-xs text-slate-500">Sin suplentes cargados.</span>
+                    <span className="text-xs text-white/52">Sin suplentes cargados.</span>
                   ) : (
                     lineupPlayers[lineupSide].suplentes.map((player, index) => (
                       <button
                         key={`${player.jugadorId}-${index}`}
                         type="button"
-                        className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs text-slate-700"
+                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0E1D30]/72 px-3 py-1 text-xs text-white/82"
                         onClick={() => handleRemovePlayer("suplentes", player.jugadorId)}
                       >
-                        <Badge variant="outline">{player.numero ?? "S/N"}</Badge>
+                        <Badge className="rounded-full border-white/12 bg-white/[0.08] text-white/82 hover:bg-white/[0.08]">
+                          {player.numero ?? "S/N"}
+                        </Badge>
                         {player.nombre}
                       </button>
                     ))
@@ -807,25 +835,26 @@ export function LiveControlToolsPanel({
     "suplentes": []
   }
 }`}
+                className={LIVE_CONTROL_TEXTAREA_CLASSNAME}
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-white/52">
                 Si dejas este JSON vacio, se usa la carga simple de arriba. Si pegas JSON, tiene prioridad.
               </p>
               {parsedJsonPayload.error ? (
-                <p className="text-xs text-red-600">{parsedJsonPayload.error}</p>
+                <p className="text-xs text-rose-200">{parsedJsonPayload.error}</p>
               ) : null}
             </div>
           ) : action === "upsert_stats" ? (
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label>Estadisticas del partido</Label>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-white/52">
                   Carga valores para local y visitante por cada rubro.
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                <div className="grid grid-cols-[minmax(0,1fr)_110px_110px] gap-2 text-xs font-semibold text-slate-700">
+              <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} p-3`}>
+                <div className="grid grid-cols-[minmax(0,1fr)_110px_110px] gap-2 text-xs font-semibold text-white/72">
                   <span>Rubro</span>
                   <span className="text-center">Local</span>
                   <span className="text-center">Visitante</span>
@@ -837,7 +866,7 @@ export function LiveControlToolsPanel({
                       key={stat.key}
                       className="grid grid-cols-[minmax(0,1fr)_110px_110px] items-center gap-2"
                     >
-                      <Label className="text-xs text-slate-700">{stat.label}</Label>
+                      <Label className="text-xs text-white/72">{stat.label}</Label>
 
                       <Input
                         value={String(statsValues.LOCAL[stat.key])}
@@ -868,45 +897,54 @@ export function LiveControlToolsPanel({
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 rows={4}
+                className={LIVE_CONTROL_TEXTAREA_CLASSNAME}
               />
             </div>
           ) : null}
 
-          <Button
-            type="button"
-            className="w-full rounded-2xl"
-            disabled={
-              executing ||
-              (action === "upsert_lineup" && Boolean(parsedJsonPayload.error)) ||
-              ((action === "upsert_cards_note" || action === "create_manual_goal") &&
-                !selectedPlayerId)
-            }
-            onClick={() => void onRun(preview)}
-          >
-            {executing ? "Ejecutando..." : "Ejecutar accion"}
-          </Button>
-        </div>
-
-        <div className="grid gap-4">
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="mb-2 text-sm font-semibold text-slate-800">Preview del payload</p>
-            <pre className="overflow-x-auto text-xs text-slate-700">
-              {JSON.stringify(preview, null, 2)}
-            </pre>
+            <Button
+              type="button"
+              className="w-full rounded-2xl"
+              disabled={
+                executing ||
+                (action === "upsert_lineup" && Boolean(parsedJsonPayload.error)) ||
+                ((action === "upsert_cards_note" ||
+                  action === "create_manual_goal") &&
+                  !selectedPlayerId)
+              }
+              onClick={() => void onRun(preview)}
+            >
+              {executing ? "Ejecutando..." : "Ejecutar accion"}
+            </Button>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-slate-950 p-4 text-slate-100">
-            <p className="mb-2 text-sm font-semibold">API response</p>
-            <pre className="overflow-x-auto text-xs">
-              {JSON.stringify(
-                response ?? { message: "Todavia no se ejecuto ninguna accion." },
-                null,
-                2,
-              )}
-            </pre>
+          <div className="grid gap-4">
+            <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} p-4`}>
+              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+                <ActivitySquare className="h-4 w-4 text-[#AEEBFF]" />
+                Preview del payload
+              </div>
+              <pre className="overflow-x-auto rounded-[20px] border border-white/8 bg-[#0E1D30]/72 p-4 text-xs text-white/78">
+                {JSON.stringify(preview, null, 2)}
+              </pre>
+            </div>
+
+            <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} p-4`}>
+              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+                <TerminalSquare className="h-4 w-4 text-[#FAB438]" />
+                API response
+              </div>
+              <pre className="overflow-x-auto rounded-[20px] border border-white/8 bg-[#07111D] p-4 text-xs text-white/82">
+                {JSON.stringify(
+                  response ?? { message: "Todavia no se ejecuto ninguna accion." },
+                  null,
+                  2,
+                )}
+              </pre>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </LiveControlSurface>
   );
 }

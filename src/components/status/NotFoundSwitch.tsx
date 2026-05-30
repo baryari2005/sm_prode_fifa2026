@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StatusPage } from "@/components/status/StatusPage";
-import Loading from "@/app/(dashboard)/loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 
 export function NotFoundSwitch2() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export function NotFoundSwitch2() {
 
   if (!showPublic404) {
     return (
-    <Loading/>
+    <DashboardLoading source="Estado not found switch" />
     );
   }
 

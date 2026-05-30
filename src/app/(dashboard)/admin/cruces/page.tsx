@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCan } from "@/hooks/useCan";
 
-import Loading from "../../loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import AccessDenied403Page from "../../403/page";
 
 import { useReglasCruce } from "@/features/partidos/hooks/useReglasCruce";
@@ -111,7 +111,7 @@ export default function CrucesPage() {
   }
 
   if (loadingReglas || loadingTabla) {
-    return <Loading />;
+    return <DashboardLoading source="Admin cruces" />;
   }
 
   return (

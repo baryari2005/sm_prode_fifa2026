@@ -4,9 +4,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
-import { Card, CardContent } from "@/components/ui/card";
-import { PartidosResetImportacion, type ResetPartidosResponse } from "@/features/partidos/components/PartidosResetImportacion";
-import { ReimportarPartidosHeader } from "@/features/partidos/components/ReimportarPartidosHeader";
+import { FixtureResetOverview } from "@/features/partidos/components/FixtureResetOverview";
+import { type ResetPartidosResponse } from "@/features/partidos/components/PartidosResetImportacion";
 import { reimportarPartidosDesdeApi } from "@/features/partidos/services/partidos.service";
 import { useCan } from "@/hooks/useCan";
 
@@ -39,17 +38,11 @@ export default function PartidosReimportarPage() {
   }
 
   return (
-    <div className="grid gap-6">
-      <Card className="border-rose-200 bg-white shadow-sm">
-        <CardContent className="space-y-6 p-4 md:p-6">
-          <ReimportarPartidosHeader
-            canRun={canCrearPartidos}
-            running={running}
-            onRun={() => void handleRun()}
-          />
-          <PartidosResetImportacion summary={summary} />
-        </CardContent>
-      </Card>
-    </div>
+    <FixtureResetOverview
+      canRun={canCrearPartidos}
+      running={running}
+      summary={summary}
+      onRun={() => void handleRun()}
+    />
   );
 }

@@ -1,103 +1,86 @@
 "use client";
 
-import { Controller } from "react-hook-form";
-
-import { CuilInput } from "@/components/forms/CuilInput";
 import { Input } from "@/components/ui/input";
-import { ESTADO_CIVIL_OPCIONES } from "@/constants/estadocivil";
+import { Label } from "@/components/ui/label";
 import { GENERO_OPCIONES } from "@/constants/genero";
-import { NACIONALIDAD_VALUES } from "@/constants/nacionalidad";
-import { TIPOS_DOCUMENTO_OPCIONES } from "@/constants/tiposDocumento";
 
+import { RegisterFieldsSectionProps } from "../../types/registerFields.types";
+import { formatEnumLabel } from "../helpers/registerFields.helpers";
 import { BirthDateField } from "./BirthDateField";
 import { ControlledSelectField } from "./ControlledSelectField";
 import { FormSection } from "./FormSection";
-import { RegisterFieldsSectionProps } from "../../types/registerFields.types";
-import { formatEnumLabel, formatSimpleCapitalized } from "../helpers/registerFields.helpers";
-import { Label } from "@/components/ui/label";
 
 export function PersonalDataFields({ form }: RegisterFieldsSectionProps) {
-  const { register, control } = form;
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = form;
 
   return (
-    <FormSection title="Datos personales">
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="min-w-0 space-y-1">
-          <Label className="text-sm text-muted-foreground">Nombre</Label>
-          <Input {...register("nombre")} className="h-11 rounded-2xl border px-3" />
+    <FormSection>
+      <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-4 lg:p-5">
+        <div className="mb-4 space-y-1">          
+          <p className="text-xs leading-5 text-white/58">
+            Completa tu informacion principal para identificar tu cuenta.
+          </p>
         </div>
 
-        <div className="min-w-0 space-y-1">
-          <Label className="text-sm text-muted-foreground">Apellido</Label>
-          <Input {...register("apellido")} className="h-11 rounded-2xl border px-3" />
-        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="min-w-0 space-y-1">
+            <Label className="text-sm text-muted-foreground">Nombre</Label>
+            <Input
+              {...register("nombre")}
+              aria-invalid={!!errors.nombre}
+              className="h-11 rounded-2xl border px-3"
+            />
+            {errors.nombre?.message ? (
+              <p className="text-xs font-semibold text-red-300">
+                {errors.nombre.message}
+              </p>
+            ) : null}
+          </div>
 
-        <div className="min-w-0 space-y-1">
-          <Label className="text-sm text-muted-foreground">Celular</Label>
-          <Input {...register("celular")} className="h-11 rounded-2xl border px-3" />
-        </div>
+          <div className="min-w-0 space-y-1">
+            <Label className="text-sm text-muted-foreground">Apellido</Label>
+            <Input
+              {...register("apellido")}
+              aria-invalid={!!errors.apellido}
+              className="h-11 rounded-2xl border px-3"
+            />
+            {errors.apellido?.message ? (
+              <p className="text-xs font-semibold text-red-300">
+                {errors.apellido.message}
+              </p>
+            ) : null}
+          </div>
 
-        <ControlledSelectField
-          control={control}
-          name="tipoDocumento"
-          label="Tipo de documento"
-          options={TIPOS_DOCUMENTO_OPCIONES}
-        />
+          <div className="min-w-0 space-y-1">
+            <Label className="text-sm text-muted-foreground">Celular</Label>
+            <Input
+              {...register("celular")}
+              aria-invalid={!!errors.celular}
+              className="h-11 rounded-2xl border px-3"
+            />
+            {errors.celular?.message ? (
+              <p className="text-xs font-semibold text-red-300">
+                {errors.celular.message}
+              </p>
+            ) : null}
+          </div>
 
-        <div className="min-w-0 space-y-1">
-          <Label className="text-sm text-muted-foreground">Documento</Label>
-          <Input
-            {...register("documento")}
-            className="h-11 rounded-2xl border px-3"
-          />
-        </div>
+          <BirthDateField form={form} />
 
-        <div className="min-w-0 space-y-1">
-          <Label className="text-sm text-muted-foreground">CUIL</Label>
-
-          <Controller
-            name="cuil"
+          <ControlledSelectField
             control={control}
-            render={({ field }) => (
-              <CuilInput
-                className="h-11 rounded-2xl border pr-3"
-                value={field.value ?? ""}
-                name={field.name}
-                onBlur={field.onBlur}
-                onChange={field.onChange}
-                onValueChange={(digits) => field.onChange(digits)}
-              />
-            )}
+            name="genero"
+            label="Genero"
+            options={GENERO_OPCIONES}
+            formatOption={formatEnumLabel}
+            errorMessage={errors.genero?.message}
+            className="md:col-span-2"
           />
         </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <BirthDateField form={form} />
-
-        <ControlledSelectField
-          control={control}
-          name="genero"
-          label="Género"
-          options={GENERO_OPCIONES}
-          formatOption={formatEnumLabel}
-        />
-
-        <ControlledSelectField
-          control={control}
-          name="nacionalidad"
-          label="Nacionalidad"
-          options={NACIONALIDAD_VALUES}
-          formatOption={formatEnumLabel}
-        />
-
-        <ControlledSelectField
-          control={control}
-          name="estadoCivil"
-          label="Estado civil"
-          options={ESTADO_CIVIL_OPCIONES}
-          formatOption={formatSimpleCapitalized}
-        />
       </div>
     </FormSection>
   );

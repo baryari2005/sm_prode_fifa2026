@@ -2,22 +2,23 @@
 
 import { useMemo } from "react";
 
+import { brandImages } from "@/config/brand-images";
 import { GoalCelebrationOverlay as GoalCelebrationOverlayView } from "@/features/live-goals/components/GoalCelebrationOverlay";
 import { useGoalCelebrationStore } from "@/stores/goal-celebration";
 
 const CELEBRATION_MASCOTS = [
-  "/mascotas/festejos/gol1.png",
-  "/mascotas/festejos/gol2.png",
-  "/mascotas/festejos/gol3.png",
-  "/mascotas/festejos/gol4.png",
-  "/mascotas/festejos/gol5.png",
-  "/mascotas/festejos/gol6.png",
+  brandImages.celebrations.goals[0],
+  brandImages.celebrations.goals[1],
+  brandImages.celebrations.goals[2],
+  brandImages.celebrations.goals[3],
+  brandImages.celebrations.goals[4],
+  brandImages.celebrations.goals[5],
 ];
 
 const STATE_MASCOTS = {
-  KICKOFF: "/mascotas/festejos/comienza.png",
-  HALFTIME: "/mascotas/festejos/entretiempo.png",
-  FINAL: "/mascotas/festejos/finalizado.png",
+  KICKOFF: brandImages.celebrations.kickoff,
+  HALFTIME: brandImages.celebrations.halftime,
+  FINAL: brandImages.celebrations.final,
 } as const;
 
 export function GoalCelebrationOverlay() {

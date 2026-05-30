@@ -21,7 +21,7 @@ const REGISTER_DEFAULT_VALUES: Values = {
   cuil: "",
   celular: "",
   domicilio: "",
-  localidad: "No Aplica",
+  localidad: "",
   codigoPostal: "",
   fechaNacimiento: "",
   genero: "PREFIERE_NO_DECIR",

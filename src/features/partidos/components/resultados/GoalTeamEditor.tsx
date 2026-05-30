@@ -109,78 +109,125 @@ export function GoalTeamEditor({
       </div>
 
       <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-3 shadow-sm">
-        <div className="grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_110px] xl:grid-cols-[minmax(180px,1fr)_90px_95px_135px]">
-          <Select
-            value={selectedPlayerId}
-            onValueChange={setSelectedPlayerId}
-            disabled={players.length === 0}
-          >
-            <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-white text-base shadow-sm">
-              <SelectValue placeholder="Jugador" />
-            </SelectTrigger>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+              Quien hizo el gol
+            </p>
+            <p className="text-sm text-slate-500">
+              Elegi jugador, minuto y si el tanto fue de penal. Este detalle se guarda junto al resultado oficial.
+            </p>
+          </div>
 
-            <SelectContent>
-              {players.map((player) => (
-                <SelectItem
+          <div className="flex flex-wrap gap-2">
+            {players.map((player) => {
+              const isSelected = selectedPlayerId === player.id;
+
+              return (
+                <button
                   key={player.id}
-                  value={player.id}
-                  className="py-2 text-base"
+                  type="button"
+                  onClick={() => setSelectedPlayerId(player.id)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    isSelected
+                      ? "border-[#008C93]/40 bg-[#008C93]/10 text-[#006A70]"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-[#008C93]/25 hover:text-slate-900"
+                  }`}
                 >
                   {player.nombre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                </button>
+              );
+            })}
+          </div>
 
-          <Input
-            type="text"
-            inputMode="numeric"
-            value={minute}
-            placeholder="Minuto"
-            onFocus={(event) => {
-              event.currentTarget.select();
-            }}
-            onMouseUp={(event) => {
-              event.preventDefault();
-            }}
-            onChange={(event) => {
-              const onlyNumbers = event.target.value.replace(/\D/g, "");
+          <div className="grid items-end gap-3 sm:grid-cols-[minmax(0,1fr)_110px] xl:grid-cols-[minmax(220px,1fr)_110px_110px_150px]">
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                Jugador
+              </label>
+              <Select
+                value={selectedPlayerId}
+                onValueChange={setSelectedPlayerId}
+                disabled={players.length === 0}
+              >
+                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-white text-base shadow-sm">
+                  <SelectValue placeholder="Selecciona un jugador" />
+                </SelectTrigger>
 
-              setMinute(onlyNumbers);
-            }}
-            onPaste={(event) => {
-              event.preventDefault();
+                <SelectContent>
+                  {players.map((player) => (
+                    <SelectItem
+                      key={player.id}
+                      value={player.id}
+                      className="py-2 text-base"
+                    >
+                      {player.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              const pastedText = event.clipboardData.getData("text");
-              const onlyNumbers = pastedText.replace(/\D/g, "");
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                Minuto
+              </label>
+              <Input
+                type="text"
+                inputMode="numeric"
+                value={minute}
+                placeholder="12"
+                onFocus={(event) => {
+                  event.currentTarget.select();
+                }}
+                onMouseUp={(event) => {
+                  event.preventDefault();
+                }}
+                onChange={(event) => {
+                  const onlyNumbers = event.target.value.replace(/\D/g, "");
 
-              setMinute(onlyNumbers);
-            }}
-            className="h-10 rounded-xl border-slate-200 bg-white text-center font-semibold text-slate-950 shadow-sm focus-visible:ring-2 focus-visible:ring-[#008C93]/20"
-          />
+                  setMinute(onlyNumbers);
+                }}
+                onPaste={(event) => {
+                  event.preventDefault();
 
-          <label className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm">
-            <input
-              type="checkbox"
-              checked={isPenalty}
-              onChange={(event) => {
-                setIsPenalty(event.target.checked);
-              }}
-              className="h-4 w-4 rounded border-slate-300 accent-[#008C93]"
-            />
+                  const pastedText = event.clipboardData.getData("text");
+                  const onlyNumbers = pastedText.replace(/\D/g, "");
 
-            <span>Penal</span>
-          </label>
+                  setMinute(onlyNumbers);
+                }}
+                className="h-10 rounded-xl border-slate-200 bg-white text-center font-semibold text-slate-950 shadow-sm focus-visible:ring-2 focus-visible:ring-[#008C93]/20"
+              />
+            </div>
 
-          <Button
-            type="button"
-            onClick={handleAddGoal}
-            disabled={!canAddGoal}
-            className="h-10 rounded-xl bg-[#008C93] px-6 text-sm font-semibold text-white shadow-sm hover:bg-[#00757B] sm:col-span-2 xl:col-span-1"
-          >
-            <CircleDot className="mr-2 h-4 w-4" />
-            Agregar gol
-          </Button>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                Tipo
+              </label>
+              <label className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm">
+                <input
+                  type="checkbox"
+                  checked={isPenalty}
+                  onChange={(event) => {
+                    setIsPenalty(event.target.checked);
+                  }}
+                  className="h-4 w-4 rounded border-slate-300 accent-[#008C93]"
+                />
+
+                <span>Penal</span>
+              </label>
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleAddGoal}
+              disabled={!canAddGoal}
+              className="h-10 rounded-xl bg-[#008C93] px-6 text-sm font-semibold text-white shadow-sm hover:bg-[#00757B]"
+            >
+              <CircleDot className="mr-2 h-4 w-4" />
+              Agregar gol
+            </Button>
+          </div>
         </div>
       </div>
 

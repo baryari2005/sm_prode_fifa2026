@@ -1,8 +1,11 @@
 "use client";
 
-import { Clock3, TimerReset, Trophy, UsersRound } from "lucide-react";
+import { Clock3, Eye, TimerReset, Trophy, UsersRound } from "lucide-react";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useCan } from "@/hooks/useCan";
 import {
   formatMatchHour,
   getFaseNombre,
@@ -37,6 +40,7 @@ export function PronosticoRapidoMatchCard({
   error,
   onScoreChange,
 }: PronosticoRapidoMatchCardProps) {
+  const canViewPartidoDetalle = useCan("partidos", "ver_detalle");
   const closed = isPredictionBlocked(partido);
   const faseNombre = getFaseNombre(partido, []);
   const grupoNombre = getGrupoNombre(partido);
@@ -92,6 +96,21 @@ export function PronosticoRapidoMatchCard({
           </div>
 
           <div className="hidden flex-wrap items-center gap-2 2xl:flex 2xl:flex-nowrap 2xl:justify-end">
+            {canViewPartidoDetalle ? (
+              <Button
+                asChild
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 rounded-xl border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+              >
+                <Link href={`/pronosticos/partidos/${partido.id}/detalle`}>
+                  <Eye className="mr-1.5 h-3.5 w-3.5" />
+                  Ver detalles
+                </Link>
+              </Button>
+            ) : null}
+
             {marcadorActual ? (
               <Badge
                 variant="secondary"

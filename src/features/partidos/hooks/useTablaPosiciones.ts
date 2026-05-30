@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Fase, Seleccion } from "@/features/partidos/types/types";
@@ -103,6 +103,22 @@ export function useTablaPosiciones() {
   const tablaPorGrupo = useMemo(() => {
     return agruparTablaPorGrupo(tablaPosiciones);
   }, [tablaPosiciones]);
+
+  useEffect(() => {
+    if (gruposDisponibles.length === 0) {
+      if (grupoSeleccionado !== null) {
+        setGrupoSeleccionado(null);
+      }
+      return;
+    }
+
+    if (
+      grupoSeleccionado === null ||
+      !gruposDisponibles.includes(grupoSeleccionado)
+    ) {
+      setGrupoSeleccionado(gruposDisponibles[0]);
+    }
+  }, [grupoSeleccionado, gruposDisponibles]);
 
   const grupoActual = useMemo(() => {
     if (grupoSeleccionado === null) {

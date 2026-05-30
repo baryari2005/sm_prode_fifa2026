@@ -9,6 +9,13 @@ import {
   X,
 } from "lucide-react";
 
+import {
+  BrandDialogFrame,
+  BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME,
+  BRAND_DIALOG_CONTENT_CLASSNAME,
+  BRAND_DIALOG_FOOTER_CLASSNAME,
+  BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME,
+} from "@/components/ui/brand-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,7 +30,6 @@ import {
   DialogHero,
   DialogHighlightCard,
   DialogMutedNote,
-  DialogShell,
 } from "@/components/ui/dialog-shell";
 import { cn } from "@/lib/utils";
 
@@ -46,37 +52,38 @@ type ConfirmDialogProps = {
 const toneStyles: Record<
   ConfirmDialogTone,
   {
-    heroClassName: string;
+    heroIcon: ReactNode;
+    heroIconClassName: string;
+    highlightIcon: ReactNode;
     highlightClassName: string;
     highlightTitleClassName: string;
     highlightDescriptionClassName: string;
     confirmButtonClassName: string;
-    defaultHeroIcon: ReactNode;
-    defaultHighlightIcon: ReactNode;
-    defaultConfirmIcon: ReactNode;
+    confirmIcon: ReactNode;
   }
 > = {
   primary: {
-    heroClassName: "from-emerald-500 via-green-600 to-slate-900",
-    highlightClassName: "border-emerald-100 bg-emerald-50",
-    highlightTitleClassName: "text-emerald-900",
-    highlightDescriptionClassName: "text-emerald-700",
-    confirmButtonClassName:
-      "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700",
-    defaultHeroIcon: <ShieldCheck className="h-6 w-6 text-white" />,
-    defaultHighlightIcon: <ShieldCheck className="h-5 w-5 text-emerald-600" />,
-    defaultConfirmIcon: <ShieldCheck className="h-4 w-4" />,
+    heroIcon: <ShieldCheck className="h-6 w-6 text-[#FAB438]" />,
+    heroIconClassName:
+      "border border-white/10 bg-white/[0.08] ring-0 shadow-[0_12px_30px_rgba(2,6,23,0.28)]",
+    highlightIcon: <ShieldCheck className="h-5 w-5 text-[#FFE4A3]" />,
+    highlightClassName: "border border-[#FAB438]/22 bg-[#FAB438]/10",
+    highlightTitleClassName: "text-[#FFF2C8]",
+    highlightDescriptionClassName: "text-white/74",
+    confirmButtonClassName: BRAND_DIALOG_PRIMARY_BUTTON_CLASSNAME,
+    confirmIcon: <ShieldCheck className="h-4 w-4" />,
   },
   danger: {
-    heroClassName: "from-rose-500 via-red-600 to-slate-900",
-    highlightClassName: "border-rose-100 bg-rose-50",
-    highlightTitleClassName: "text-rose-900",
-    highlightDescriptionClassName: "text-rose-700",
+    heroIcon: <ShieldX className="h-6 w-6 text-[#FCA5A5]" />,
+    heroIconClassName:
+      "border border-rose-300/18 bg-rose-400/10 ring-0 shadow-[0_12px_30px_rgba(127,29,29,0.18)]",
+    highlightIcon: <AlertTriangle className="h-5 w-5 text-[#FCA5A5]" />,
+    highlightClassName: "border border-rose-300/18 bg-rose-400/10",
+    highlightTitleClassName: "text-[#FFE0E0]",
+    highlightDescriptionClassName: "text-white/74",
     confirmButtonClassName:
-      "bg-rose-600 text-white shadow-lg shadow-rose-600/20 hover:bg-rose-700",
-    defaultHeroIcon: <ShieldX className="h-6 w-6 text-white" />,
-    defaultHighlightIcon: <AlertTriangle className="h-5 w-5 text-rose-600" />,
-    defaultConfirmIcon: <ShieldX className="h-4 w-4" />,
+      "h-11 rounded-2xl border border-rose-300/18 bg-rose-500/88 px-5 font-black text-white shadow-[0_14px_34px_rgba(159,18,57,0.24)] transition hover:bg-rose-500 disabled:bg-white/10 disabled:text-white/40 disabled:shadow-none",
+    confirmIcon: <ShieldX className="h-4 w-4" />,
   },
 };
 
@@ -97,21 +104,26 @@ export function ConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-0 shadow-2xl">
+      <DialogContent className={BRAND_DIALOG_CONTENT_CLASSNAME}>
         <DialogTitle className="sr-only">{title}</DialogTitle>
         <DialogDescription className="sr-only">{description}</DialogDescription>
 
-        <DialogShell>
+        <BrandDialogFrame>
           <DialogHero
-            icon={styles.defaultHeroIcon}
-            title={title}
+            icon={styles.heroIcon}
+            title={
+              <span className="font-brand text-[1.85rem] leading-[0.94] tracking-[0.03em] text-white">
+                {title}
+              </span>
+            }
             description={description}
-            className={styles.heroClassName}
+            className="border-b border-white/10 from-[#1E2C46] via-[#243754] to-[#10233B] px-6 py-6"
+            iconClassName={styles.heroIconClassName}
           />
 
           <DialogFormSection>
             <DialogHighlightCard
-              icon={styles.defaultHighlightIcon}
+              icon={styles.highlightIcon}
               title={title}
               description={description}
               className={styles.highlightClassName}
@@ -119,17 +131,17 @@ export function ConfirmDialog({
               descriptionClassName={styles.highlightDescriptionClassName}
             />
 
-            <DialogMutedNote>
+            <DialogMutedNote className="border border-white/8 bg-white/[0.05]">
               {note ??
                 "Revisá esta acción antes de confirmar porque puede impactar datos visibles del sistema."}
             </DialogMutedNote>
           </DialogFormSection>
 
-          <DialogFooter className="gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:justify-end">
+          <DialogFooter className={BRAND_DIALOG_FOOTER_CLASSNAME}>
             <DialogClose asChild>
               <Button
                 variant="outline"
-                className="h-11 rounded-xl border-slate-200 px-5 font-bold"
+                className={BRAND_DIALOG_CANCEL_BUTTON_CLASSNAME}
                 disabled={loading}
               >
                 <X className="mr-2 h-4 w-4" />
@@ -140,10 +152,7 @@ export function ConfirmDialog({
             <Button
               onClick={onConfirm}
               disabled={loading}
-              className={cn(
-                "h-11 rounded-xl px-5 font-black",
-                styles.confirmButtonClassName
-              )}
+              className={cn(styles.confirmButtonClassName)}
             >
               {loading ? (
                 <span className="inline-flex items-center gap-2">
@@ -152,13 +161,13 @@ export function ConfirmDialog({
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-2">
-                  {icon ?? styles.defaultConfirmIcon}
+                  {icon ?? styles.confirmIcon}
                   <span>{confirmLabel}</span>
                 </span>
               )}
             </Button>
           </DialogFooter>
-        </DialogShell>
+        </BrandDialogFrame>
       </DialogContent>
     </Dialog>
   );

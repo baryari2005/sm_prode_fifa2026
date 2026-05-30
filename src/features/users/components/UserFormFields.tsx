@@ -243,7 +243,7 @@ export function UserFormFields({
         )}
       </div>
 
-      <div className="md:col-span-12 h-px bg-slate-200/80" />
+      <div className="user-form-divider h-px bg-slate-200/80 md:col-span-12" />
 
       <div className="space-y-1 md:col-span-3">
         <Label>Tipo de documento</Label>
@@ -326,7 +326,7 @@ export function UserFormFields({
         />
       </div>
 
-      <div className="md:col-span-12 h-px bg-slate-200/80" />
+      <div className="user-form-divider h-px bg-slate-200/80 md:col-span-12" />
 
       <div className="space-y-1 md:col-span-6">
         <Label>Domicilio</Label>
@@ -392,7 +392,7 @@ export function UserFormFields({
         )}
       </div>
 
-      <div className="md:col-span-12 h-px bg-slate-200/80" />
+      <div className="user-form-divider h-px bg-slate-200/80 md:col-span-12" />
 
       <div className="space-y-1 md:col-span-6">
         <Label>Celular</Label>

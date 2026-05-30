@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+
 import { buildActionsColumn } from "@/components/data-display/table/BuildActionsColumn";
 import { Badge } from "@/components/ui/badge";
 import type { Role } from "@/features/roles/types/types";
@@ -11,23 +12,27 @@ export function getRoleColumns(canEdit: boolean): ColumnDef<Role>[] {
       accessorKey: "nombre",
       header: "Nombre",
       cell: ({ row }) => (
-        <span className="font-medium">{row.original.nombre}</span>
+        <span className="font-semibold text-white">{row.original.nombre}</span>
       ),
     },
     {
       accessorKey: "descripcion",
-      header: "Descripción",
+      header: "Descripcion",
       cell: ({ row }) => (
-        <span className="text-muted-foreground">
-          {row.original.descripcion ?? "-"}
-        </span>
+        <span className="text-white/72">{row.original.descripcion ?? "-"}</span>
       ),
     },
     {
       accessorKey: "activo",
       header: "Estado",
       cell: ({ row }) => (
-        <Badge variant={row.original.activo ? "default" : "destructive"}>
+        <Badge
+          className={
+            row.original.activo
+              ? "rounded-full border-emerald-300/18 bg-emerald-300/10 text-emerald-100 hover:bg-emerald-300/10"
+              : "rounded-full border-[#FAB438]/18 bg-[#FAB438]/10 text-[#FFE4A3] hover:bg-[#FAB438]/10"
+          }
+        >
           {row.original.activo ? "Activo" : "Inactivo"}
         </Badge>
       ),
@@ -35,12 +40,20 @@ export function getRoleColumns(canEdit: boolean): ColumnDef<Role>[] {
     {
       id: "permisos",
       header: "Permisos",
-      cell: ({ row }) => row.original._count?.permisos ?? 0,
+      cell: ({ row }) => (
+        <span className="font-semibold text-white">
+          {row.original._count?.permisos ?? 0}
+        </span>
+      ),
     },
     {
       id: "usuarios",
       header: "Usuarios",
-      cell: ({ row }) => row.original._count?.usuarios ?? 0,
+      cell: ({ row }) => (
+        <span className="font-semibold text-white">
+          {row.original._count?.usuarios ?? 0}
+        </span>
+      ),
     },
     buildActionsColumn<Role>({
       component: "roles",

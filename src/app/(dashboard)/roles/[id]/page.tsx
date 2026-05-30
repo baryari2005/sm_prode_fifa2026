@@ -1,6 +1,6 @@
 "use client";
 
-import Loading from "../../loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import { useCan } from "@/hooks/useCan";
 import { useEditRole } from "../../../../features/roles/hooks/useEditRole";
 import { EditRoleForm } from "../../../../features/roles/components/EditRoleForm";
@@ -17,7 +17,7 @@ export default function EditRolePage() {
   }
 
   if (editRole.loading) {
-    return <Loading />;
+    return <DashboardLoading source="Roles detalle" />;
   }
 
   return <EditRoleForm {...editRole} />;

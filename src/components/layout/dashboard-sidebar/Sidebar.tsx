@@ -13,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu } from "lucide-react";
 
+import { BrandSidebarCard } from "@/components/brand/BrandSidebarCard";
 import { Separator } from "@/components/ui/separator";
 import { SidebarNavIcon } from "./SidebarNavIcon";
 import { SidebarSection } from "./SidebarSection";
@@ -20,6 +21,8 @@ import {
   SIDEBAR_CONFIG,
   type SidebarSubItemConfig,
 } from "@/config/sidebar.config";
+import { brandImages } from "@/config/brand-images";
+import { EMPTY_PERMISSIONS } from "@/features/auth/constants/empty-permissions";
 import { useAuth } from "@/stores/auth";
 import type { PermissionDTO } from "@/features/auth/types/auth.types";
 import { hasPermission } from "@/features/auth/libs/permissions";
@@ -33,7 +36,9 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const permissions = useAuth((state) => state.user?.permisos ?? []);
+  const permissions = useAuth(
+    (state) => state.user?.permisos ?? EMPTY_PERMISSIONS
+  );
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
   const badgeMap: Record<string, number> = {
@@ -257,10 +262,10 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
                 <button
                   type="button"
                   onClick={() => toggleMenu(childKey)}
-                  className={`group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                  className={`group flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold transition ${
                     childActive
-                      ? "cursor-pointer bg-[#FDBB30]/15 text-[#FDBB30]"
-                      : "cursor-pointer text-white/75 hover:bg-white/[0.07] hover:text-white"
+                      ? "cursor-pointer bg-[#FAB438]/12 text-[#FFE4A3]"
+                      : "cursor-pointer text-white/75 hover:bg-white/[0.06] hover:text-white"
                   }`}
                 >
                   <span className="flex min-w-0 items-center gap-2">
@@ -286,10 +291,10 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
             <Link
               key={childKey}
               href={child.href}
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${
+              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ${
                 childActive
-                  ? "bg-[#FDBB30]/15 text-[#FDBB30]"
-                  : "text-white/75 hover:bg-white/[0.07] hover:text-white"
+                  ? "bg-[#5993B6]/18 text-sky-100"
+                  : "text-white/75 hover:bg-white/[0.06] hover:text-sky-100"
               }`}
             >
               <ChildIcon className="h-3.5 w-3.5 shrink-0 text-current" />
@@ -302,9 +307,9 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
   };
 
   return (
-    <aside className="flex h-dvh min-h-dvh min-w-0 shrink-0 flex-col overflow-hidden bg-[#06111F] text-white shadow-[18px_0_45px_rgba(0,0,0,0.22)] transition-all duration-300">
+    <aside className="flex h-dvh min-h-dvh min-w-0 shrink-0 flex-col overflow-hidden bg-[linear-gradient(180deg,#061B33_0%,#071A2F_100%)] text-white shadow-[18px_0_45px_rgba(0,0,0,0.22)] transition-all duration-300">
       <div className="relative shrink-0 border-b border-white/10 p-3 xl:p-4">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(57,169,53,0.22),transparent_45%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(117,215,255,0.18),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent)]" />
 
         <div
           className={`relative flex items-center ${
@@ -315,7 +320,7 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
             <div className="flex items-center gap-3">
               <div className="min-w-0">
                 <Image
-                  src="/logo.png"
+                  src={brandImages.prode.masSanMiguelLogo}
                   alt="104 partidos en el Mundial 2026"
                   width={130}
                   height={130}
@@ -325,22 +330,10 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
             </div>
           )}
 
-          {collapsed && (
-            <div className="grid h-12 w-12 place-items-center rounded-2xl">
-              <Image
-                src="/copa.png"
-                alt="Logo copa mundial"
-                width={30}
-                height={30}
-                className="h-auto w-8 select-none object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.25)]"
-              />
-            </div>
-          )}
-
           {!collapsed && (
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="grid h-10 w-10 place-items-center rounded-xl text-white/75 transition hover:bg-white/10 hover:text-[#FDBB30]"
+              className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.05] text-white/75 transition hover:bg-white/10 hover:text-sky-100"
               aria-label="Contraer menú"
             >
               <Menu className="h-5 w-5" />
@@ -351,7 +344,7 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
         {collapsed && (
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="relative mx-auto mt-3 grid h-9 w-9 place-items-center rounded-xl text-white/75 transition hover:bg-white/10 hover:text-[#FDBB30]"
+            className="relative mx-auto mt-3 grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-white/[0.05] text-white/75 transition hover:bg-white/10 hover:text-sky-100"
             aria-label="Expandir menú"
           >
             <Menu className="h-5 w-5" />
@@ -390,11 +383,11 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
                         onClick={() => toggleMenu(itemKey)}
                         className={`
                           group flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5
-                          text-sm font-medium transition
+                          text-sm font-semibold transition
                           ${
                             itemActive
-                              ? "bg-[#FDBB30]/12 text-[#FDBB30]"
-                              : "cursor-pointer text-white hover:bg-white/10 hover:text-[#FDBB30]"
+                              ? "bg-[#5993B6]/18 text-sky-100 shadow-[0_10px_22px_rgba(89,147,182,0.12)]"
+                              : "cursor-pointer text-white hover:bg-white/[0.06] hover:text-sky-100"
                           }
                         `}
                       >
@@ -402,8 +395,8 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
                           <Icon
                             className={`h-4 w-4 shrink-0 ${
                               itemActive
-                                ? "text-[#FDBB30]"
-                                : "text-white transition-colors group-hover:text-[#FDBB30]"
+                                ? "text-sky-100"
+                                : "text-white/72 transition-colors group-hover:text-sky-100"
                             }`}
                           />
 
@@ -413,8 +406,8 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
                         <ChevronDown
                           className={`h-4 w-4 shrink-0 transition-transform ${
                             itemActive
-                              ? "text-[#FDBB30]"
-                              : "text-white/75 group-hover:text-[#FDBB30]"
+                              ? "text-sky-100"
+                              : "text-white/56 group-hover:text-sky-100"
                           } ${isOpen ? "rotate-180" : ""}`}
                         />
                       </button>
@@ -443,10 +436,20 @@ export function Sidebar({ collapsed, setCollapsed }: Props) {
               })}
             </div>
 
-            <Separator className="my-4 bg-white/10" />
+            <Separator className="my-4 bg-white/8" />
           </div>
         ))}
 
+        <div className="px-1 pt-1">
+          <BrandSidebarCard
+            collapsed={collapsed}
+            imageSrc={brandImages.institucional.solArgentino}
+            title="Orgullo de barrio"
+            subtitle="Pasión mundial"   
+            height={60}         
+            width={60}
+          />
+        </div>
       </div>
     </aside>
   );

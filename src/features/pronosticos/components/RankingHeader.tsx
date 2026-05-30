@@ -1,21 +1,19 @@
 "use client";
 
-import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Medal } from "lucide-react";
+import { PageHeaderWithBrand } from "@/components/brand/PageHeaderWithBrand";
+import { brandImages } from "@/config/brand-images";
 
 export function RankingHeader() {
   return (
-    <CardHeader className="border-b border-slate-100 px-5 py-5 md:px-6">
-      <div className="space-y-2">
-        <CardTitle className="flex items-center gap-2 text-2xl text-slate-950">
-          <Medal className="h-6 w-6" />
-          Ranking del Prode
-        </CardTitle>
-
-        <CardDescription className="text-sm text-slate-500">
-          Seguí tu posición, tus puntos acumulados y el historial de pronósticos ya calificados.
-        </CardDescription>
-      </div>
-    </CardHeader>
+    <PageHeaderWithBrand
+      title="Ranking del Prode"
+      description="El orgullo del barrio se juega fecha a fecha. Seguí tu posición, tus puntos acumulados y el historial de pronósticos ya calificados."
+      badge="Pasión mundial"
+      imageSrc={brandImages.institucional.masSanMiguelLogo}
+      watermarkSrc={brandImages.institucional.solArgentino}
+      imageAlt="Branding institucional del ranking"
+      density="compact"
+      brandVisual="subtle"
+    />
   );
 }

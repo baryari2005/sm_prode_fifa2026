@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { RegisterFormValues } from "../../types/registerFields.types";
 
 type Props = {
@@ -19,6 +20,8 @@ type Props = {
   options: readonly string[];
   placeholder?: string;
   formatOption?: (value: string) => string;
+  errorMessage?: string;
+  className?: string;
 };
 
 const SELECT_TRIGGER_CLASS =
@@ -34,9 +37,11 @@ export function ControlledSelectField({
   options,
   placeholder = "Seleccionar",
   formatOption,
+  errorMessage,
+  className,
 }: Props) {
   return (
-    <div className="min-w-0 space-y-1">
+    <div className={`min-w-0 space-y-1 ${className ?? ""}`}>
       <label className="text-sm text-muted-foreground">{label}</label>
 
       <Controller
@@ -44,7 +49,10 @@ export function ControlledSelectField({
         name={name}
         render={({ field }) => (
           <Select value={String(field.value ?? "")} onValueChange={field.onChange}>
-            <SelectTrigger className={SELECT_TRIGGER_CLASS}>
+            <SelectTrigger
+              aria-invalid={!!errorMessage}
+              className={SELECT_TRIGGER_CLASS}
+            >
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
 
@@ -58,6 +66,9 @@ export function ControlledSelectField({
           </Select>
         )}
       />
+      {errorMessage ? (
+        <p className="text-xs font-semibold text-red-300">{errorMessage}</p>
+      ) : null}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
-import Loading from "../loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import { useLiveAutoRefresh } from "@/hooks/useLiveAutoRefresh";
 import { useCan } from "@/hooks/useCan";
 
@@ -181,7 +181,7 @@ export default function PronosticosPage() {
   }
 
   if (loading) {
-    return <Loading />;
+    return <DashboardLoading source="Pronosticos" />;
   }
 
   return (
@@ -227,6 +227,9 @@ export default function PronosticosPage() {
                 partidos={grupo.partidos}
                 selecciones={[]}
                 fases={[]}
+                onVerDetalle={(partidoId) =>
+                  router.push(`/pronosticos/partidos/${partidoId}/detalle`)
+                }
                 allowPronostico
                 onPronosticoSaved={loadData}
                 onPronosticarClick={(partido) => {

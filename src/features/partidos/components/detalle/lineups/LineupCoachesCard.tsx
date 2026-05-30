@@ -1,6 +1,5 @@
 import Image from "next/image";
-
-import { Card, CardContent } from "@/components/ui/card";
+import { PARTIDO_DETALLE_SUBCARD_CLASSNAME } from "@/features/partidos/components/detalle/PartidoDetalleSurface";
 
 import type { PartidoDetalleEquipo } from "@/features/partidos/types/partido-detalle.types";
 
@@ -18,12 +17,8 @@ export function LineupCoachesCard({
   entrenadorVisitante,
 }: LineupCoachesCardProps) {
   return (
-    <Card className="group relative overflow-hidden rounded-[1.9rem] border border-slate-200/90 bg-gradient-to-br from-white via-white to-slate-50 shadow-[0_20px_55px_rgba(15,23,42,0.09)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#008C93]/35 hover:shadow-[0_26px_60px_rgba(15,23,42,0.14)]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#008C93] via-[#00A6B2] to-[#7DD3FC]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,140,147,0.08),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(125,211,252,0.08),transparent_30%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-
-      <CardContent className="relative p-0">
-        <div className="grid gap-0 md:grid-cols-2">
+    <div className={`${PARTIDO_DETALLE_SUBCARD_CLASSNAME} overflow-hidden`}>
+      <div className="grid gap-0 md:grid-cols-2">
           <CoachBlock
             equipo={local}
             entrenador={entrenadorLocal}
@@ -35,9 +30,8 @@ export function LineupCoachesCard({
             entrenador={entrenadorVisitante}
             align="right"
           />
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -54,17 +48,17 @@ function CoachBlock({ equipo, entrenador, align }: CoachBlockProps) {
     <div
       className={`flex items-center gap-3 px-4 py-4 ${
         isRight
-          ? "justify-end text-right md:border-l md:border-slate-200"
+          ? "justify-end text-right md:border-l md:border-white/8"
           : "justify-start"
       }`}
     >
       {!isRight && <TeamLogo equipo={equipo} />}
 
       <div>
-        <p className="text-sm font-semibold text-slate-950">
+        <p className="text-sm font-semibold text-white">
           {entrenador || "DT sin cargar"}
         </p>
-        <p className="text-xs text-slate-500">Director tecnico</p>
+        <p className="text-xs text-white/58">Director tecnico</p>
       </div>
 
       {isRight && <TeamLogo equipo={equipo} />}
@@ -74,7 +68,7 @@ function CoachBlock({ equipo, entrenador, align }: CoachBlockProps) {
 
 function TeamLogo({ equipo }: { equipo: PartidoDetalleEquipo }) {
   return (
-    <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white p-1 shadow-sm">
+    <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/12 bg-white/[0.08] p-1.5">
       {equipo.escudoUrl ? (
         <Image
           src={equipo.escudoUrl}
@@ -85,8 +79,8 @@ function TeamLogo({ equipo }: { equipo: PartidoDetalleEquipo }) {
           className="h-full w-full object-contain"
         />
       ) : (
-        <span className="text-[10px] font-bold text-slate-500">
-          {equipo.nombre.slice(0, 2).toUpperCase()}
+        <span className="text-[10px] font-bold text-[#AEEBFF]">
+          {(equipo.codigo ?? equipo.nombre.slice(0, 2)).toUpperCase()}
         </span>
       )}
     </div>

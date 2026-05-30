@@ -1,16 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Save, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
-import Loading from "@/app/(dashboard)/loading";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineupEditorCard } from "@/features/partidos/components/LineupEditorCard";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
+import { PartidoFormacionesDashboardView } from "@/features/partidos/components/components/formaciones/PartidoFormacionesDashboardView";
 import { getPlantelBySeleccion } from "@/features/partidos/services/plantel.service";
 import {
   getPartidoDetalle,
@@ -18,8 +14,8 @@ import {
   getResultado,
   saveResultado,
 } from "@/features/partidos/services/resultado.service";
-import type { TeamLineup } from "@/features/partidos/types/fixture-details";
 import { DEFAULT_TEAM_LINEUP } from "@/features/partidos/types/fixture-details";
+import type { TeamLineup } from "@/features/partidos/types/fixture-details";
 import type { JugadorSeleccion, Partido, Resultado } from "@/features/partidos/types/types";
 import { useCan } from "@/hooks/useCan";
 
@@ -62,13 +58,11 @@ export default function PartidoFormacionesPage() {
     suplentes: [],
   });
   const [previousLocal, setPreviousLocal] = useState<PreviousSource | null>(null);
-  const [previousVisitante, setPreviousVisitante] = useState<PreviousSource | null>(
-    null
-  );
+  const [previousVisitante, setPreviousVisitante] = useState<PreviousSource | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const isLiveLocked =
-    resultado?.estado === "EN_JUEGO" || resultado?.estado === "ENTRETIEMPO";
+
+  const isFormacionesLocked = resultado?.estado === "FINALIZADO";
 
   useEffect(() => {
     if (!canVer) return;
@@ -130,7 +124,7 @@ export default function PartidoFormacionesPage() {
   );
 
   if (loading) {
-    return <Loading />;
+    return <DashboardLoading source="Admin partidos formaciones" />;
   }
 
   if (!canVer) {
@@ -143,8 +137,10 @@ export default function PartidoFormacionesPage() {
 
   async function handleSave() {
     if (!canEditar) return;
-    if (isLiveLocked) {
-      toast.error("No se pueden modificar las formaciones porque el partido esta en juego");
+    if (isFormacionesLocked) {
+      toast.error(
+        "No se pueden modificar las formaciones porque el partido esta finalizado"
+      );
       return;
     }
 
@@ -174,110 +170,39 @@ export default function PartidoFormacionesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-1">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(`/admin/partidos/${partidoId}`)}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver al partido
-          </Button>
-          <h1 className="text-3xl font-bold tracking-tight">Cargar formaciones</h1>
-          <p className="text-sm text-muted-foreground">
-            {localNombre} vs {visitanteNombre}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Link href={`/admin/partidos/${partidoId}`}>
-            <Button variant="outline">Ver detalle</Button>
-          </Link>
-          <Link href={`/admin/partidos/${partidoId}/resultado`}>
-            <Button variant="outline">Cargar resultado</Button>
-          </Link>
-          <Link href={`/admin/paises/${partido.seleccionLocalId}/plantel`}>
-            <Button variant="outline">
-              <Users className="mr-2 h-4 w-4" />
-              {`Plantel ${localNombre}`}
-            </Button>
-          </Link>
-          <Link href={`/admin/paises/${partido.seleccionVisitanteId}/plantel`}>
-            <Button variant="outline">
-              <Users className="mr-2 h-4 w-4" />
-              {`Plantel ${visitanteNombre}`}
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      <Card className="border-white/70 bg-white shadow-sm">
-        <CardHeader>
-          <CardTitle>Editor de formaciones</CardTitle>
-          <CardDescription>
-            Podés cargar titulares y suplentes para cada selección. Si existe una
-            formación anterior, se puede reutilizar y editar para este partido.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-6 xl:grid-cols-2">
-          {isLiveLocked ? (
-            <div className="xl:col-span-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
-              El partido esta en juego. La edicion manual de formaciones queda bloqueada.
-            </div>
-          ) : null}
-
-          <div className={isLiveLocked ? "pointer-events-none opacity-60" : ""}>
-            <LineupEditorCard
-              title={localNombre}
-              teamCode={localCodigo}
-              lineup={alineacionLocal}
-              squad={plantelLocal}
-              onChange={setAlineacionLocal}
-              previousLineup={previousLocal?.lineup ?? null}
-              previousMatchLabel={localPreviousLabel}
-              onApplyPrevious={
-                previousLocal?.lineup
-                  ? () => setAlineacionLocal(cloneLineup(previousLocal.lineup))
-                  : undefined
-              }
-            />
-          </div>
-
-          <div className={isLiveLocked ? "pointer-events-none opacity-60" : ""}>
-            <LineupEditorCard
-              title={visitanteNombre}
-              teamCode={visitanteCodigo}
-              lineup={alineacionVisitante}
-              squad={plantelVisitante}
-              onChange={setAlineacionVisitante}
-              previousLineup={previousVisitante?.lineup ?? null}
-              previousMatchLabel={visitantePreviousLabel}
-              onApplyPrevious={
-                previousVisitante?.lineup
-                  ? () =>
-                      setAlineacionVisitante(cloneLineup(previousVisitante.lineup))
-                  : undefined
-              }
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-end gap-3">
-        <Button
-          variant="outline"
-          onClick={() => router.push(`/admin/partidos/${partidoId}`)}
-        >
-          Cancelar
-        </Button>
-        <Button onClick={handleSave} disabled={!canEditar || isLiveLocked || saving}>
-          <Save className="mr-2 h-4 w-4" />
-          {saving ? "Guardando..." : "Guardar formaciones"}
-        </Button>
-      </div>
-    </div>
+    <PartidoFormacionesDashboardView
+      partido={partido}
+      partidoId={partidoId}
+      localNombre={localNombre}
+      visitanteNombre={visitanteNombre}
+      localCodigo={localCodigo}
+      visitanteCodigo={visitanteCodigo}
+      localPlantel={plantelLocal}
+      visitantePlantel={plantelVisitante}
+      alineacionLocal={alineacionLocal}
+      alineacionVisitante={alineacionVisitante}
+      previousLocalLabel={localPreviousLabel}
+      previousVisitanteLabel={visitantePreviousLabel}
+      previousLocalLineup={previousLocal?.lineup ?? null}
+      previousVisitanteLineup={previousVisitante?.lineup ?? null}
+      onApplyPreviousLocal={
+        previousLocal?.lineup
+          ? () => setAlineacionLocal(cloneLineup(previousLocal.lineup))
+          : undefined
+      }
+      onApplyPreviousVisitante={
+        previousVisitante?.lineup
+          ? () => setAlineacionVisitante(cloneLineup(previousVisitante.lineup))
+          : undefined
+      }
+      onChangeLocal={setAlineacionLocal}
+      onChangeVisitante={setAlineacionVisitante}
+      onCancel={() => router.push(`/admin/partidos/${partidoId}`)}
+      onSave={handleSave}
+      saving={saving}
+      canEdit={canEditar}
+      isLiveLocked={isFormacionesLocked}
+    />
   );
 }
 

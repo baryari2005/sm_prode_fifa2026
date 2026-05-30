@@ -16,7 +16,17 @@ export function useRoles(enabled: boolean) {
 
     const fetchRoles = async () => {
       try {
-        const { data } = await axiosInstance.get("/roles");
+        const { data } = await axiosInstance.get("/roles", {
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+          params: {
+            page: 1,
+            pageSize: 100,
+            sortBy: "nombre",
+            sortDir: "asc",
+          },
+        });
         setRoles(data.data ?? []);
       } catch (error) {
         console.error("Error al cargar roles:", error);

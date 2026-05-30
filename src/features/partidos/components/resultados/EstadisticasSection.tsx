@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { SectionCard } from "./common/SectionCard";
 import { Input } from "@/components/ui/input";
+import { FlagImage } from "@/components/ui/flag-image";
+import { SectionCard } from "./common/SectionCard";
 
 import { TEAM_STAT_DEFINITIONS } from "@/features/partidos/types/fixture-details";
-
 import type { TeamStats } from "@/features/partidos/types/fixture-details";
 
 type EstadisticasSectionProps = {
@@ -21,6 +20,9 @@ type EstadisticasSectionProps = {
   onVisitanteStatChange: (key: keyof TeamStats, value: number) => void;
 };
 
+const DARK_FIELD =
+  "h-12 w-full rounded-2xl border-white/10 bg-transparent px-0 text-[1.9rem] font-black text-white shadow-none placeholder:text-white/30 focus-visible:ring-2 focus-visible:ring-[#5993B6]/40 md:text-[2rem]";
+
 export function EstadisticasSection({
   localNombre,
   visitanteNombre,
@@ -33,40 +35,24 @@ export function EstadisticasSection({
 }: EstadisticasSectionProps) {
   return (
     <SectionCard
-      title="Estadísticas del equipo"
-      description="Carga los valores manuales que después se mostrarán en el detalle del fixture."
-      // actions={
-      //   <label className="inline-flex cursor-pointer items-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
-      //     <Upload className="mr-2 h-4 w-4" />
-      //     {importing ? "Importando..." : "Importar Excel/JSON"}
-
-      //     <input
-      //       type="file"
-      //       className="hidden"
-      //       accept=".json,.xlsx,.xls,.csv"
-      //       onChange={(event) => {
-      //         const file = event.target.files?.[0];
-
-      //         if (file) {
-      //           void onImport(file);
-      //         }
-
-      //         event.currentTarget.value = "";
-      //       }}
-      //     />
-      //   </label>
-      // }
+      title="Estadísticas del partido"
+      description="Cargá los valores manuales que después se mostrarán en el detalle del fixture."
+      headerContent={
+        <div className="space-y-2">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
+            Estadísticas del partido
+          </p>          
+        </div>
+      }
     >
-      <div className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-sm">
-        <div className="grid grid-cols-[minmax(0,1fr)_80px_minmax(0,1fr)] items-center gap-3 border-b border-slate-100 bg-slate-50/70 px-4 py-4">
-          <TeamHeader
-            name={localNombre}
-            flagUrl={localBanderaUrl}
-            align="left"
-          />
+      <div className="space-y-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_96px_minmax(0,1fr)] items-center gap-3 rounded-[28px] border border-white/10 bg-[#223553] px-4 py-4 md:px-5">
+          <TeamHeader name={localNombre} flagUrl={localBanderaUrl} align="left" />
 
-          <div className="text-center text-xs font-black uppercase tracking-[0.22em] text-[#008C93]/70">
+          <div className="text-center">
+            <span className="inline-flex min-w-[72px] items-center justify-center rounded-3xl border border-white/10 bg-white/[0.08] px-4 py-3 text-center text-[1.35rem] font-black uppercase tracking-[0.08em] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
             VS
+            </span>
           </div>
 
           <TeamHeader
@@ -76,24 +62,30 @@ export function EstadisticasSection({
           />
         </div>
 
-        <div className="divide-y divide-slate-100">
+        <div className="space-y-4">
           {TEAM_STAT_DEFINITIONS.map((stat) => (
             <div
               key={stat.key}
-              className="grid grid-cols-1 items-center gap-3 px-4 py-3 md:grid-cols-[minmax(120px,1fr)_220px_minmax(120px,1fr)]"
-            >
+              className="grid grid-cols-[88px_minmax(0,1fr)_88px] items-center gap-4 
+                  rounded-[22px] border border-white/10 bg-white/[0.05] 
+                px-4 md:grid-cols-[120px_minmax(0,1fr)_120px] md:px-5"
+              >
               <StatInput
                 value={estadisticasLocal[stat.key]}
+                unit={stat.unit}
                 onChange={(value) => onLocalStatChange(stat.key, value)}
+                align="left"
               />
 
-              <div className="order-first text-center text-sm font-semibold text-slate-700 md:order-none">
+              <div className="text-center text-base font-semibold text-white/78 md:text-[1.05rem]">
                 {stat.label}
               </div>
 
               <StatInput
                 value={estadisticasVisitante[stat.key]}
+                unit={stat.unit}
                 onChange={(value) => onVisitanteStatChange(stat.key, value)}
+                align="right"
               />
             </div>
           ))}
@@ -112,16 +104,16 @@ function TeamHeader({
   flagUrl?: string | null;
   align: "left" | "right";
 }) {
-  const flag = flagUrl ? (
-    <Image
-      src={flagUrl}
-      alt={name}
-      width={40}
-      height={28}
-      unoptimized
-      className="h-7 w-10 shrink-0 object-cover shadow-sm"
+  const flag = (
+    <FlagImage
+      bandera={flagUrl}
+      nombre={name}
+      widthClassName="w-12"
+      heightClassName="h-8"
+      className="drop-shadow-[0_8px_16px_rgba(2,8,23,0.32)]"
+      imageClassName="object-contain"
     />
-  ) : null;
+  );
 
   return (
     <div
@@ -131,7 +123,7 @@ function TeamHeader({
     >
       {align === "left" ? (
         <>
-          <span className="truncate text-base font-black text-slate-950">
+          <span className="truncate text-[1.05rem] font-black text-white md:text-[1.15rem]">
             {name}
           </span>
           {flag}
@@ -139,7 +131,7 @@ function TeamHeader({
       ) : (
         <>
           {flag}
-          <span className="truncate text-base font-black text-slate-950">
+          <span className="truncate text-[1.05rem] font-black text-white md:text-[1.15rem]">
             {name}
           </span>
         </>
@@ -150,36 +142,47 @@ function TeamHeader({
 
 function StatInput({
   value,
+  unit,
   onChange,
+  align,
 }: {
   value: number;
+  unit: string;
   onChange: (value: number) => void;
+  align: "left" | "right";
 }) {
   return (
-    <Input
-      type="text"
-      inputMode="numeric"
-      value={String(value ?? 0)}
-      onFocus={(event) => {
-        event.currentTarget.select();
-      }}
-      onMouseUp={(event) => {
-        event.preventDefault();
-      }}
-      onChange={(event) => {
-        const onlyNumbers = event.target.value.replace(/\D/g, "");
-
-        onChange(onlyNumbers === "" ? 0 : Number(onlyNumbers));
-      }}
-      onPaste={(event) => {
-        event.preventDefault();
-
-        const pastedText = event.clipboardData.getData("text");
-        const onlyNumbers = pastedText.replace(/\D/g, "");
-
-        onChange(onlyNumbers === "" ? 0 : Number(onlyNumbers));
-      }}
-      className="mx-auto h-11 w-full max-w-[180px] rounded-xl border-slate-200 bg-white text-center text-lg font-bold text-slate-950 shadow-sm focus-visible:ring-2 focus-visible:ring-[#008C93]/20"
-    />
+    <div
+      className={
+        align === "right"
+          ? "justify-self-end"
+          : "justify-self-start"
+      }
+    >
+      <Input
+        type="text"
+        inputMode="numeric"
+        value={`${value ?? 0}${unit}`}
+        onFocus={(event) => {
+          event.currentTarget.select();
+        }}
+        onMouseUp={(event) => {
+          event.preventDefault();
+        }}
+        onChange={(event) => {
+          const onlyNumbers = event.target.value.replace(/\D/g, "");
+          onChange(onlyNumbers === "" ? 0 : Number(onlyNumbers));
+        }}
+        onPaste={(event) => {
+          event.preventDefault();
+          const pastedText = event.clipboardData.getData("text");
+          const onlyNumbers = pastedText.replace(/\D/g, "");
+          onChange(onlyNumbers === "" ? 0 : Number(onlyNumbers));
+        }}
+        className={`${DARK_FIELD} h-11 !text-[1.5rem] max-w-[96px] ${
+          align === "right" ? "pr-3 text-right" : "pl-3 text-left"
+        }`}
+      />
+    </div>
   );
 }

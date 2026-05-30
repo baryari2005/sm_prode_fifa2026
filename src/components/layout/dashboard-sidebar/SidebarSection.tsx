@@ -9,7 +9,7 @@ export function SidebarSection({ label, collapsed }: Props) {
   if (collapsed) return null;
 
   return (
-    <div className="px-4 mt-4 mb-1 text-[10px] uppercase tracking-wider text-white/60 transition-opacity duration-200">
+    <div className="mb-2 mt-4 px-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/38 transition-opacity duration-200">
       {label}
     </div>
   );

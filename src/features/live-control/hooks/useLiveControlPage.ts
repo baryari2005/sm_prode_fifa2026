@@ -8,6 +8,7 @@ import {
   getLiveControlMatches,
   patchLiveStatus,
   postManualGoal,
+  recalculateRankingManually,
   runLiveTool,
   syncAllLiveNow,
   syncMatchNow,
@@ -28,6 +29,7 @@ export function useLiveControlPage() {
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const [toolResponse, setToolResponse] = useState<LiveActionResponse | Record<string, unknown> | null>(null);
   const [executingTool, setExecutingTool] = useState(false);
+  const [recalculatingRanking, setRecalculatingRanking] = useState(false);
 
   const load = useCallback(async (silent = false) => {
     if (!silent) {
@@ -155,6 +157,21 @@ export function useLiveControlPage() {
     }
   }
 
+  async function handleRecalculateRanking() {
+    try {
+      setRecalculatingRanking(true);
+      const result = await recalculateRankingManually();
+      setToolResponse(result);
+      toast.success(result.message ?? "Ranking recalculado correctamente");
+      await load(true);
+    } catch (error) {
+      toast.error("No se pudo recalcular el ranking");
+      console.error(error);
+    } finally {
+      setRecalculatingRanking(false);
+    }
+  }
+
   return {
     matches,
     matchGroups,
@@ -164,6 +181,7 @@ export function useLiveControlPage() {
     selectedMatch,
     toolResponse,
     executingTool,
+    recalculatingRanking,
     setSelectedMatchId,
     load,
     handleSyncAll,
@@ -171,5 +189,6 @@ export function useLiveControlPage() {
     handleManualGoal,
     handleStatusChange,
     handleRunTool,
+    handleRecalculateRanking,
   };
 }

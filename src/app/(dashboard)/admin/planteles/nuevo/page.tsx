@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { UserPlus } from "lucide-react";
 
 import AccessDenied403Page from "@/app/(dashboard)/403/page";
-import Loading from "@/app/(dashboard)/loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCan } from "@/hooks/useCan";
 import { axiosInstance } from "@/lib/axios";
@@ -50,7 +50,7 @@ export default function NuevoJugadorPlantelPage() {
     void loadSelecciones();
   }, [canCrear]);
 
-  if (loading) return <Loading />;
+  if (loading) return <DashboardLoading source="Admin planteles nuevo" />;
   if (!canCrear) return <AccessDenied403Page />;
 
   return (

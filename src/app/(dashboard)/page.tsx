@@ -7,6 +7,14 @@ import { DashboardHero } from "@/features/dashboard/components/home/DashboardHer
 import { DashboardMainGrid } from "@/features/dashboard/components/home/DashboardMainGrid";
 import { DashboardStatsGrid } from "@/features/dashboard/components/home/DashboardStatsGrid";
 import { ImportantActionsCard } from "@/features/dashboard/components/home/ImportantActionsCard";
+import {
+  DASHBOARD_PANEL,
+  DASHBOARD_TOP_LINE,
+  DASHBOARD_TOP_LINE_GLOW,
+  DASHBOARD_TOP_LINE_HAIR,
+  DASHBOARD_TOP_LINE_INNER,
+  DASHBOARD_TOP_LINE_SWEEP,
+} from "@/features/dashboard/components/home/dashboard-home.styles";
 import { useLiveAutoRefresh } from "@/hooks/useLiveAutoRefresh";
 import { useCan } from "@/hooks/useCan";
 import { useAuth } from "@/stores/auth";
@@ -15,7 +23,7 @@ import { useDashboardRoleFlags } from "@/features/dashboard/hooks/useDashboardRo
 import { usePendingUsers } from "@/features/dashboard/hooks/usePendingUsers";
 import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
 import { useProdeDashboard } from "@/features/pronosticos/hooks/useProdeDashboard";
-import Loading from "./loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -70,7 +78,11 @@ export default function DashboardPage() {
   });
 
   if (loading) {
-    return <Loading />;
+    return (
+      <DashboardLoading
+        badgeLabel="Loading home"        
+      />
+    );
   }
 
   const roleName = user?.rol?.nombre ?? "User";
@@ -78,9 +90,15 @@ export default function DashboardPage() {
   return (
     <main className="w-full overflow-x-hidden px-3 py-4 md:px-5 md:py-5 xl:px-4">
       <div className="mx-auto flex w-full max-w-[1500px] min-w-0 flex-col gap-5 xl:gap-6">
-        <section className="group relative overflow-hidden rounded-[32px] border border-slate-200/90 bg-gradient-to-br from-white via-white to-slate-50 p-3 shadow-[0_14px_35px_rgba(15,23,42,0.06)] transition-all duration-200 hover:border-[#008C93]/25 hover:shadow-[0_20px_45px_rgba(15,23,42,0.10)] md:p-4">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#008C93] via-[#00A6B2] to-[#7DD3FC]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,140,147,0.08),transparent_35%)] opacity-70" />
+        <section className={`${DASHBOARD_PANEL} rounded-[32px] p-3 md:p-4`}>
+          <div className={DASHBOARD_TOP_LINE}>
+            <div className={DASHBOARD_TOP_LINE_INNER} />
+            <div className={DASHBOARD_TOP_LINE_SWEEP} />
+            <div className={DASHBOARD_TOP_LINE_GLOW} />
+            <div className={DASHBOARD_TOP_LINE_HAIR} />
+          </div>
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(89,147,182,0.16),transparent_35%),radial-gradient(circle_at_15%_15%,rgba(250,180,56,0.18),transparent_18%)] opacity-85" />
+
           <div className="grid w-full min-w-0 gap-4 2xl:grid-cols-[minmax(0,2.05fr)_minmax(300px,0.95fr)] 2xl:items-stretch">
             <DashboardHero
               displayName={displayName}
@@ -180,13 +198,13 @@ export default function DashboardPage() {
           }}
           onGoPronosticoPartido={(partidoId) => {
             if (!canAccessPronosticos) return;
-            router.push(`/pronosticos?partido=${partidoId}`);
+            router.push(`/pronosticos/rapido?partidoId=${partidoId}`);
           }}
         />
 
-        <footer className="flex flex-col items-center justify-between gap-2 rounded-[24px] border border-white/70 bg-white/75 px-4 py-4 text-center text-xs font-semibold text-slate-500 shadow-sm backdrop-blur sm:flex-row">
+        <footer className="flex flex-col items-center justify-between gap-2 rounded-[24px] border border-white/10 bg-white/[0.06] px-4 py-4 text-center text-xs font-semibold text-white/74 shadow-[0_14px_32px_rgba(30,44,70,0.14)] backdrop-blur sm:flex-row">
           <span>Prode Mundial © 2026</span>
-          <span className="text-slate-400">
+          <span className="text-white/54">
             Competí, pronosticá y seguí el torneo en tiempo real.
           </span>
         </footer>

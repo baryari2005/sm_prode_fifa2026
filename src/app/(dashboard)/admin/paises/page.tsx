@@ -1,23 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import { toast } from "sonner";
 
 import { useCan } from "@/hooks/useCan";
-import { Card, CardContent } from "@/components/ui/card";
-import { PaisList } from "@/features/paises/components/PaisList";
 import AccessDenied403Page from "../../403/page";
-import { PaisHeader } from "@/features/paises/components/PaisHeader";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
+import { PaisesOverview } from "@/features/paises/components/PaisesOverview";
 import { axiosInstance } from "@/lib/axios";
+import { useState } from "react";
 
 export default function PaisesPage() {
   const canVerPaises = useCan("paises", "ver");
   const canCrearPaises = useCan("paises", "crear");
   const canEditarPaises = useCan("paises", "editar");
 
-  const [search] = useState("");
   const [refreshToken, setRefreshToken] = useState(0);
   const [updatingLanguage, setUpdatingLanguage] = useState(false);
+  const [updatingConfederations, setUpdatingConfederations] = useState(false);
+
+  if (canVerPaises === false && canCrearPaises === false && canEditarPaises === false) {
+    return <DashboardLoading badgeLabel="Loading paises" />;
+  }
 
   if (!canVerPaises) {
     return <AccessDenied403Page />;
@@ -44,20 +47,42 @@ export default function PaisesPage() {
     }
   }
 
+  async function handleUpdateConfederations() {
+    try {
+      setUpdatingConfederations(true);
+      const response = await axiosInstance.post<{
+        message?: string;
+        meta?: {
+          actualizadas?: number;
+          sinCambios?: number;
+          sinMapeo?: number;
+        };
+      }>("/paises/completar-confederaciones");
+
+      toast.success(
+        response.data.message || "Las confederaciones se completaron correctamente",
+      );
+      setRefreshToken((value) => value + 1);
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudieron completar las confederaciones");
+    } finally {
+      setUpdatingConfederations(false);
+    }
+  }
+
   return (
-    <div className="grid gap-6">
-      <Card className="border-white/70 bg-white shadow-sm">
-        <CardContent className="space-y-6 p-4 md:p-6">
-          <PaisHeader
-            cantCreate={!canCrearPaises}
-            updatingLanguage={updatingLanguage}
-            onUpdateLanguage={
-              canEditarPaises ? () => void handleUpdateLanguage() : undefined
-            }
-          />
-          <PaisList search={search} refresh={refreshToken} />
-        </CardContent>
-      </Card>
-    </div>
+    <PaisesOverview
+      canEdit={canEditarPaises}
+      refreshToken={refreshToken}
+      updatingConfederations={updatingConfederations}
+      updatingLanguage={updatingLanguage}
+      onUpdateConfederations={
+        canEditarPaises ? () => void handleUpdateConfederations() : undefined
+      }
+      onUpdateLanguage={
+        canEditarPaises ? () => void handleUpdateLanguage() : undefined
+      }
+    />
   );
 }

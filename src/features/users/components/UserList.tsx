@@ -11,6 +11,11 @@ import { UserRow } from "../types/types";
 interface Props {
   search?: string;
   refresh?: string | number | boolean | null | undefined;
+  onDataResolved?: (payload: {
+    items: UserRow[];
+    total: number;
+    pageCount: number;
+  }) => void;
 }
 
 type PaginatedResponse<T> = {
@@ -21,7 +26,7 @@ type PaginatedResponse<T> = {
   };
 };
 
-export function UserList({ search = "", refresh }: Props) {
+export function UserList({ search = "", refresh, onDataResolved }: Props) {
   const [refreshVersion, setRefreshVersion] = useState(0);
   const endpoint = "/users";
 
@@ -65,6 +70,7 @@ export function UserList({ search = "", refresh }: Props) {
           pageCount: typed.meta?.pageCount,
         };
       }}
+      onDataResolved={onDataResolved}
       DataTableComponent={(props) => (
         <GenericDataTable
           {...props}

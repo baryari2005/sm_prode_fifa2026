@@ -8,6 +8,12 @@ import { HelpAccordion } from "@/features/help/components/HelpAccordion";
 import { HelpPageHeader } from "@/features/help/components/HelpPageHeader";
 import { HelpSectionCard } from "@/features/help/components/HelpSectionCard";
 import {
+  HELP_TOP_ACCENT,
+  HELP_TOP_ACCENT_GLOW,
+  HELP_TOP_ACCENT_HAIR,
+  HELP_TOP_ACCENT_INNER,
+} from "@/features/help/components/help-surface.styles";
+import {
   ADMIN_HELP_FAQS,
   ADMIN_HELP_INTRO,
   ADMIN_HELP_SECTIONS,
@@ -29,25 +35,38 @@ export default function AyudaAdminPage() {
         title={ADMIN_HELP_INTRO.title}
         description={ADMIN_HELP_INTRO.description}
         icon={ShieldCheck}
+        variant="dark"
+        topAccentVariant="help"
       />
 
       <section className="grid items-start gap-5 xl:grid-cols-2">
         {ADMIN_HELP_SECTIONS.map((section) => (
-          <HelpSectionCard key={section.title} section={section} />
+          <HelpSectionCard
+            key={section.title}
+            section={section}
+            variant="dark"
+            topAccentVariant="help"
+          />
         ))}
       </section>
 
-      <section className="rounded-[24px] border border-amber-200 bg-amber-50/80 px-6 py-6 shadow-[0_14px_34px_rgba(245,158,11,0.08)]">
-        <div className="mb-4 flex items-center gap-2 text-lg font-black text-amber-950">
-          <AlertTriangle className="h-5 w-5" />
+      <section className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#1E2C46] px-6 py-6 text-white shadow-[0_18px_48px_rgba(2,6,23,0.2)]">
+        <div className={HELP_TOP_ACCENT}>
+          <div className={HELP_TOP_ACCENT_INNER} />
+          <div className={HELP_TOP_ACCENT_GLOW} />
+          <div className={HELP_TOP_ACCENT_HAIR} />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(89,147,182,0.18),transparent_36%)] opacity-70" />
+        <div className="relative mb-4 flex items-center gap-2 text-lg font-black text-white">
+          <AlertTriangle className="h-5 w-5 text-[#FFE4A3]" />
           Recomendaciones para la administración
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="relative flex flex-wrap gap-3">
           {ADMIN_RECOMMENDATIONS.map((item) => (
             <Badge
               key={item}
-              className="h-auto max-w-full rounded-2xl border border-amber-300 bg-white/80 px-4 py-3 text-left text-sm font-semibold whitespace-normal text-amber-900"
+              className="h-auto max-w-full whitespace-normal rounded-2xl border border-[#FAB438]/24 bg-[#FAB438]/10 px-4 py-3 text-left text-sm font-semibold text-[#FFE4A3] hover:bg-[#FAB438]/10"
             >
               {item}
             </Badge>
@@ -59,6 +78,8 @@ export default function AyudaAdminPage() {
         title="Preguntas frecuentes de administración"
         description="Consultas comunes para operar el panel sin perder consistencia en los datos."
         items={ADMIN_HELP_FAQS}
+        variant="dark"
+        topAccentVariant="help"
       />
     </div>
   );

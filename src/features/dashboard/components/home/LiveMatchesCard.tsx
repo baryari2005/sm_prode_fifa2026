@@ -1,9 +1,18 @@
 "use client";
 
 import { format } from "date-fns";
-import { ArrowRight, CalendarDays, Clock3, Radio } from "lucide-react";
+import { CalendarDays, ChevronRight, Clock3, Radio } from "lucide-react";
 
 import { FlagImage } from "@/components/ui/flag-image";
+import {
+  DASHBOARD_PANEL,
+  DASHBOARD_SUBCARD,
+  DASHBOARD_TOP_LINE,
+  DASHBOARD_TOP_LINE_GLOW,
+  DASHBOARD_TOP_LINE_HAIR,
+  DASHBOARD_TOP_LINE_INNER,
+  DASHBOARD_TOP_LINE_SWEEP,
+} from "@/features/dashboard/components/home/dashboard-home.styles";
 import {
   getMatchStatusMeta,
   getPredictionCountdownLabel,
@@ -37,12 +46,18 @@ export function LiveMatchesCard({
   const nextPredictionClose = proximosPartidos[0] ?? null;
 
   return (
-    <article className="group relative min-w-0 overflow-hidden rounded-[30px] border border-slate-200/90 bg-gradient-to-br from-white via-white to-slate-50 p-4 shadow-[0_14px_35px_rgba(15,23,42,0.06)] transition-all duration-200 hover:border-[#008C93]/25 hover:shadow-[0_20px_45px_rgba(15,23,42,0.10)] xl:p-4 2xl:p-5">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#008C93] via-[#00A6B2] to-[#7DD3FC]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,140,147,0.08),transparent_35%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+    <article className={DASHBOARD_PANEL}>
+      <div className={DASHBOARD_TOP_LINE}>
+        <div className={DASHBOARD_TOP_LINE_INNER} />
+        <div className={DASHBOARD_TOP_LINE_SWEEP} />
+        <div className={DASHBOARD_TOP_LINE_GLOW} />
+        <div className={DASHBOARD_TOP_LINE_HAIR} />
+      </div>
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_42%,transparent_62%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
+          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-emerald-400/16 text-emerald-200">
             {showingLive ? (
               <Radio className="h-5 w-5" />
             ) : (
@@ -50,13 +65,13 @@ export function LiveMatchesCard({
             )}
           </span>
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#008C93]">
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
               {showingLive ? "Partidos en juego" : "Próximos partidos"}
             </p>
-            <h2 className="text-base font-black tracking-[-0.04em] text-slate-950 xl:text-lg">
+            <h2 className="brand-heading text-lg font-black !tracking-[0.04em] text-white xl:text-xl">
               {showingLive
                 ? "Seguimiento en tiempo real"
-                : "Carga tus pronósticos a tiempo"}
+                : "Cargá tus pronósticos a tiempo"}
             </h2>
           </div>
         </div>
@@ -65,17 +80,17 @@ export function LiveMatchesCard({
           <button
             type="button"
             onClick={onGoFixture}
-            className="inline-flex max-w-full cursor-pointer items-center gap-2 text-sm font-black text-slate-500 transition hover:text-slate-900"
+            className="inline-flex max-w-full cursor-pointer items-center gap-2 text-sm font-black text-white/62 transition hover:text-white"
           >
             {actionLabel}
-            <ArrowRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" />
           </button>
         ) : null}
       </div>
 
       <div className="space-y-3">
         {rows.length === 0 ? (
-          <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm font-semibold text-slate-500">
+          <div className="rounded-[24px] border border-dashed border-white/14 bg-white/[0.04] px-4 py-10 text-center text-sm font-semibold text-white/60">
             No hay partidos en juego ni encuentros próximos para mostrar ahora.
           </div>
         ) : showingLive ? (
@@ -101,7 +116,7 @@ export function LiveMatchesCard({
       </div>
 
       {nextPredictionClose ? (
-        <div className="mt-4 flex flex-col gap-2 rounded-[22px] border border-emerald-200 bg-emerald-50/70 px-4 py-3 text-sm font-semibold text-emerald-900 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-4 flex flex-col gap-2 rounded-[22px] border border-white/10 bg-white/[0.08] px-4 py-3 text-sm font-semibold text-white/82 sm:flex-row sm:items-center sm:justify-between">
           <span className="min-w-0">
             Próximo cierre de pronósticos:{" "}
             <span className="font-black">
@@ -109,7 +124,7 @@ export function LiveMatchesCard({
               {nextPredictionClose.seleccionVisitante?.nombre ?? "Visitante"}
             </span>
           </span>
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 font-black text-emerald-700">
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#FAB438]/14 px-3 py-1 font-black text-[#FFE4A3]">
             <Clock3 className="h-4 w-4" />
             {getPredictionCountdownLabel(
               nextPredictionClose.fecha,
@@ -140,10 +155,8 @@ function LiveMatchRow({
       type="button"
       onClick={onClick}
       disabled={!canOpen}
-      className={`group flex w-full items-center gap-3 rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 text-left transition-all duration-200 ${
-        canOpen
-          ? "cursor-pointer hover:-translate-y-0.5 hover:border-[#008C93]/30 hover:shadow-[0_18px_32px_rgba(15,23,42,0.08)]"
-          : "cursor-default"
+      className={`group flex w-full items-center gap-3 rounded-[24px] px-4 py-4 text-left ${DASHBOARD_SUBCARD} ${
+        canOpen ? "cursor-pointer" : "cursor-default"
       }`}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
@@ -161,11 +174,11 @@ function LiveMatchRow({
         />
 
         <div className="min-w-0">
-          <p className="truncate text-sm font-black text-slate-950">
+          <p className="truncate text-sm font-black text-white">
             {partido.seleccionLocal?.nombre ?? "Local"} vs{" "}
             {partido.seleccionVisitante?.nombre ?? "Visitante"}
           </p>
-          <p className="mt-1 truncate text-xs font-semibold text-slate-500">
+          <p className="mt-1 truncate text-xs font-semibold text-white/60">
             {partido.fase?.nombre ?? "Sin fase"} ·{" "}
             {resultado?.tiempoJuego ? `${resultado.tiempoJuego}'` : status.label}
           </p>
@@ -173,18 +186,18 @@ function LiveMatchRow({
       </div>
 
       <div className="hidden shrink-0 items-end gap-3 md:flex">
-        <span className="text-lg font-black tracking-[-0.05em] text-slate-950 xl:text-xl">
+        <span className="brand-heading text-lg font-black tracking-[0.02em] text-white xl:text-xl">
           {resultado
             ? `${resultado.golesLocal} - ${resultado.golesVisitante}`
             : "0 - 0"}
         </span>
-          <span className="whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-black text-emerald-700">
+        <span className="whitespace-nowrap rounded-full bg-emerald-400/16 px-2.5 py-1 text-[11px] font-black text-emerald-200">
           EN VIVO
         </span>
       </div>
 
       {canOpen ? (
-        <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#0B6B59]" />
+        <ChevronRight className="h-4 w-4 shrink-0 text-[#5993B6] transition group-hover:translate-x-0.5 group-hover:text-[#AEEBFF]" />
       ) : null}
     </button>
   );
@@ -206,10 +219,8 @@ function UpcomingMatchRow({
       type="button"
       onClick={onClick}
       disabled={!canOpen}
-      className={`group flex w-full items-center gap-3 rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 text-left transition-all duration-200 ${
-        canOpen
-          ? "cursor-pointer hover:-translate-y-0.5 hover:border-[#008C93]/30 hover:shadow-[0_18px_32px_rgba(15,23,42,0.08)]"
-          : "cursor-default"
+      className={`group flex w-full items-center gap-3 rounded-[24px] px-4 py-4 text-left ${DASHBOARD_SUBCARD} ${
+        canOpen ? "cursor-pointer" : "cursor-default"
       }`}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
@@ -227,11 +238,11 @@ function UpcomingMatchRow({
         />
 
         <div className="min-w-0">
-          <p className="truncate text-sm font-black text-slate-950">
+          <p className="truncate text-sm font-black text-white">
             {partido.seleccionLocal?.nombre ?? "Local"} vs{" "}
             {partido.seleccionVisitante?.nombre ?? "Visitante"}
           </p>
-          <p className="mt-1 truncate text-xs font-semibold text-slate-500">
+          <p className="mt-1 truncate text-xs font-semibold text-white/60">
             {partido.fase?.nombre ?? "Sin fase"} ·{" "}
             {format(new Date(partido.fecha), "dd/MM HH:mm")}
           </p>
@@ -239,7 +250,7 @@ function UpcomingMatchRow({
       </div>
 
       <div className="hidden shrink-0 md:block">
-        <span className="whitespace-nowrap rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-black text-sky-700">
+        <span className="whitespace-nowrap rounded-full bg-[#5993B6]/18 px-2.5 py-1 text-[11px] font-black text-[#D8F2FF]">
           {getPredictionCountdownLabel(
             partido.fecha,
             PREDICTION_CLOSE_MINUTES_BEFORE,
@@ -249,7 +260,7 @@ function UpcomingMatchRow({
       </div>
 
       {canOpen ? (
-        <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-sky-700" />
+        <ChevronRight className="h-4 w-4 shrink-0 text-[#5993B6] transition group-hover:translate-x-0.5 group-hover:text-[#AEEBFF]" />
       ) : null}
     </button>
   );

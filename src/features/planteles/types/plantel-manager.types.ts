@@ -4,6 +4,9 @@ export type SeleccionResumen = {
   codigo?: string | null;
   bandera?: string | null;
   footballDataTeamId?: number | null;
+  grupo?: string | null;
+  confederacion?: string | null;
+  activo?: boolean;
 };
 
 export type PaginatedResponse<T> = {

@@ -91,6 +91,10 @@ export function usePlantelManager({
     setTotalJugadores(0);
   }, [selectedSeleccionId]);
 
+  useEffect(() => {
+    setImportReport(null);
+  }, [selectedSeleccionId]);
+
   async function handleDelete(playerId: string) {
     try {
       await deleteJugador(playerId);
@@ -186,6 +190,7 @@ export function usePlantelManager({
     importing,
     importingApi,
     importReport,
+    setImportReport,
 
     stats,
 

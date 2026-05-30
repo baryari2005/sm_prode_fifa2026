@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { getRoleColumns } from "@/features/roles/components/columns";
-import { useCan } from "@/hooks/useCan";
-import { GenericListWithTable } from "@/components/data-display/table/GenericListWithTable";
-import { GenericDataTable } from "@/components/data-display/table/GenericDataTable";
-import { Role, RolesListProps } from "../types/types";
 
+import { GenericListWithTable } from "@/components/data-display/table/GenericListWithTable";
+import { useCan } from "@/hooks/useCan";
+import { getRoleColumns } from "@/features/roles/components/columns";
+import { Role, RolesListProps } from "../types/types";
+import { RolesAdminDataTable } from "./RolesAdminDataTable";
 
 type RoleResponse = {
   data?: Role[];
@@ -14,25 +14,30 @@ type RoleResponse = {
     total?: number;
     pageCount?: number;
   };
-}
+};
 
-export function RolesList({ search = "", refresh }: RolesListProps) {
-  const endPoint = "/roles";
+type RolesListResolvedPayload = {
+  items: Role[];
+  total: number;
+  pageCount: number;
+};
 
+type RolesListComponentProps = RolesListProps & {
+  onDataResolved?: (payload: RolesListResolvedPayload) => void;
+};
+
+export function RolesList({
+  search = "",
+  refresh,
+  onDataResolved,
+}: RolesListComponentProps) {
   const canEdit = useCan("roles", "editar");
 
-  const columns = useMemo(
-    () => getRoleColumns(canEdit),
-    [canEdit]
-  );
-
-  if (process.env.NODE_ENV !== "production") {
-    console.log("[RolesList] endpoint →", endPoint);
-  }
+  const columns = useMemo(() => getRoleColumns(canEdit), [canEdit]);
 
   return (
     <GenericListWithTable<Role>
-      endpoint={endPoint}
+      endpoint="/roles"
       columns={columns}
       externalSearch={search}
       refreshToken={`${refresh ?? ""}`}
@@ -53,10 +58,11 @@ export function RolesList({ search = "", refresh }: RolesListProps) {
           pageCount: typed.meta?.pageCount,
         };
       }}
+      onDataResolved={onDataResolved}
       DataTableComponent={(props) => (
-        <GenericDataTable
+        <RolesAdminDataTable
           {...props}
-          searchPlaceholder="Buscar por nombre o descripción"
+          searchPlaceholder="Buscar por nombre o descripcion"
         />
       )}
     />

@@ -22,7 +22,7 @@ import {
   EMPLOYMENT_STATUS,
   CONTRACT_TYPES,
 } from "@/features/users/schemas/legajo.schema";
-import Loading from "@/app/(dashboard)/loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 
 type PersonnelFileDTO = {
   employeeNumber?: string | null;
@@ -147,7 +147,7 @@ function LegajoContent({ id }: { id: string }) {
   }, [id]);
 
   if (loading || !initial) {
-    return <Loading />;
+    return <DashboardLoading source="Usuarios legajo" />;
   }
 
   return (

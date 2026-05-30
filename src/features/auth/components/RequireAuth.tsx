@@ -3,9 +3,14 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/stores/auth";
-import Loading from "@/app/(dashboard)/loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 
-export function RequireAuth({ children }: { children: React.ReactNode }) {
+type Props = {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+};
+
+export function RequireAuth({ children, fallback }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -44,15 +49,15 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   }, [hasHydrated, token, triedMe, loading, user, pathname, router]);
 
   if (!hasHydrated) {
-    return <Loading />;
+    return fallback ?? <DashboardLoading source="Auth require auth" />;
   }
 
   if (!token) {
-    return <Loading />;
+    return fallback ?? <DashboardLoading source="Auth require auth" />;
   }
 
   if (!user && (!triedMe || loading)) {
-    return <Loading />;
+    return fallback ?? <DashboardLoading source="Auth require auth" />;
   }
 
   if (!user) {

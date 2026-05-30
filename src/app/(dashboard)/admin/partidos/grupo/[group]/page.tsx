@@ -7,7 +7,7 @@ import { useCan } from "@/hooks/useCan";
 import { useLiveAutoRefresh } from "@/hooks/useLiveAutoRefresh";
 
 import { Card, CardContent } from "@/components/ui/card";
-import Loading from "../../../../loading";
+import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 
 import { PartidosHeader } from "@/features/partidos/components/PartidosHeader";
 import { PartidosEmptyState } from "@/features/partidos/components/PartidosEmptyState";
@@ -61,7 +61,7 @@ export default function PartidosGrupoPage({ params }: GrupoPageProps) {
   }
 
   if (loading) {
-    return <Loading />;
+    return <DashboardLoading source="Admin partidos grupo" />;
   }
 
   return (

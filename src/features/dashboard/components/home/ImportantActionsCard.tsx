@@ -2,7 +2,18 @@
 
 import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, CalendarClock, Trophy, UsersRound } from "lucide-react";
+import { CalendarClock, ChevronRight, Sparkles, Trophy, UsersRound } from "lucide-react";
+
+import {
+  DASHBOARD_PANEL,
+  DASHBOARD_SUBCARD,
+  DASHBOARD_TOP_LINE,
+  DASHBOARD_TOP_LINE_GLOW,
+  DASHBOARD_TOP_LINE_HAIR,
+  DASHBOARD_TOP_LINE_INNER,
+  DASHBOARD_TOP_LINE_SWEEP,
+} from "@/features/dashboard/components/home/dashboard-home.styles";
+import { LateralSummaryHeader } from "@/components/ui/lateralSummaryHeader";
 
 type ImportantActionsCardProps = {
   pendingUserCount: number;
@@ -39,67 +50,68 @@ export function ImportantActionsCard({
   const actions: ActionItem[] = [
     ...(canManageUsers
       ? [
-          {
-            id: "usuarios",
-            title: "Aprobar usuarios pendientes",
-            description: "Revisá altas nuevas y accesos al Prode.",
-            icon: UsersRound,
-            toneClassName: "bg-emerald-50 text-emerald-700",
-            badge:
-              pendingUserCount > 0 ? `${pendingUserCount} pendientes` : undefined,
-            onClick: onGoUsers,
-          },
-        ]
+        {
+          id: "usuarios",
+          title: "Aprobar usuarios pendientes",
+          description: "Revisá altas nuevas y accesos al Prode.",
+          icon: UsersRound,
+          toneClassName: "bg-[#5993B6]/18 text-[#AEEBFF]",
+          badge:
+            pendingUserCount > 0 ? `${pendingUserCount} pendientes` : undefined,
+          onClick: onGoUsers,
+        },
+      ]
       : []),
     ...(canManageFixture
       ? [
-          {
-            id: "resultados",
-            title: "Cargar resultado de partido",
-            description: "Actualizá resultados oficiales y estados en vivo.",
-            iconSrc: "/pelota.ico",
-            toneClassName: "bg-violet-50 text-violet-700",
-            onClick: onGoResultados,
-          },
-          {
-            id: "fixture",
-            title: "Gestionar fixture",
-            description: "Ver y editar partidos, fases y horarios.",
-            icon: CalendarClock,
-            toneClassName: "bg-blue-50 text-blue-700",
-            onClick: onGoFixture,
-          },
-        ]
+        {
+          id: "resultados",
+          title: "Cargar resultado de partido",
+          description: "Actualizá resultados oficiales y estados en vivo.",
+          iconSrc: "/pelota.ico",
+          toneClassName: "bg-white/[0.08] !text-[#AEEBFF]",
+          onClick: onGoResultados,
+        },
+        {
+          id: "fixture",
+          title: "Gestionar fixture",
+          description: "Ver y editar partidos, fases y horarios.",
+          icon: CalendarClock,
+          toneClassName: "bg-white/[0.08] text-[#AEEBFF]",
+          onClick: onGoFixture,
+        },
+      ]
       : []),
     ...(canViewRanking
       ? [
-          {
-            id: "ranking",
-            title: "Ver ranking general",
-            description: "Seguimiento rápido de posiciones y puntajes.",
-            icon: Trophy,
-            toneClassName: "bg-amber-50 text-amber-700",
-            onClick: onGoRanking,
-          },
-        ]
+        {
+          id: "ranking",
+          title: "Ver ranking general",
+          description: "Seguimiento rápido de posiciones y puntajes.",
+          icon: Trophy,
+          toneClassName: "bg-[#5993B6]/18 text-[#AEEBFF]",
+          onClick: onGoRanking,
+        },
+      ]
       : []),
   ];
 
   if (actions.length === 0) return null;
 
   return (
-    <aside className="group relative min-w-0 overflow-hidden rounded-[30px] border border-slate-200/90 bg-gradient-to-br from-white via-white to-slate-50 p-4 shadow-[0_14px_35px_rgba(15,23,42,0.06)] transition-all duration-200 hover:border-[#008C93]/25 hover:shadow-[0_20px_45px_rgba(15,23,42,0.10)] xl:p-4 2xl:p-5">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#008C93] via-[#00A6B2] to-[#7DD3FC]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,140,147,0.08),transparent_35%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-
-      <div className="mb-3">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#008C93]">
-          Acciones importantes
-        </p>
-        <p className="mt-1.5 text-sm font-semibold leading-5 text-slate-500">
-          Accesos directos para administrar el sistema.
-        </p>
+    <aside className={DASHBOARD_PANEL}>
+      <div className={DASHBOARD_TOP_LINE}>
+        <div className={DASHBOARD_TOP_LINE_INNER} />
+        <div className={DASHBOARD_TOP_LINE_SWEEP} />
+        <div className={DASHBOARD_TOP_LINE_GLOW} />
+        <div className={DASHBOARD_TOP_LINE_HAIR} />
       </div>
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_42%,transparent_62%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+      <LateralSummaryHeader
+        title="Acciones importantes"
+        description="Accesos directos para administrar el sistema."
+      />
 
       <div className="space-y-2.5">
         {actions.map((action) => (
@@ -107,7 +119,7 @@ export function ImportantActionsCard({
             key={action.id}
             type="button"
             onClick={action.onClick}
-            className="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-[22px] border border-slate-200/90 bg-white/95 px-3 py-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#008C93]/30 hover:shadow-[0_18px_32px_rgba(15,23,42,0.08)] xl:px-3.5"
+            className={`group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-[22px] px-3 py-3 text-left xl:px-3.5 ${DASHBOARD_SUBCARD}`}
           >
             <span
               className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl ${action.toneClassName}`}
@@ -120,29 +132,31 @@ export function ImportantActionsCard({
                   alt=""
                   width={18}
                   height={18}
-                  className="h-[18px] w-[18px] object-contain"
+                  className="h-[18px] w-[18px] object-contain brightness-0 saturate-100 [filter:brightness(0)_saturate(100%)_invert(61%)_sepia(21%)_saturate(688%)_hue-rotate(162deg)_brightness(92%)_contrast(89%)]"
                 />
-              ) : null}
+              ) : (
+                <Sparkles className="h-4.5 w-4.5" />
+              )}
             </span>
 
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-2">
-                <span className="line-clamp-2 text-[13px] font-black leading-4 text-slate-950">
+                <span className="line-clamp-2 text-[13px] font-black leading-4 text-white">
                   {action.title}
                 </span>
                 {action.badge ? (
-                  <span className="rounded-full bg-[#008C93]/10 px-2.5 py-1 text-[11px] font-black text-[#008C93]">
+                  <span className="rounded-full bg-[#FAB438]/12 px-2.5 py-1 text-[11px] font-black text-[#FFE4A3]">
                     {action.badge}
                   </span>
                 ) : null}
               </span>
 
-              <span className="mt-0.5 block line-clamp-2 text-[11px] font-semibold leading-4 text-slate-500">
+              <span className="mt-0.5 block line-clamp-2 text-[11px] font-semibold leading-4 text-white/64">
                 {action.description}
               </span>
             </span>
 
-            <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#008C93]" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-[#5993B6] transition group-hover:translate-x-0.5 group-hover:text-[#AEEBFF]" />
           </button>
         ))}
       </div>

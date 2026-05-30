@@ -56,13 +56,13 @@ export function getReglasCruceColumns({
       header: "Partido",
       cell: ({ row }) => (
         <div className="min-w-[180px]">
-          <p className="font-semibold text-slate-900">{row.original.nombre}</p>
+          <p className="font-semibold text-white">{row.original.nombre}</p>
 
-          {row.original.partidoNumero && (
-            <p className="text-xs font-medium text-slate-500">
-              Partido Nº {row.original.partidoNumero}
+          {row.original.partidoNumero ? (
+            <p className="text-xs font-medium text-white/58">
+              Partido Nro {row.original.partidoNumero}
             </p>
-          )}
+          ) : null}
         </div>
       ),
     },
@@ -73,7 +73,7 @@ export function getReglasCruceColumns({
       cell: ({ row }) => (
         <Badge
           variant="secondary"
-          className="rounded-full bg-[#008C93]/10 px-3 py-1 font-semibold text-[#008C93]"
+          className="rounded-full border-white/10 bg-white/10 px-3 py-1 font-semibold text-[#AEEBFF]"
         >
           {row.original.fase?.nombre || "Sin fase"}
         </Badge>
@@ -83,7 +83,7 @@ export function getReglasCruceColumns({
       accessorKey: "localOrigen",
       header: "Local",
       cell: ({ row }) => (
-        <span className="font-medium text-slate-700">
+        <span className="font-medium text-white/78">
           {row.original.localOrigen}
         </span>
       ),
@@ -92,7 +92,7 @@ export function getReglasCruceColumns({
       accessorKey: "visitanteOrigen",
       header: "Visitante",
       cell: ({ row }) => (
-        <span className="font-medium text-slate-700">
+        <span className="font-medium text-white/78">
           {row.original.visitanteOrigen}
         </span>
       ),
@@ -101,21 +101,21 @@ export function getReglasCruceColumns({
       accessorKey: "fecha",
       header: "Fecha",
       cell: ({ row }) => (
-        <span className="text-slate-700">{formatFecha(row.original.fecha)}</span>
+        <span className="text-white/72">{formatFecha(row.original.fecha)}</span>
       ),
     },
     {
       accessorKey: "hora",
       header: "Hora",
       cell: ({ row }) => (
-        <span className="text-slate-700">{formatHora(row.original.hora)}</span>
+        <span className="text-white/72">{formatHora(row.original.hora)}</span>
       ),
     },
     {
       accessorKey: "estadio",
       header: "Estadio",
       cell: ({ row }) => (
-        <span className="text-slate-700">{row.original.estadio || "-"}</span>
+        <span className="text-white/72">{row.original.estadio || "-"}</span>
       ),
     },
     {
@@ -138,9 +138,9 @@ export function getReglasCruceColumns({
           actions.push({
             label: "Eliminar",
             icon: <Trash2 className="h-4 w-4" />,
-            confirmTitle: "¿Eliminar esta regla?",
+            confirmTitle: "Eliminar esta regla?",
             confirmDescription:
-              "Esta acción eliminará permanentemente la regla de cruce. ¿Continuar?",
+              "Esta accion eliminara permanentemente la regla de cruce. Continuar?",
             confirmActionLabel: "Eliminar",
             onConfirm: async () => {
               await axiosInstance.delete(`/reglas-cruces/${regla.id}`);

@@ -18,13 +18,13 @@ const config: Config = {
       },
       backgroundImage: {
         "prode-dark":
-          "radial-gradient(circle at top left, rgba(57,169,53,0.18), transparent 32%), linear-gradient(135deg, #06111F 0%, #0A1728 52%, #03101B 100%)",
+          "radial-gradient(circle at top left, rgba(117,215,255,0.18), transparent 32%), radial-gradient(circle at bottom right, rgba(246,200,95,0.1), transparent 26%), linear-gradient(135deg, #041427 0%, #082A4A 52%, #061B33 100%)",
         "prode-card":
-          "linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,248,251,0.98))",
+          "linear-gradient(180deg, rgba(11,39,69,0.92), rgba(6,27,51,0.9))",
       },
       boxShadow: {
-        "prode-card": "0 14px 35px rgba(15, 23, 42, 0.08)",
-        "prode-dark": "0 20px 45px rgba(0, 0, 0, 0.35)",
+        "prode-card": "0 18px 52px rgba(0, 0, 0, 0.24)",
+        "prode-dark": "0 26px 70px rgba(0, 0, 0, 0.34)",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -35,16 +35,16 @@ const config: Config = {
       },
       colors: {
         prode: {
-          dark: "#06111F",
-          darkSoft: "#0A1728",
-          navy: "#101E2D",
-          green: "#39A935",
-          greenDark: "#247A28",
-          gold: "#F7B731",
-          light: "#F5F7FA",
-          border: "#E5EAF0",
-          text: "#172033",
-          muted: "#6B7280",
+          dark: "#041427",
+          darkSoft: "#061B33",
+          navy: "#0B2745",
+          sky: "#75D7FF",
+          skySoft: "#AEEBFF",
+          gold: "#F6C85F",
+          light: "#0E223A",
+          border: "rgba(174,235,255,0.24)",
+          text: "#FFFFFF",
+          muted: "rgba(255,255,255,0.7)",
         },
         background: "var(--background)",
         foreground: "var(--foreground)",
