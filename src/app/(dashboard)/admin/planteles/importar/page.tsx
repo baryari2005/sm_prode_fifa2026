@@ -255,7 +255,7 @@ export default function PlantelesImportarPage() {
                 </div>
               </div>
 
-              <div className="pointer-events-none absolute bottom-[4px] right-[-28px] z-20 hidden h-[420px] w-[360px] xl:block 2xl:bottom-[-2px] 2xl:right-[-18px] 2xl:h-[510px] 2xl:w-[430px]">
+              <div className="pointer-events-none absolute bottom-[-18px] right-[-22px] z-20 hidden h-[336px] w-[288px] xl:block 2xl:bottom-[-26px] 2xl:right-[-14px] 2xl:h-[408px] 2xl:w-[344px]">
                 <div className="absolute inset-2 rounded-full bg-[#5993B6]/22 blur-[120px]" />
                 <div className="absolute inset-x-[-8%] top-[18%] h-[52%] rounded-[999px] bg-[radial-gradient(ellipse_at_center,rgba(174,235,255,0.18)_0%,rgba(89,147,182,0.16)_36%,rgba(30,44,70,0.08)_64%,transparent_92%)] blur-[34px]" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(30,44,70,0)_48%,rgba(30,44,70,0.16)_78%,rgba(30,44,70,0.32)_100%)]" />
@@ -263,7 +263,7 @@ export default function PlantelesImportarPage() {
                   src={brandImages.mascots.importar}
                   alt=""
                   sizes="(min-width: 1536px) 430px, 360px"
-                  baseClassName="relative object-contain object-[center_bottom] drop-shadow-[0_28px_64px_rgba(0,0,0,0.34)] [mask-image:radial-gradient(circle_at_center,rgba(0,0,0,0.98)_44%,rgba(0,0,0,0.82)_62%,rgba(0,0,0,0.42)_82%,transparent_100%)] [-webkit-mask-image:radial-gradient(circle_at_center,rgba(0,0,0,0.98)_44%,rgba(0,0,0,0.82)_62%,rgba(0,0,0,0.42)_82%,transparent_100%)]"
+                  baseClassName="relative object-contain object-[center_bottom] drop-shadow-[0_28px_64px_rgba(0,0,0,0.34)] [mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.55)_12%,rgba(0,0,0,0.92)_22%,rgba(0,0,0,0.98)_50%,rgba(0,0,0,0.92)_78%,rgba(0,0,0,0.55)_88%,transparent_100%),radial-gradient(circle_at_center,rgba(0,0,0,0.98)_44%,rgba(0,0,0,0.82)_62%,rgba(0,0,0,0.42)_82%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.55)_12%,rgba(0,0,0,0.92)_22%,rgba(0,0,0,0.98)_50%,rgba(0,0,0,0.92)_78%,rgba(0,0,0,0.55)_88%,transparent_100%),radial-gradient(circle_at_center,rgba(0,0,0,0.98)_44%,rgba(0,0,0,0.82)_62%,rgba(0,0,0,0.42)_82%,transparent_100%)]"
                   loadedClassName="scale-100 opacity-[0.78]"
                   loadingClassName="scale-[0.97] opacity-0"
                 />

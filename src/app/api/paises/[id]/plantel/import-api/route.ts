@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, requirePermission } from "@/lib/server-auth";
 import { prisma } from "@/lib/db";
 import { replaceJugadoresSeleccion } from "@/features/partidos/services/partido.service";
+import { normalizePlantelPositionCode } from "@/features/planteles/helpers/plantel-position.helpers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,15 +32,15 @@ type FootballDataTeamResponse = {
 };
 
 function mapPosition(position?: string | null) {
-  const normalized = (position ?? "").trim().toLowerCase();
+  const normalizedCode = normalizePlantelPositionCode(position);
+
+  if (normalizedCode !== "M" || !position?.trim()) {
+    return normalizedCode;
+  }
+
+  const normalized = position.trim().toLowerCase();
 
   switch (normalized) {
-    case "goalkeeper":
-      return "A";
-    case "defence":
-      return "D";
-    case "midfield":
-      return "M";
     case "attacking midfield":
       return "MO";
     case "central midfield":
@@ -58,8 +59,6 @@ function mapPosition(position?: string | null) {
       return "DC";
     case "centre-forward":
       return "FC";
-    case "forward":
-      return "F";
     default:
       return "M";
   }

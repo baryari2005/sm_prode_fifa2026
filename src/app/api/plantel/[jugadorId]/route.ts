@@ -6,6 +6,7 @@ import {
   updateJugadorSeleccion,
 } from "@/features/partidos/services/partido.service";
 import { jugadorSeleccionUpdateSchema } from "@/features/partidos/schemas/jugador-seleccion.schema";
+import { normalizePlantelPositionCode } from "@/features/planteles/helpers/plantel-position.helpers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -59,7 +60,13 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     requirePermission(loggedInUser, "paises", "editar");
 
     const body = await req.json();
-    const dto = jugadorSeleccionUpdateSchema.parse(body);
+    const dto = jugadorSeleccionUpdateSchema.parse({
+      ...body,
+      posicion:
+        typeof body?.posicion === "string"
+          ? normalizePlantelPositionCode(body.posicion)
+          : body?.posicion,
+    });
     const jugador = await updateJugadorSeleccion(jugadorId, dto);
 
     return NextResponse.json(jugador);

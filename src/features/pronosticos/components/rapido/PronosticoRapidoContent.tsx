@@ -137,9 +137,35 @@ export function PronosticoRapidoContent() {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(89,147,182,0.16),transparent_35%),radial-gradient(circle_at_18%_18%,rgba(250,180,56,0.12),transparent_22%)] opacity-90" />
 
           <div className="relative z-10 space-y-6">
+            <div className="flex flex-col gap-3 border-b border-white/10 pb-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
+                  tablero de carga
+                </p>
+                <h2 className="font-brand mt-2 text-[1.95rem] leading-[0.94] tracking-[0.04em] text-white">
+                  Partidos listos para pronosticar
+                </h2>
+                <p className="mt-2 max-w-[860px] text-sm leading-6 text-white/72">
+                  Recorre la fecha, completa marcadores y guarda todo en bloque
+                  sin salir de la misma pantalla.
+                </p>
+              </div>
+
+              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-semibold text-[#AEEBFF]">
+                {totalPartidosVisibles}{" "}
+                {totalPartidosVisibles === 1 ? "partido visible" : "partidos visibles"}
+              </div>
+            </div>
+
             {partidosAgrupadosVisibles.length === 0 ? (
-              <div className="rounded-[24px] border border-dashed border-white/12 bg-white/[0.05] px-6 py-16 text-center text-sm font-medium text-white/66">
-                No hay partidos para mostrar con los filtros actuales.
+              <div className="rounded-[28px] border border-dashed border-white/12 bg-white/[0.05] px-6 py-16 text-center">
+                <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
+                  Sin resultados para esta vista
+                </p>
+                <p className="mx-auto mt-3 max-w-xl text-sm font-medium leading-6 text-white/66">
+                  No hay partidos para mostrar con los filtros actuales. Proba
+                  con otra fase, grupo o cambia la busqueda para seguir cargando.
+                </p>
               </div>
             ) : (
               <div className="space-y-6">

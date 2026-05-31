@@ -6,6 +6,7 @@ import {
   listJugadoresBySeleccionIdPaginated,
 } from "@/features/partidos/services/partido.service";
 import { jugadorSeleccionCreateSchema } from "@/features/partidos/schemas/jugador-seleccion.schema";
+import { normalizePlantelPositionCode } from "@/features/planteles/helpers/plantel-position.helpers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -95,6 +96,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     const dto = jugadorSeleccionCreateSchema.parse({
       ...body,
       seleccionId: id,
+      posicion: normalizePlantelPositionCode(body?.posicion),
     });
 
     const jugador = await createJugadorSeleccion(dto);

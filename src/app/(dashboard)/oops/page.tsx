@@ -1,78 +1,20 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { Home, ShieldAlert } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { StatusPage } from "@/components/status/StatusPage";
 
-export default function DashboardNotFoundPage() {
+export default function DashboardOopsPage() {
   return (
-    <div className="min-h-[75vh] w-full flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-lg rounded-2xl border bg-white/70 backdrop-blur p-8 shadow-sm text-center dark:bg-slate-950/40">
-        {/* Robot */}
-        <div className="relative mx-auto w-fit">
-          <div className="animate-float">
-            <Image
-              src="/error-404.png"
-              alt="Pagina no encontrada."
-              width={600}
-              height={600}
-              priority
-              className="select-none"
-            />
-          </div>
-
-          {/* Glow tenue */}
-          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full blur-2xl opacity-15 bg-[#008C93]" />
-        </div>
-
-        {/* Badge 403 */}
-        <div className="mt-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#008C93]/10 text-[#008C93]">
-            <ShieldAlert className="h-4 w-4" />
-          </span>
-          <span className="tracking-wide font-bold text-xl">404</span>
-        </div>
-
-        <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-slate-50">
-          Página no encontrada
-        </h1>
-
-        <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-          No encontramos esta sección.
-          La página no existe o todavía no esá disponible.
-        </p>
-
-        <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/"
-            //className="h-12 w-full rounded-2xl bg-[#39A935] font-bold text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
-            className="inline-flex items-center 
-            justify-center rounded-2xl px-4 py-2 
-            text-sm font-semibold bg-[#39A935] 
-             text-white shadow-lg shadow-green-700/20 transition hover:bg-[#247A28]"
-          >
-            <Home className="w-4 h-4 mr-2" />
-            Volver al inicio
-          </Link>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => history.back()}
-          >
-            Volver atrás
-          </Button>
-        </div>
-
-        {/* Opcional: link “Solicitar acceso” */}
-        <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-          ¿Necesitás permisos?{" "}
-          <Link href="/ayuda/usuario" className="text-[#008C93] hover:underline">
-            Solicitar acceso
-          </Link>
-        </div>
-      </div>
-    </div>
+    <StatusPage
+      code="404"
+      title="Pagina no encontrada"
+      description="No encontramos esta seccion. Puede que la pagina no exista o que todavia no este disponible dentro del panel."
+      imageSrc="/mascotas/error-404.png"
+      imageWrapperClassName="max-w-[860px] lg:max-w-[920px]"
+      showBrandHeader
+      brandTitle="Pasion mundial"
+      brandSubtitle="Oops"
+      primaryAction={{ label: "Volver al inicio", href: "/" }}
+      secondaryAction={{ label: "Ir a ayuda", href: "/ayuda/usuario" }}
+    />
   );
 }

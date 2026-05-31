@@ -16,18 +16,18 @@ export default function PartidoDetallePage() {
   const router = useRouter();
 
   const partidoId = params.id;
-  const canVer = useCan("partidos", "ver");
+  const canVerDetalle = useCan("partidos", "ver_detalle");
 
   const { detalle, loading, refreshing, loadData } = usePartidoDetallePage({
     partidoId,
-    canVer,
+    canVer: canVerDetalle,
   });
 
   useEffect(() => {
-    if (canVer) {
+    if (canVerDetalle) {
       loadData();
     }
-  }, [canVer, loadData]);
+  }, [canVerDetalle, loadData]);
 
   const autoRefreshEnabled =
     detalle?.estado === "EN_JUEGO" || detalle?.estado === "ENTRETIEMPO";
@@ -37,19 +37,19 @@ export default function PartidoDetallePage() {
     lastRefreshAt,
     isRefreshing,
   } = useLiveAutoRefresh({
-    enabled: Boolean(autoRefreshEnabled && canVer && partidoId),
+    enabled: Boolean(autoRefreshEnabled && canVerDetalle && partidoId),
     intervalSeconds: 30,
     onRefresh: async () => {
       await loadData({ silent: true });
     },
   });
 
-  if (!canVer) {
+  if (!canVerDetalle) {
     return <AccessDenied403Page />;
   }
 
   if (loading) {
-    return <DashboardLoading badgeLabel="Landing detalle partido" />;
+    return <DashboardLoading badgeLabel="Loading detalle partido" />;
   }
 
   if (!detalle) {

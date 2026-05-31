@@ -173,7 +173,7 @@ export function PronosticoRapidoDashboardMatchCard({
                 size="sm"
                 className="h-9 rounded-full border-white/12 bg-white/[0.08] px-4 text-sm font-semibold text-white shadow-none hover:bg-white/[0.14] hover:text-white"
               >
-                <Link href={`/pronosticos/partidos/${partido.id}/detalle`}>
+                <Link href={`/admin/partidos/${partido.id}`}>
                   <Eye className="mr-1.5 h-4 w-4" />
                   Ver detalles
                 </Link>

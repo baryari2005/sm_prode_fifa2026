@@ -5,6 +5,8 @@ import type {
   JugadorSeleccionCreateInput,
 } from "@/features/partidos/types/types";
 
+import { normalizePlantelPositionCode } from "./plantel-position.helpers";
+
 import type { JugadorPlantelFormState } from "../types";
 
 export function toInitialJugadorPlantelFormState(
@@ -50,7 +52,7 @@ export function buildJugadorPlantelPayload(
     nombre: form.nombre.trim(),
     fotoUrl: emptyToNull(form.fotoUrl),
     numero: numberOrNull(form.numero),
-    posicion: form.posicion,
+    posicion: normalizePlantelPositionCode(form.posicion),
     edad: numberOrNull(form.edad),
     estatura: emptyToNull(form.estatura),
     peso: emptyToNull(form.peso),

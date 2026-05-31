@@ -104,7 +104,7 @@ export function PronosticoRapidoMatchCard({
                 size="sm"
                 className="h-8 rounded-xl border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
               >
-                <Link href={`/pronosticos/partidos/${partido.id}/detalle`}>
+                <Link href={`/admin/partidos/${partido.id}`}>
                   <Eye className="mr-1.5 h-3.5 w-3.5" />
                   Ver detalles
                 </Link>

@@ -52,6 +52,7 @@ export const brandImages = {
     cargaPrediccion: withVersion("/mascotas/pronosticar.png"),
     tabla: withVersion("/mascotas/posiciones.png"),
     fixture: withVersion("/mascotas/fixture.png"),
+    ranking: withVersion("/mascotas/ranking.png"),
     byConfederation: {
       conmebol: withVersion("/mascotas/confederaciones/conmebol.png"),
       concacaf: withVersion("/mascotas/confederaciones/concacaf.png"),

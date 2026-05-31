@@ -4,11 +4,11 @@ import { useEffect } from "react";
 
 import { useCan } from "@/hooks/useCan";
 
-import { Card, CardContent } from "@/components/ui/card";
 import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import AccessDenied403Page from "../../403/page";
 
 import { GoleadoresHeader } from "@/features/goleadores/components/GoleadoresHeader";
+import { GoleadoresOverview } from "@/features/goleadores/components/GoleadoresOverview";
 import { GoleadoresTable } from "@/features/goleadores/components/GoleadoresTable";
 import { useGoleadoresPage } from "@/features/goleadores/hooks/useGoleadoresPage";
 
@@ -44,8 +44,10 @@ export default function GoleadoresPage() {
   }
 
   return (
-    <Card className="border-white/70 bg-white shadow-sm">
-      <CardContent className="space-y-6 p-4 md:p-6">
+    <main className="min-h-full bg-transparent px-3 py-4 md:px-5 md:py-5 xl:px-4">
+      <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 xl:gap-6">
+        <GoleadoresOverview goleadores={goleadores} source={source} />
+
         <GoleadoresHeader
           total={goleadores.length}
           source={source}
@@ -57,8 +59,12 @@ export default function GoleadoresPage() {
           onCargarDesdeMock={loadFromMock}
         />
 
-        <GoleadoresTable goleadores={goleadoresFiltrados} />
-      </CardContent>
-    </Card>
+        <GoleadoresTable
+          goleadores={goleadoresFiltrados}
+          totalGoleadores={goleadores.length}
+          busqueda={busqueda}
+        />
+      </div>
+    </main>
   );
 }

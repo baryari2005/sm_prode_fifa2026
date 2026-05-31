@@ -21,6 +21,7 @@ type DashboardMainGridProps = {
   now: number;
   canAccessPronosticos: boolean;
   canAccessRanking: boolean;
+  canViewPartidoDetalle: boolean;
   showAdminFixtureActions: boolean;
   showAdminTablaPosicionesAction: boolean;
   showAdminGoleadoresAction: boolean;
@@ -43,6 +44,7 @@ export function DashboardMainGrid({
   now,
   canAccessPronosticos,
   canAccessRanking,
+  canViewPartidoDetalle,
   showAdminFixtureActions,
   showAdminTablaPosicionesAction,
   showAdminGoleadoresAction,
@@ -62,7 +64,8 @@ export function DashboardMainGrid({
       ? "Ver todos"
       : null;
 
-  const canOpenLiveMatch = showAdminFixtureActions || canAccessPronosticos;
+  const canOpenLiveMatch =
+    showAdminFixtureActions || canAccessPronosticos || canViewPartidoDetalle;
   const canOpenUpcomingMatch = canAccessPronosticos;
 
   return (

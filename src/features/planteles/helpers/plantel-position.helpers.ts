@@ -13,6 +13,88 @@ export type PlantelPositionGroup = {
   codes: string[];
 };
 
+const POSITION_CODE_ALIASES: Record<string, string> = {
+  A: "A",
+  GK: "A",
+  GOALKEEPER: "A",
+  ARQUERO: "A",
+  PORTERO: "A",
+  GUARDAMETA: "A",
+
+  D: "D",
+  DF: "D",
+  DEFENDER: "D",
+  DEFENCE: "D",
+  DEFENSA: "D",
+
+  LI: "LI",
+  "LEFT BACK": "LI",
+  LEFTBACK: "LI",
+  "LATERAL IZQUIERDO": "LI",
+
+  LD: "LD",
+  "RIGHT BACK": "LD",
+  RIGHTBACK: "LD",
+  "LATERAL DERECHO": "LD",
+
+  DC: "DC",
+  "CENTRE BACK": "DC",
+  CENTREBACK: "DC",
+  "CENTER BACK": "DC",
+  CENTERBACK: "DC",
+  "DEFENSA CENTRAL": "DC",
+  CENTRAL: "DC",
+
+  M: "M",
+  MF: "M",
+  MIDFIELDER: "M",
+  MIDFIELD: "M",
+  MEDIOCAMPISTA: "M",
+  CENTROCAMPISTA: "M",
+  VOLANTE: "M",
+
+  MO: "MO",
+  "ATTACKING MIDFIELD": "MO",
+  "MEDIOCAMPISTA OFENSIVO": "MO",
+  "CENTROCAMPISTA OFENSIVO": "MO",
+  ENGANCHE: "MO",
+
+  MC: "MC",
+  "CENTRAL MIDFIELD": "MC",
+  "MEDIOCAMPISTA CENTRAL": "MC",
+  "CENTROCAMPISTA CENTRAL": "MC",
+
+  MD: "MD",
+  "DEFENSIVE MIDFIELD": "MD",
+  "MEDIOCAMPISTA DEFENSIVO": "MD",
+  "CENTROCAMPISTA DEFENSIVO": "MD",
+  "VOLANTE DEFENSIVO": "MD",
+
+  ED: "ED",
+  "RIGHT WINGER": "ED",
+  EXTREMO: "ED",
+  "EXTREMO DERECHO": "ED",
+
+  EI: "EI",
+  "LEFT WINGER": "EI",
+  "EXTREMO IZQUIERDO": "EI",
+
+  FC: "FC",
+  "CENTRE FORWARD": "FC",
+  CENTREFORWARD: "FC",
+  "CENTER FORWARD": "FC",
+  CENTERFORWARD: "FC",
+  "CENTRODELANTERO": "FC",
+  "DELANTERO CENTRO": "FC",
+  "DELANTERO CENTRAL": "FC",
+
+  F: "F",
+  FW: "F",
+  FORWARD: "F",
+  DELANTERO: "F",
+  ATACANTE: "F",
+};
+
 export const POSITION_LABELS = Object.fromEntries(
   POSITION_OPTIONS.map((option) => [option.value, option.label.replace(/^[A-Z]+\s-\s/, "")]),
 ) as Record<string, string>;
@@ -25,10 +107,20 @@ export const POSITION_GROUPS: PlantelPositionGroup[] = [
   { key: "otros", label: "Otros", codes: [] },
 ];
 
+export function normalizePlantelPositionCode(position?: string | null) {
+  const normalizedPosition = normalizePositionAlias(position);
+
+  if (!normalizedPosition) {
+    return "M";
+  }
+
+  return POSITION_CODE_ALIASES[normalizedPosition] ?? normalizedPosition;
+}
+
 export function getPlantelGroupForPosition(
   position?: string | null,
 ): PlantelPositionGroupKey {
-  const normalizedPosition = position?.trim().toUpperCase();
+  const normalizedPosition = normalizePlantelPositionCode(position);
 
   if (!normalizedPosition) {
     return "otros";
@@ -46,5 +138,17 @@ export function getPlantelPositionLabel(position?: string | null) {
     return "Sin definir";
   }
 
-  return POSITION_LABELS[position.trim().toUpperCase()] ?? position;
+  const normalizedPosition = normalizePlantelPositionCode(position);
+
+  return POSITION_LABELS[normalizedPosition] ?? position;
+}
+
+function normalizePositionAlias(position?: string | null) {
+  return position
+    ?.trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[-_/]+/g, " ")
+    .replace(/\s+/g, " ")
+    .toUpperCase();
 }

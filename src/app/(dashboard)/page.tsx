@@ -42,6 +42,7 @@ export default function DashboardPage() {
   const canViewDashboardRanking = useCan("dashboard", "ver_acceso_ranking");
   const canViewUsuarios = useCan("usuarios", "ver");
   const canViewPartidos = useCan("partidos", "ver");
+  const canViewPartidoDetalle = useCan("partidos", "ver_detalle");
 
   const canAccessPronosticos =
     canAccessPronosticosSection && canViewDashboardPronosticos;
@@ -154,6 +155,7 @@ export default function DashboardPage() {
           now={now}
           canAccessPronosticos={canAccessPronosticos}
           canAccessRanking={canAccessRanking}
+          canViewPartidoDetalle={canViewPartidoDetalle}
           showAdminFixtureActions={showAdminFixtureActions}
           showAdminTablaPosicionesAction={showAdminFixtureActions}
           showAdminGoleadoresAction={showAdminFixtureActions}
@@ -189,6 +191,11 @@ export default function DashboardPage() {
           }}
           onGoPartido={(partidoId) => {
             if (showAdminFixtureActions) {
+              router.push(`/admin/partidos/${partidoId}`);
+              return;
+            }
+
+            if (canViewPartidoDetalle) {
               router.push(`/admin/partidos/${partidoId}`);
               return;
             }

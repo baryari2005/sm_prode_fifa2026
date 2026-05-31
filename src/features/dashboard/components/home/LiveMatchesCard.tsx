@@ -1,7 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
-import { CalendarDays, ChevronRight, Clock3, Radio } from "lucide-react";
+import { ChevronRight, Clock3, Radio } from "lucide-react";
 
 import { FlagImage } from "@/components/ui/flag-image";
 import {
@@ -41,8 +40,7 @@ export function LiveMatchesCard({
   onGoPartido,
   onGoFixture,
 }: LiveMatchesCardProps) {
-  const showingLive = partidosEnJuego.length > 0;
-  const rows = (showingLive ? partidosEnJuego : proximosPartidos).slice(0, 3);
+  const rows = partidosEnJuego.slice(0, 3);
   const nextPredictionClose = proximosPartidos[0] ?? null;
 
   return (
@@ -58,20 +56,14 @@ export function LiveMatchesCard({
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-emerald-400/16 text-emerald-200">
-            {showingLive ? (
-              <Radio className="h-5 w-5" />
-            ) : (
-              <CalendarDays className="h-5 w-5" />
-            )}
+            <Radio className="h-5 w-5" />
           </span>
           <div>
             <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-              {showingLive ? "Partidos en juego" : "Próximos partidos"}
+              Partidos en juego
             </p>
             <h2 className="brand-heading text-lg font-black !tracking-[0.04em] text-white xl:text-xl">
-              {showingLive
-                ? "Seguimiento en tiempo real"
-                : "Cargá tus pronósticos a tiempo"}
+              Seguimiento en tiempo real
             </h2>
           </div>
         </div>
@@ -91,23 +83,13 @@ export function LiveMatchesCard({
       <div className="space-y-3">
         {rows.length === 0 ? (
           <div className="rounded-[24px] border border-dashed border-white/14 bg-white/[0.04] px-4 py-10 text-center text-sm font-semibold text-white/60">
-            No hay partidos en juego ni encuentros próximos para mostrar ahora.
+            No hay partidos actualmente en juego.
           </div>
-        ) : showingLive ? (
+        ) : (
           rows.map((partido) => (
             <LiveMatchRow
               key={partido.id}
               partido={partido}
-              canOpen={canOpenPartido}
-              onClick={() => onGoPartido(partido.id)}
-            />
-          ))
-        ) : (
-          rows.map((partido) => (
-            <UpcomingMatchRow
-              key={partido.id}
-              partido={partido}
-              now={now}
               canOpen={canOpenPartido}
               onClick={() => onGoPartido(partido.id)}
             />
@@ -118,7 +100,7 @@ export function LiveMatchesCard({
       {nextPredictionClose ? (
         <div className="mt-4 flex flex-col gap-2 rounded-[22px] border border-white/10 bg-white/[0.08] px-4 py-3 text-sm font-semibold text-white/82 sm:flex-row sm:items-center sm:justify-between">
           <span className="min-w-0">
-            Próximo cierre de pronósticos:{" "}
+            Proximo cierre de pronosticos:{" "}
             <span className="font-black">
               {nextPredictionClose.seleccionLocal?.nombre ?? "Local"} vs{" "}
               {nextPredictionClose.seleccionVisitante?.nombre ?? "Visitante"}
@@ -179,7 +161,7 @@ function LiveMatchRow({
             {partido.seleccionVisitante?.nombre ?? "Visitante"}
           </p>
           <p className="mt-1 truncate text-xs font-semibold text-white/60">
-            {partido.fase?.nombre ?? "Sin fase"} ·{" "}
+            {partido.fase?.nombre ?? "Sin fase"} .{" "}
             {resultado?.tiempoJuego ? `${resultado.tiempoJuego}'` : status.label}
           </p>
         </div>
@@ -193,69 +175,6 @@ function LiveMatchRow({
         </span>
         <span className="whitespace-nowrap rounded-full bg-emerald-400/16 px-2.5 py-1 text-[11px] font-black text-emerald-200">
           EN VIVO
-        </span>
-      </div>
-
-      {canOpen ? (
-        <ChevronRight className="h-4 w-4 shrink-0 text-[#5993B6] transition group-hover:translate-x-0.5 group-hover:text-[#AEEBFF]" />
-      ) : null}
-    </button>
-  );
-}
-
-function UpcomingMatchRow({
-  partido,
-  now,
-  canOpen,
-  onClick,
-}: {
-  partido: PartidoConRelaciones;
-  now: number;
-  canOpen: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={!canOpen}
-      className={`group flex w-full items-center gap-3 rounded-[24px] px-4 py-4 text-left ${DASHBOARD_SUBCARD} ${
-        canOpen ? "cursor-pointer" : "cursor-default"
-      }`}
-    >
-      <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
-        <MatchFlags
-          local={{
-            bandera: partido.seleccionLocal?.bandera,
-            codigo: partido.seleccionLocal?.codigo,
-            nombre: partido.seleccionLocal?.nombre ?? "Local",
-          }}
-          visitante={{
-            bandera: partido.seleccionVisitante?.bandera,
-            codigo: partido.seleccionVisitante?.codigo,
-            nombre: partido.seleccionVisitante?.nombre ?? "Visitante",
-          }}
-        />
-
-        <div className="min-w-0">
-          <p className="truncate text-sm font-black text-white">
-            {partido.seleccionLocal?.nombre ?? "Local"} vs{" "}
-            {partido.seleccionVisitante?.nombre ?? "Visitante"}
-          </p>
-          <p className="mt-1 truncate text-xs font-semibold text-white/60">
-            {partido.fase?.nombre ?? "Sin fase"} ·{" "}
-            {format(new Date(partido.fecha), "dd/MM HH:mm")}
-          </p>
-        </div>
-      </div>
-
-      <div className="hidden shrink-0 md:block">
-        <span className="whitespace-nowrap rounded-full bg-[#5993B6]/18 px-2.5 py-1 text-[11px] font-black text-[#D8F2FF]">
-          {getPredictionCountdownLabel(
-            partido.fecha,
-            PREDICTION_CLOSE_MINUTES_BEFORE,
-            now,
-          )}
         </span>
       </div>
 

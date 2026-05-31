@@ -19,6 +19,7 @@ import {
   DASHBOARD_TOP_LINE_INNER,
   DASHBOARD_TOP_LINE_SWEEP,
 } from "@/features/dashboard/components/home/dashboard-home.styles";
+import { LateralSummaryHeader } from "@/components/ui/lateralSummaryHeader";
 
 export default function RankingPage() {
   const { miRanking, ranking, historial, loading, loadData } = useRankingPage();
@@ -28,7 +29,7 @@ export default function RankingPage() {
   }, [loadData]);
 
   if (loading) {
-    return <DashboardLoading source="Ranking" />;
+    return <DashboardLoading source="Loading Ranking" />;
   }
 
   const lider = ranking[0] ?? null;
@@ -79,14 +80,10 @@ export default function RankingPage() {
           <aside className="relative min-w-0 overflow-hidden rounded-[28px] border border-white/10 bg-[#1E2C46] p-4 text-white shadow-[0_18px_48px_rgba(2,6,23,0.18)] xl:min-h-[248px]">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(89,147,182,0.18),transparent_36%)]" />
             <div className="relative flex h-full flex-col">
-              <div className="space-y-1.5">
-                <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                  Resumen lateral
-                </p>
-                <h2 className="font-brand text-[1.6rem] leading-none tracking-[0.04em] text-white">
-                  Tu carrera
-                </h2>
-              </div>
+              <LateralSummaryHeader
+                title="Resumen lateral"
+                description="Estado rapido del flujo y de los campos que se van a actualizar."
+              />
 
               <div className="mt-3.5 space-y-2">
                 {resumen.map((stat) => {

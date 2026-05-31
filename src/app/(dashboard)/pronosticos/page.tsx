@@ -228,7 +228,7 @@ export default function PronosticosPage() {
                 selecciones={[]}
                 fases={[]}
                 onVerDetalle={(partidoId) =>
-                  router.push(`/pronosticos/partidos/${partidoId}/detalle`)
+                  router.push(`/admin/partidos/${partidoId}`)
                 }
                 allowPronostico
                 onPronosticoSaved={loadData}

@@ -1,5 +1,6 @@
 import type { AciertoTipo } from "@prisma/client";
 import type { Fase, Resultado, Seleccion } from "@/features/partidos/types/types";
+import { axiosInstance } from "@/lib/axios";
 
 export type RankingRowDTO = {
   posicion: number | null;
@@ -41,26 +42,14 @@ type RankingResponse = {
   message?: string;
 };
 
-function getAuthHeaders(): HeadersInit {
-  if (typeof window === "undefined") return {};
-
-  const token = localStorage.getItem("token");
-
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
 export async function getPronosticosRanking() {
-  const res = await fetch("/api/pronosticos/ranking", {
-    method: "GET",
-    cache: "no-store",
-    headers: getAuthHeaders(),
+  const response = await axiosInstance.get<RankingResponse>("/pronosticos/ranking", {
+    headers: {
+      "Cache-Control": "no-cache",
+    },
   });
 
-  const data = (await res.json()) as RankingResponse;
-
-  if (!res.ok) {
-    throw new Error(data.message || "Error al cargar el ranking");
-  }
+  const data = response.data;
 
   return {
     miRanking: data.data?.miRanking ?? null,

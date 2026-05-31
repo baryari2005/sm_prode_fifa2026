@@ -76,13 +76,21 @@ export function PronosticoRapidoDashboardFilters({
 
           <div className="flex flex-col gap-3 xl:min-w-[360px] xl:items-end">
             <div className="flex w-full flex-col gap-3 sm:flex-row xl:justify-end">
-              <label className="flex items-center gap-3 text-sm font-semibold text-white/72">
+              <label className="inline-flex items-center gap-3 rounded-full border border-[#E7C66A]/40 bg-[#FAB438] px-4 py-2 text-sm font-black text-[#1E2C46] shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition hover:bg-[#F7C45A] hover:shadow-[0_14px_34px_rgba(0,0,0,0.28)]">
                 <Switch
                   checked={showOnlyPending}
                   onCheckedChange={onShowOnlyPendingChange}
+                  aria-label={
+                    showOnlyPending
+                      ? "Mostrando solo partidos pendientes"
+                      : "Mostrando todos los partidos"
+                  }
+                  className="data-[state=checked]:bg-[#1E2C46] data-[state=unchecked]:bg-[#1E2C46]/55 [&_[data-slot=switch-thumb]]:bg-white"
                 />
-                <span>
-                  {showOnlyPending ? "Solo pendientes" : "Ver todos"}
+                <span className="leading-none">
+                  {showOnlyPending
+                    ? "Ver solo pendientes"
+                    : "Ver todos los partidos"}
                 </span>
               </label>
               <div className="relative min-w-[220px] flex-1 xl:max-w-[280px]">

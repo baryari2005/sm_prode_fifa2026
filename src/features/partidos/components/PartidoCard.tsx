@@ -236,7 +236,7 @@ export function PartidoCard({
                     size="sm"
                     className={secondaryActionButtonClassName}
                   >
-                    <Link href={`/pronosticos/partidos/${partido.id}/detalle`}>
+                    <Link href={`/admin/partidos/${partido.id}`}>
                       <Eye className="mr-1.5 h-3.5 w-3.5" />
                       Ver detalles
                     </Link>

@@ -6,7 +6,7 @@ export default function ComingSoonPage() {
       code="501"
       title="Sección en construcción"
       description="Estamos trabajando en esta sección. Volvé en unos días."
-      imageSrc="/error-501.png"
+      imageSrc="/mascotas/error-501.png"
       primaryAction={{ label: "Ir al inicio", href: "/" }}
     />
   );
