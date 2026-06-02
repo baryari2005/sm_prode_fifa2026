@@ -12,6 +12,7 @@ type PlantelResponse = {
 export type PlantelImportSummary = {
   seleccionId: string;
   seleccionNombre?: string | null;
+  coach?: string | null;
   imported: number;
   cleared: number;
   source: "file" | "api";
@@ -83,6 +84,7 @@ export async function importPlantelDesdeApi(
       cleared?: number;
       seleccionId?: string;
       seleccionNombre?: string | null;
+      coach?: string | null;
     };
   }>(
     `/paises/${seleccionId}/plantel/import-api`
@@ -95,6 +97,7 @@ export async function importPlantelDesdeApi(
     summary: {
       seleccionId: res.data.meta?.seleccionId ?? seleccionId,
       seleccionNombre: res.data.meta?.seleccionNombre ?? null,
+      coach: res.data.meta?.coach ?? null,
       imported: res.data.meta?.totalImported ?? data.length,
       cleared: res.data.meta?.cleared ?? 0,
       source: "api",

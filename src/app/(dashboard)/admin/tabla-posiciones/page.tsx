@@ -121,7 +121,7 @@ export default function TablaPosicionesPage() {
                 <div className="mt-7 space-y-4">
                   <h1 className="text-4xl font-extrabold tracking-[-0.04em] text-white md:text-6xl">
                     Clasificación 
-                    <span className="text-[#5993B6]"> cada grupo</span>
+                    <span className="text-[#5993B6]"> por grupos</span>
                   </h1>
                   <p className="brand-heading max-w-[680px] text-[2.25rem] uppercase !tracking-[0.04em] text-white md:text-[3.2rem] md:leading-[1.1]">
                     puntos y diferencia

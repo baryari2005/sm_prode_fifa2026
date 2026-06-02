@@ -2,6 +2,7 @@ import { POSITION_OPTIONS } from "../types/constants";
 
 export type PlantelPositionGroupKey =
   | "arqueros"
+  | "cuerpo-tecnico"
   | "defensores"
   | "mediocampo"
   | "delanteros"
@@ -20,6 +21,15 @@ const POSITION_CODE_ALIASES: Record<string, string> = {
   ARQUERO: "A",
   PORTERO: "A",
   GUARDAMETA: "A",
+
+  CT: "CT",
+  COACH: "CT",
+  MANAGER: "CT",
+  "HEAD COACH": "CT",
+  "TECHNICAL STAFF": "CT",
+  "CUERPO TECNICO": "CT",
+  ENTRENADOR: "CT",
+  DT: "CT",
 
   D: "D",
   DF: "D",
@@ -91,6 +101,8 @@ const POSITION_CODE_ALIASES: Record<string, string> = {
   F: "F",
   FW: "F",
   FORWARD: "F",
+  OFFENCE: "F",
+  OFFENSE: "F",
   DELANTERO: "F",
   ATACANTE: "F",
 };
@@ -104,6 +116,7 @@ export const POSITION_GROUPS: PlantelPositionGroup[] = [
   { key: "defensores", label: "Defensores", codes: ["D", "LI", "LD", "DC"] },
   { key: "mediocampo", label: "Mediocampo", codes: ["M", "MO", "MC", "MD"] },
   { key: "delanteros", label: "Delanteros", codes: ["ED", "EI", "FC", "F"] },
+  { key: "cuerpo-tecnico", label: "Cuerpo técnico", codes: ["CT"] },
   { key: "otros", label: "Otros", codes: [] },
 ];
 

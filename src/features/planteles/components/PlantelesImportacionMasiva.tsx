@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CirclePlus, Sigma, TriangleAlert } from "lucide-react";
+import { CirclePlus, RefreshCw, Sigma, TriangleAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { axiosInstance } from "@/lib/axios";
 import { DASHBOARD_PANEL, DASHBOARD_SUBCARD, DASHBOARD_TOP_LINE, DASHBOARD_TOP_LINE_GLOW, DASHBOARD_TOP_LINE_HAIR, DASHBOARD_TOP_LINE_INNER, DASHBOARD_TOP_LINE_SWEEP } from "@/features/dashboard/components/home/dashboard-home.styles";
 import { ImportacionMetricCard } from "@/features/importaciones/components/ImportacionMetricCard";
@@ -11,6 +12,7 @@ import { ImportacionMetricCard } from "@/features/importaciones/components/Impor
 type ImportSummary = {
   seleccionId: string;
   seleccionNombre?: string | null;
+  coach?: string | null;
   success: boolean;
   imported: number;
   cleared: number;
@@ -38,6 +40,8 @@ export type ImportResponse = {
 
 type PlantelesImportacionMasivaProps = {
   result: ImportResponse | null;
+  retryingFailed?: boolean;
+  onRetryFailed?: () => void;
 };
 
 type SeleccionLookup = {
@@ -51,6 +55,8 @@ type SeleccionesResponse = {
 
 export function PlantelesImportacionMasiva({
   result,
+  retryingFailed = false,
+  onRetryFailed,
 }: PlantelesImportacionMasivaProps) {
   const [selectionNamesById, setSelectionNamesById] = useState<Record<string, string>>({});
   const summaries = useMemo(
@@ -67,6 +73,9 @@ export function PlantelesImportacionMasiva({
   const failedSummaries = useMemo(
     () => summaries.filter((item) => !item.success),
     [summaries],
+  );
+  const canRetryFailed = failedSummaries.some(
+    (item) => !item.seleccionId.startsWith("missing-"),
   );
 
   useEffect(() => {
@@ -204,6 +213,22 @@ export function PlantelesImportacionMasiva({
               </p>
             </div>
 
+            {canRetryFailed && onRetryFailed ? (
+              <div className="flex justify-start">
+                <Button
+                  type="button"
+                  onClick={onRetryFailed}
+                  disabled={retryingFailed}
+                  className="rounded-2xl bg-[#FAB438] font-semibold text-[#1E2C46] hover:bg-[#F7C45A]"
+                >
+                  <RefreshCw
+                    className={`mr-2 h-4 w-4 ${retryingFailed ? "animate-spin" : ""}`}
+                  />
+                  {retryingFailed ? "Reintentando errores..." : "Reintentar selecciones con error"}
+                </Button>
+              </div>
+            ) : null}
+
             <div className="grid gap-3 xl:grid-cols-2">
               {failedSummaries.map((item) => (
                 <article
@@ -215,6 +240,11 @@ export function PlantelesImportacionMasiva({
                       <p className="text-sm font-black text-white">
                         {getSelectionDisplayName(item)}
                       </p>
+                      {item.coach ? (
+                        <p className="mt-1 text-xs font-semibold text-[#AEEBFF]">
+                          DT: {item.coach}
+                        </p>
+                      ) : null}
                       <p className="mt-1 break-words text-sm text-white/64">
                         {item.message ?? "La API devolvio un error sin detalle adicional."}
                       </p>
@@ -319,6 +349,11 @@ export function PlantelesImportacionMasiva({
                       <p className="text-sm font-black text-white">
                         {getSelectionDisplayName(item)}
                       </p>
+                      {item.coach ? (
+                        <p className="mt-1 text-xs font-semibold text-[#AEEBFF]">
+                          DT: {item.coach}
+                        </p>
+                      ) : null}
                       <p className="mt-1 text-sm text-white/64">
                         {item.message ?? (item.success ? "Sin novedades" : "No disponible")}
                       </p>

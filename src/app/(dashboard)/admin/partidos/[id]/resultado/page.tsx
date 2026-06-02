@@ -41,7 +41,7 @@ export default function ResultadoPartidoPage() {
   } = useResultadoPartidoPage();
 
   if (loading) {
-    return <DashboardLoading badgeLabel="Loading estadisticas..." />;
+    return <DashboardLoading badgeLabel="Cargando estadisticas..." />;
   }
 
   if (!canVer) {

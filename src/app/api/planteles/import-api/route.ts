@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       imported: number;
       cleared: number;
       seleccionNombre?: string | null;
+      coach?: string | null;
       message?: string | null;
     }> = [];
 
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
               cleared?: number;
               seleccionId?: string;
               seleccionNombre?: string | null;
+              coach?: string | null;
             };
           }
         | undefined;
@@ -88,6 +90,7 @@ export async function POST(req: NextRequest) {
           imported: 0,
           cleared: 0,
           seleccionNombre: payload?.meta?.seleccionNombre ?? null,
+          coach: payload?.meta?.coach ?? null,
           message: payload?.message ?? `Error HTTP ${response?.status ?? 500}`,
         });
         await sleep(1200);
@@ -102,6 +105,7 @@ export async function POST(req: NextRequest) {
         imported: payload?.meta?.totalImported ?? 0,
         cleared: payload?.meta?.cleared ?? 0,
         seleccionNombre: payload?.meta?.seleccionNombre ?? null,
+        coach: payload?.meta?.coach ?? null,
         message: payload?.message ?? null,
       });
 

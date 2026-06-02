@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { LucideIcon, ShieldCheck } from "lucide-react";
+import type { ShieldCheck } from "lucide-react";
 import { AlertTriangle, Sparkles, Trophy, Users } from "lucide-react";
 
 import { brandImages } from "@/config/brand-images";

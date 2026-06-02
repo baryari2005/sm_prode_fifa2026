@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ChevronLeft,
   FileSpreadsheet,
+  Globe2,
+  Import,
   RefreshCw,
   Search,
   ShieldCheck,
-  UserPlus,
   Users,
   X,
 } from "lucide-react";
@@ -16,6 +16,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DASHBOARD_HERO_PATTERN,
   DASHBOARD_PANEL,
@@ -37,7 +44,6 @@ import { LateralSummaryHeader } from "@/components/ui/lateralSummaryHeader";
 export function PlantelManager({
   initialSeleccionId,
   standalone = false,
-  canCreate = true,
 }: PlantelManagerProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -46,6 +52,8 @@ export function PlantelManager({
   const {
     selectedSeleccionId,
     selectedSeleccion,
+    selecciones,
+    setSelectedSeleccionId,
     refreshToken,
     loadingInitial,
     importingApi,
@@ -62,20 +70,6 @@ export function PlantelManager({
       ? `/admin/paises/${selectedSeleccionId}/plantel`
       : "/admin/planteles";
 
-  function handleBack() {
-    router.push("/admin/paises");
-  }
-
-  function handleCreatePlayer() {
-    if (!selectedSeleccionId) return;
-
-    router.push(
-      `/admin/planteles/nuevo?seleccionId=${selectedSeleccionId}&returnTo=${encodeURIComponent(
-        returnTo,
-      )}`,
-    );
-  }
-
   function handleEditPlayer(playerId: string) {
     router.push(
       `/admin/planteles/${playerId}?returnTo=${encodeURIComponent(returnTo)}`,
@@ -91,7 +85,7 @@ export function PlantelManager({
   }, [selectedSeleccionId]);
 
   if (loadingInitial) {
-    return <DashboardLoading badgeLabel="Loading planteles manager" />;
+    return <DashboardLoading badgeLabel="Cargando administrador de planteles..." />;
   }
 
   if (selectedSeleccionId && !isPlantelReady) {
@@ -99,7 +93,7 @@ export function PlantelManager({
       <>
         <main className="w-full overflow-x-hidden px-3 py-4 md:px-5 md:py-5 xl:px-4">
           <div className="mx-auto flex w-full max-w-[1500px] min-w-0 flex-col gap-5 xl:gap-6">
-            <DashboardLoading badgeLabel="Loading jugadores" />
+            <DashboardLoading badgeLabel="Cargando jugadores..." />
           </div>
         </main>
 
@@ -164,38 +158,58 @@ export function PlantelManager({
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-3 pt-8 xl:pt-10 2xl:pt-14">
-                  <Button
+                <div className="w-fit pt-8 xl:pt-10 2xl:pt-14">
+                  <div className="relative inline-block w-[320px] shrink-0 align-middle">
+                    <Globe2 className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#AEEBFF]" />
+                    <Select
+                      value={selectedSeleccionId}
+                      onValueChange={setSelectedSeleccionId}
+                      disabled={selecciones.length === 0}
+                    >
+                      <SelectTrigger className="h-11 rounded-2xl border-white/15 bg-white/10 pl-11 text-white">
+                        <SelectValue placeholder="Seleccioná una selección" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selecciones.map((seleccion) => (
+                          <SelectItem key={seleccion.id} value={seleccion.id}>
+                            {seleccion.nombre}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* <Button
                     variant="outline"
                     onClick={handleBack}
                     className="rounded-2xl border-white/15 bg-white/10 text-white hover:bg-white/15"
                   >
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Volver a seleccion
-                  </Button>
+                  </Button> */}
 
                   <Button
                     variant="outline"
                     onClick={() => void handleImportFromApi()}
                     disabled={importingApi || !selectedSeleccionId}
-                    className="rounded-2xl border-white/15 bg-white/10 text-white hover:bg-white/15"
+                    className="ml-2 inline-flex h-11 align-middle rounded-2xl border-white/15 bg-white/10 text-white hover:bg-white/15"
                   >
                     {importingApi ? (
                       <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
-                      <FileSpreadsheet className="mr-2 h-4 w-4" />
+                      <Import className="mr-2 h-4 w-4" />
                     )}
-                    {importingApi ? "Importando..." : "Importar API"}
+                    {importingApi ? "Importando..." : "Importar desde API oficial"}
                   </Button>
 
-                  <Button
+                  {/* <Button
                     onClick={handleCreatePlayer}
                     disabled={!canCreate || !selectedSeleccionId}
                     className="rounded-2xl bg-[#FAB438] font-semibold text-[#1E2C46] hover:bg-[#F7C45A]"
                   >
                     <UserPlus className="mr-2 h-4 w-4" />
                     Nuevo jugador
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
 
@@ -214,7 +228,7 @@ export function PlantelManager({
                 <div className={DASHBOARD_TOP_LINE_HAIR} />
               </div>
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_42%,transparent_62%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            
+
               <LateralSummaryHeader
                 title="Vista rápida"
                 description="Estado del plantel y accesos rapidos para la gestión."
@@ -360,6 +374,11 @@ export function PlantelManager({
                               <p className="mt-1 text-xs font-semibold text-white/58">
                                 {item.source === "file" ? "Origen: archivo" : "Origen: API"}
                               </p>
+                              {item.coach ? (
+                                <p className="mt-2 text-xs font-semibold text-[#AEEBFF]">
+                                  DT: {item.coach}
+                                </p>
+                              ) : null}
                             </div>
 
                             <Badge className="rounded-full border-emerald-400/20 bg-emerald-400/14 text-emerald-100 hover:bg-emerald-400/14">

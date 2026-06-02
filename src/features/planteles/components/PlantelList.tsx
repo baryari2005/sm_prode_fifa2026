@@ -57,23 +57,30 @@ export function PlantelList({
   onInitialLoadComplete,
 }: PlantelListProps) {
   const cacheKey = `${seleccionId}:${String(refresh ?? "base")}`;
-  const cachedPlayers = plantelCache.get(cacheKey) ?? null;
-  const [players, setPlayers] = useState<PlantelRow[]>(cachedPlayers ?? []);
-  const [loading, setLoading] = useState(cachedPlayers === null);
+  const [players, setPlayers] = useState<PlantelRow[]>(
+    () => plantelCache.get(cacheKey) ?? [],
+  );
+  const [loading, setLoading] = useState(
+    () => !plantelCache.has(cacheKey),
+  );
   const [activeTab, setActiveTab] = useState<PlantelPositionGroupKey>("arqueros");
   const [didNotifyInitialLoad, setDidNotifyInitialLoad] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
+    const cachedPlayers = plantelCache.get(cacheKey) ?? null;
     const hasCachedPlayers = cachedPlayers !== null;
 
     async function loadPlayers() {
       try {
-        if (!hasCachedPlayers) {
-          setLoading(true);
-        } else {
+        if (hasCachedPlayers) {
+          setPlayers(cachedPlayers);
           onTotalChange?.(cachedPlayers.length);
+          setLoading(false);
+          return;
         }
+
+        setLoading(true);
 
         const response = await axiosInstance.get<PaginatedResponse<PlantelRow>>(
           `/paises/${seleccionId}/plantel`,
@@ -107,7 +114,7 @@ export function PlantelList({
     return () => {
       cancelled = true;
     };
-  }, [cacheKey, cachedPlayers, onTotalChange, refresh, seleccionId]);
+  }, [cacheKey, onTotalChange, seleccionId]);
 
   useEffect(() => {
     setDidNotifyInitialLoad(false);
@@ -150,6 +157,7 @@ export function PlantelList({
       },
       {
         arqueros: [],
+        "cuerpo-tecnico": [],
         defensores: [],
         mediocampo: [],
         delanteros: [],
@@ -157,7 +165,6 @@ export function PlantelList({
       },
     );
   }, [filteredPlayers]);
-
   const visibleGroups = useMemo(
     () =>
       POSITION_GROUPS.filter(

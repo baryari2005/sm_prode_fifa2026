@@ -81,7 +81,7 @@ export function PaisesOverview({
     return (
       <main className="w-full overflow-x-hidden px-3 py-4 md:px-5 md:py-5 xl:px-4">
         <div className="mx-auto flex w-full max-w-[1500px] min-w-0 flex-col gap-5 xl:gap-6">
-          <DashboardLoading badgeLabel="Loading paises" />
+          <DashboardLoading badgeLabel="Cargando selecciones..." />
         </div>
       </main>
     );

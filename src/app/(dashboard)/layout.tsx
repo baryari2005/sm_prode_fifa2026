@@ -216,7 +216,7 @@ export default function DashboardRootLayout({ children }: Props) {
     <RequireAuth
       fallback={renderChrome(
         <DashboardLoading
-          badgeLabel="Loading dashboard"
+          badgeLabel="Cargando dashboard..."
           source="Auth require auth"
         />,
       )}

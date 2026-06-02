@@ -94,7 +94,7 @@ export function PronosticoRapidoContent() {
   };
 
   if (loading) {
-    return <DashboardLoading badgeLabel="Loading carga de pronosticos" />;
+    return <DashboardLoading badgeLabel="Cargando alta de pronosticos..." />;
   }
 
   return (

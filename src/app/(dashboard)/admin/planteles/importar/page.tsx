@@ -34,7 +34,10 @@ import {
   mapRowsToPlantelesBySeleccion,
   parseImportFile,
 } from "@/features/partidos/services/fixture-import.service";
-import { importPlantel } from "@/features/partidos/services/plantel.service";
+import {
+  importPlantel,
+  importPlantelDesdeApi,
+} from "@/features/partidos/services/plantel.service";
 import { useCan } from "@/hooks/useCan";
 import { axiosInstance } from "@/lib/axios";
 import { LateralSummaryHeader } from "@/components/ui/lateralSummaryHeader";
@@ -55,6 +58,7 @@ export default function PlantelesImportarPage() {
   const canImport = useCan("planteles", "importar");
   const [importing, setImporting] = useState(false);
   const [importingExcel, setImportingExcel] = useState(false);
+  const [retryingFailed, setRetryingFailed] = useState(false);
   const [result, setResult] = useState<ImportResponse | null>(null);
   const [selecciones, setSelecciones] = useState<SeleccionLookup[]>([]);
   const [selectedExcelFileName, setSelectedExcelFileName] = useState("");
@@ -133,6 +137,7 @@ export default function PlantelesImportarPage() {
           summaries.push({
             seleccionId,
             seleccionNombre: seleccion?.nombre ?? null,
+            coach: null,
             success: true,
             imported: response.summary.imported,
             cleared: response.summary.cleared,
@@ -143,6 +148,7 @@ export default function PlantelesImportarPage() {
           summaries.push({
             seleccionId,
             seleccionNombre: seleccion?.nombre ?? null,
+            coach: null,
             success: false,
             imported: 0,
             cleared: 0,
@@ -155,6 +161,7 @@ export default function PlantelesImportarPage() {
         summaries.push({
           seleccionId: `missing-${missing.selectionCode ?? missing.selectionName ?? Math.random().toString(36).slice(2, 8)}`,
           seleccionNombre: missing.selectionName ?? missing.selectionCode ?? "Seleccion no identificada",
+          coach: null,
           success: false,
           imported: 0,
           cleared: 0,
@@ -195,6 +202,92 @@ export default function PlantelesImportarPage() {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+    }
+  }
+
+  async function handleRetryFailedImports() {
+    const summaries = result?.meta?.summaries ?? [];
+    const failedSummaries = summaries.filter(
+      (item) =>
+        !item.success && selecciones.some((seleccion) => seleccion.id === item.seleccionId),
+    );
+
+    if (failedSummaries.length === 0) {
+      toast.warning("No hay selecciones con error disponibles para reintentar.");
+      return;
+    }
+
+    try {
+      setRetryingFailed(true);
+
+      const retriedSummaries = await Promise.all(
+        failedSummaries.map(async (item) => {
+          try {
+            const response = await importPlantelDesdeApi(item.seleccionId);
+
+            return {
+              seleccionId: item.seleccionId,
+              seleccionNombre:
+                response.summary.seleccionNombre ??
+                selecciones.find((seleccion) => seleccion.id === item.seleccionId)?.nombre ??
+                item.seleccionNombre ??
+                null,
+              coach: response.summary.coach ?? item.coach ?? null,
+              success: true,
+              imported: response.summary.imported,
+              cleared: response.summary.cleared,
+              message: `Reimportado desde API (${response.summary.imported} jugadores).`,
+            };
+          } catch (error) {
+            console.error(error);
+            return {
+              ...item,
+              message: "No se pudo reintentar la importación de esta selección.",
+            };
+          }
+        }),
+      );
+
+      setResult((current) => {
+        if (!current?.meta) {
+          return current;
+        }
+
+        const nextSummaries = (current.meta.summaries ?? []).map((item) => {
+          const retried = retriedSummaries.find(
+            (retryItem) => retryItem.seleccionId === item.seleccionId,
+          );
+
+          return retried ?? item;
+        });
+
+        const importedSelections = nextSummaries.filter((item) => item.success).length;
+        const importedPlayers = nextSummaries.reduce(
+          (total, item) => total + item.imported,
+          0,
+        );
+        const failedSelections = nextSummaries.filter((item) => !item.success).length;
+        const recoveredSelections = retriedSummaries.filter((item) => item.success).length;
+
+        return {
+          ...current,
+          message:
+            recoveredSelections > 0
+              ? `Reintento completado. ${recoveredSelections} selecciones con error se importaron correctamente.`
+              : "Reintento completado. No se pudieron recuperar las selecciones con error.",
+          meta: {
+            ...current.meta,
+            importedSelections,
+            importedPlayers,
+            failedSelections,
+            summaries: nextSummaries,
+          },
+        };
+      });
+
+      toast.success("Se reintentaron las selecciones con error.");
+    } finally {
+      setRetryingFailed(false);
     }
   }
 
@@ -396,7 +489,11 @@ export default function PlantelesImportarPage() {
               />
             </div>
 
-            <PlantelesImportacionMasiva result={result} />
+            <PlantelesImportacionMasiva
+              result={result}
+              retryingFailed={retryingFailed}
+              onRetryFailed={() => void handleRetryFailedImports()}
+            />
           </div>
         </section>
       </div>

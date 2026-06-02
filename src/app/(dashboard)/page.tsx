@@ -81,7 +81,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <DashboardLoading
-        badgeLabel="Loading home"        
+        badgeLabel="Cargando home..."        
       />
     );
   }

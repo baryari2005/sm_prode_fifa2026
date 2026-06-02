@@ -167,7 +167,7 @@ export default function EditarPaisPage() {
     void loadPais();
   }, [canEditarPaises, params.id, router]);
 
-  if (loading) return <DashboardLoading badgeLabel="Loading paises detalle" />;
+  if (loading) return <DashboardLoading badgeLabel="Cargando detalle de selección..." />;
   if (!canEditarPaises) return <AccessDenied403Page />;
   if (!pais) return null;
 

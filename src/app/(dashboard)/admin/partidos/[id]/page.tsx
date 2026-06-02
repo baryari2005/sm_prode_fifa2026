@@ -49,7 +49,7 @@ export default function PartidoDetallePage() {
   }
 
   if (loading) {
-    return <DashboardLoading badgeLabel="Loading detalle partido" />;
+    return <DashboardLoading badgeLabel="Cargando detalle de partido..." />;
   }
 
   if (!detalle) {

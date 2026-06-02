@@ -28,6 +28,7 @@ export type PlantelStats = {
 export type PlantelImportReportItem = {
   seleccionId: string;
   seleccionNombre: string;
+  coach?: string | null;
   imported: number;
   cleared: number;
   source: "file" | "api";

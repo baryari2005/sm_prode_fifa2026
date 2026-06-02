@@ -161,6 +161,7 @@ export function usePlantelManager({
               result.summary.seleccionNombre ??
               selectedSeleccion?.nombre ??
               "Seleccion actual",
+            coach: result.summary.coach ?? null,
             imported: result.summary.imported,
             cleared: result.summary.cleared,
             source: "api",

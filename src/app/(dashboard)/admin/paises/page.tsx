@@ -19,7 +19,7 @@ export default function PaisesPage() {
   const [updatingConfederations, setUpdatingConfederations] = useState(false);
 
   if (canVerPaises === false && canCrearPaises === false && canEditarPaises === false) {
-    return <DashboardLoading badgeLabel="Loading paises" />;
+    return <DashboardLoading badgeLabel="Cargando selecciones..." />;
   }
 
   if (!canVerPaises) {

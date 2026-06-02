@@ -21,7 +21,12 @@ type FootballDataPlayer = {
 };
 
 type FootballDataCoach = {
+  id?: number | null;
+  firstName?: string | null;
+  lastName?: string | null;
   name?: string | null;
+  dateOfBirth?: string | null;
+  nationality?: string | null;
 };
 
 type FootballDataTeamResponse = {
@@ -41,6 +46,9 @@ function mapPosition(position?: string | null) {
   const normalized = position.trim().toLowerCase();
 
   switch (normalized) {
+    case "offence":
+    case "offense":
+      return "F";
     case "attacking midfield":
       return "MO";
     case "central midfield":
@@ -172,6 +180,32 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
           rojas: 0,
           atajadas: 0,
           golesConcedidos: 0,
+      });
+    }
+
+    if (payload.coach?.name) {
+      normalizedSquad.push({
+        seleccionId: seleccion.id,
+        nombre: payload.coach.name,
+        fotoUrl: null,
+        numero: null,
+        posicion: "CT",
+        edad: calculateAge(payload.coach.dateOfBirth),
+        estatura: null,
+        peso: null,
+        nacionalidad: payload.coach.nationality ?? null,
+        apariciones: 0,
+        suplencias: 0,
+        goles: 0,
+        asistencias: 0,
+        tiros: 0,
+        tirosAlArco: 0,
+        faltasCometidas: 0,
+        faltasSufridas: 0,
+        amarillas: 0,
+        rojas: 0,
+        atajadas: 0,
+        golesConcedidos: 0,
       });
     }
 

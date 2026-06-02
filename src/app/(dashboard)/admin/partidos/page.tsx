@@ -137,7 +137,7 @@ export default function PartidosPage() {
   }
 
   if (loading) {
-    return <DashboardLoading badgeLabel="Loading partidos" />;
+    return <DashboardLoading badgeLabel="Cargando partidos..." />;
   }
 
   return (

@@ -2,6 +2,7 @@ import type { StatsField } from "./types";
 
 export const POSITION_OPTIONS = [
   { value: "A", label: "A - Arquero" },
+  { value: "CT", label: "CT - Cuerpo técnico" },
   { value: "D", label: "D - Defensor" },
   { value: "M", label: "M - Mediocampo" },
   { value: "MO", label: "MO - Mediocampista Ofensivo" },
