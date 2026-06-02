@@ -106,7 +106,7 @@ export function RegisterAccessPanel({
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-2">
-                  Enviar solicitud
+                  Entrar a jugar 
                   <Send className="h-4 w-4" />
                 </span>
               )}

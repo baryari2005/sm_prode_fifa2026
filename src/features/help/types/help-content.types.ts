@@ -21,10 +21,9 @@ export type HelpSection = {
 
 export type RulesEditableContent = {
   premios: {
-    primerPuesto: string;
-    segundoPuesto: string;
-    tercerPuesto: string;
-    otrosPremios: string;
+    InstanciasDePremiacion: string;
+    FaseDeGrupos: string;
+    FaseDeEliminatorias: string;
   };
   participantesHabilitados: string[];
   participantesExcluidos: string[];

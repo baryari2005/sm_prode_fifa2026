@@ -1,6 +1,10 @@
 import { z } from "zod";
 
 import { TIPOS_DOCUMENTO_OPCIONES } from "@/constants/tiposDocumento";
+import { userSchemaHelpers } from "@/features/users/schemas/schemas";
+
+const REGISTER_PHONE_PATTERN = /^[0-9+\-()\s]+$/;
+const REGISTER_PHONE_ERROR_MESSAGE = "Ingresá un número de teléfono válido.";
 
 export const loginSchema = z.object({
   userId: z.string().min(1, "Ingrese su usuario"),
@@ -15,16 +19,23 @@ export const registerSchema = z.object({
   password: z.string().min(6, "Mínimo 6 caracteres"),
   nombre: z.string().min(1, "Ingrese su nombre"),
   apellido: z.string().min(1, "Ingrese su apellido"),
+  celular: z
+    .string()
+    .trim()
+    .min(8, REGISTER_PHONE_ERROR_MESSAGE)
+    .max(20, "El número de teléfono es demasiado largo.")
+    .regex(REGISTER_PHONE_PATTERN, REGISTER_PHONE_ERROR_MESSAGE)
+    .refine((value) => userSchemaHelpers.isValidPhone(value), {
+      message: REGISTER_PHONE_ERROR_MESSAGE,
+    }),
   tipoDocumento: z.enum(TIPOS_DOCUMENTO_OPCIONES, {
     message: "Seleccione un tipo de documento",
   }),
   documento: z.string().min(7, "Ingrese un documento válido"),
   domicilio: z.string().min(1, "Ingrese su domicilio"),
-  localidad: z
-    .string()
-    .refine((value) => value === "San Miguel", {
-      message: "El registro está disponible solo para residentes de San Miguel",
-    }),
+  localidad: z.string().refine((value) => value === "San Miguel", {
+    message: "El registro está disponible solo para residentes de San Miguel",
+  }),
   acceptedTerms: z.boolean().refine((value) => value, {
     message: "Debe aceptar las bases y condiciones",
   }),

@@ -31,7 +31,7 @@ model Usuario {
 
   password           String
   mustChangePassword Boolean @default(false)
-  aprobado           Boolean @default(false)
+  aprobado           Boolean @default(true)
 
   rolId Int
   rol   Rol @relation(fields: [rolId], references: [id])

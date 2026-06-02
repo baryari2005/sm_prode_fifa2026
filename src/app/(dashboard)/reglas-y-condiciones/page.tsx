@@ -115,20 +115,16 @@ export default async function ReglasYCondicionesPage() {
             </CardHeader>
             <CardContent className="relative space-y-3 px-6 pb-5 pt-0 text-sm leading-6 text-white/72">
               <div className={RULES_PANEL_ITEM}>
-                <p className="font-bold text-white">Primer puesto</p>
-                <p>{RULES_EDITABLE_CONTENT.premios.primerPuesto}</p>
+                <p className="font-bold text-white">Instancia De Premiacion</p>
+                <p>{RULES_EDITABLE_CONTENT.premios.InstanciasDePremiacion}</p>
               </div>
               <div className={RULES_PANEL_ITEM}>
-                <p className="font-bold text-white">Segundo puesto</p>
-                <p>{RULES_EDITABLE_CONTENT.premios.segundoPuesto}</p>
+                <p className="font-bold text-white">Fase De Grupos</p>
+                <p>{RULES_EDITABLE_CONTENT.premios.FaseDeGrupos}</p>
               </div>
               <div className={RULES_PANEL_ITEM}>
-                <p className="font-bold text-white">Tercer puesto</p>
-                <p>{RULES_EDITABLE_CONTENT.premios.tercerPuesto}</p>
-              </div>
-              <div className={RULES_PANEL_ITEM}>
-                <p className="font-bold text-white">Otros premios</p>
-                <p>{RULES_EDITABLE_CONTENT.premios.otrosPremios}</p>
+                <p className="font-bold text-white">Fase De Eliminatorias</p>
+                <p>{RULES_EDITABLE_CONTENT.premios.FaseDeEliminatorias}</p>
               </div>
             </CardContent>
           </Card>

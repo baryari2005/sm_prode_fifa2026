@@ -1,6 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+
 import { RegisterFieldsSectionProps } from "../../types/registerFields.types";
 import { FormSection } from "./FormSection";
 
@@ -44,6 +45,25 @@ export function PersonalDataFields({ form }: RegisterFieldsSectionProps) {
             {errors.apellido?.message ? (
               <p className="text-xs font-semibold text-red-300">
                 {errors.apellido.message}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="min-w-0 space-y-1">
+            <label className="text-sm text-muted-foreground">
+              Número de teléfono
+            </label>
+            <Input
+              {...register("celular")}
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              aria-invalid={!!errors.celular}
+              className="h-11 rounded-2xl border px-3"
+            />
+            {errors.celular?.message ? (
+              <p className="text-xs font-semibold text-red-300">
+                {errors.celular.message}
               </p>
             ) : null}
           </div>

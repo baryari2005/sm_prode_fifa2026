@@ -237,7 +237,7 @@ export function PronosticoDialog({
 
                       <div className="space-y-2">
                         <p className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.28em] text-[#AEEBFF]">                          
-                          Carga de pronostico
+                          CARGA DE PRONÓSTICO
                         </p>
 
                         <DialogTitle className="text-[2rem] font-bold leading-[0.94] tracking-[-0.05em] text-white md:text-[2.5rem]">
@@ -250,7 +250,7 @@ export function PronosticoDialog({
 
                         <p className="max-w-[520px] text-sm leading-6 text-white/78 md:text-[0.95rem]">
                           Revisá el cruce completo, validá estadísticas oficiales y
-                          confirma tu pronostico desde el mismo panel.
+                          confirmá tu pronóstico desde el mismo panel.
                         </p>
                       </div>
 
@@ -426,7 +426,7 @@ export function PronosticoDialog({
                   className={`${DASHBOARD_SUBCARD} relative z-10 flex flex-col gap-3 rounded-[24px] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5`}
                 >
                 <p className="text-sm font-medium text-white/58">
-                  Revisá el marcador y confirma el guardado desde este mismo panel.
+                  Revisá el marcador y confirmá el guardado desde este mismo panel.
                 </p>
                 <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                   <Button
@@ -453,7 +453,7 @@ export function PronosticoDialog({
                     ) : (
                       <span className="inline-flex items-center gap-2">
                         <Save className="h-4 w-4" />
-                        Guardar pronostico
+                       Guardar pronóstico
                       </span>
                     )}
                   </Button>

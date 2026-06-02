@@ -20,6 +20,7 @@ const REGISTER_DEFAULT_VALUES: DefaultValues<FormValues> = {
   password: "",
   nombre: "",
   apellido: "",
+  celular: "",
   tipoDocumento: "DNI",
   documento: "",
   domicilio: "",

@@ -5,12 +5,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowBigLeft,
   ArrowBigRight,
-  CheckCircle,
   Pencil,
   RefreshCw,
   ShieldX,
   Trash2,
   UserRound,
+  UserX,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -75,6 +75,7 @@ function UsersAdminCardsRenderer({
 
   function buildActions(user: UserRow) {
     const actions: TableAction[] = [];
+    const isApproved = user.aprobado ?? true;
 
     if (canEdit) {
       actions.push({
@@ -84,20 +85,24 @@ function UsersAdminCardsRenderer({
       });
     }
 
-    if ((user.aprobado ?? true) === false && canEdit) {
+    if (isApproved && canEdit) {
       actions.push({
-        label: "Aprobar",
-        icon: <CheckCircle className="h-4 w-4" />,
-        confirmTitle: "Aprobar usuario",
+        label: "Deshabilitar",
+        icon: <UserX className="h-4 w-4" />,
+        confirmTitle: "¿Deshabilitar usuario?",
         confirmDescription:
-          "El usuario podra acceder al sistema una vez aprobado.",
-        confirmActionLabel: "Aprobar",
+          "El usuario no podrá iniciar sesión mientras su cuenta esté deshabilitada.",
+        confirmActionLabel: "Deshabilitar",
+        confirmTone: "danger",
+        confirmIcon: <ShieldX className="h-4 w-4" />,
+        confirmNote:
+          "Esta acción no elimina al usuario ni sus datos. Solo bloquea su acceso a la aplicación.",
         onConfirm: async () => {
           await axiosInstance.patch(`/users/${user.id}`, {
-            aprobado: true,
+            aprobado: false,
           });
 
-          toast.success("Usuario aprobado correctamente");
+          toast.success("Usuario deshabilitado correctamente");
           onRefresh();
         },
       });
@@ -110,11 +115,11 @@ function UsersAdminCardsRenderer({
         confirmTitle: "Eliminar usuario",
         confirmDescription:
           "Vas a quitar este usuario de la gestión activa del sistema.",
-        confirmActionLabel: "Confirmar eliminacion",
+        confirmActionLabel: "Confirmar eliminación",
         confirmTone: "danger",
         confirmIcon: <ShieldX className="h-4 w-4" />,
         confirmNote:
-          "Esta accion afecta solo al usuario seleccionado. Si necesitas recuperarlo, requerira una gestión posterior.",
+          "Esta acción afecta solo al usuario seleccionado. Si necesitás recuperarlo, requerirá una gestión posterior.",
         onConfirm: async () => {
           await axiosInstance.delete(`/users/${user.id}`);
           toast.success(formatApiMessage("success.userDeleted"));
@@ -157,12 +162,14 @@ function UsersAdminCardsRenderer({
             </div>
           ))
         ) : data.length === 0 ? (
-          <div className={`rounded-[24px] p-6 xl:col-span-2 ${DASHBOARD_SUBCARD}`}>
+          <div
+            className={`rounded-[24px] p-6 xl:col-span-2 ${DASHBOARD_SUBCARD}`}
+          >
             <p className="font-brand text-[1.6rem] leading-none tracking-[0.04em] text-white">
               Sin usuarios para mostrar
             </p>
             <p className="mt-3 text-sm leading-6 text-white/72">
-              Ajusta la busqueda o carga un nuevo usuario desde la accion principal.
+              Ajustá la búsqueda o cargá un nuevo usuario desde la acción principal.
             </p>
           </div>
         ) : (
@@ -180,7 +187,10 @@ function UsersAdminCardsRenderer({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start gap-3">
                       <Avatar className="h-14 w-14 rounded-[20px] border border-white/10">
-                        <AvatarImage src={user.avatarUrl ?? undefined} alt={displayName} />
+                        <AvatarImage
+                          src={user.avatarUrl ?? undefined}
+                          alt={displayName}
+                        />
                         <AvatarFallback className="rounded-[20px] bg-[#5993B6]/18 font-brand text-[1.2rem] tracking-[0.04em] text-[#AEEBFF]">
                           {buildInitials(user)}
                         </AvatarFallback>
@@ -191,23 +201,26 @@ function UsersAdminCardsRenderer({
                           <h3 className="font-brand text-[1.7rem] leading-none tracking-[0.04em] text-white">
                             {displayName}
                           </h3>
+
                           <Badge className="rounded-full border-[#FAB438]/18 bg-[#FAB438]/10 text-[#FFE4A3] hover:bg-[#FAB438]/10">
                             {user.rol?.nombre ?? "Sin rol"}
                           </Badge>
+
                           <Badge
                             className={
                               isApproved
                                 ? "rounded-full border-emerald-300/18 bg-emerald-300/10 text-emerald-100 hover:bg-emerald-300/10"
-                                : "rounded-full border-[#FAB438]/18 bg-[#FAB438]/10 text-[#FFE4A3] hover:bg-[#FAB438]/10"
+                                : "rounded-full border-red-300/18 bg-red-400/10 text-red-100 hover:bg-red-400/10"
                             }
                           >
-                            {isApproved ? "Aprobado" : "Pendiente"}
+                            {isApproved ? "Activo" : "Deshabilitado"}
                           </Badge>
                         </div>
 
                         <p className="mt-2 text-sm font-semibold text-white/68">
                           @{user.userId}
                         </p>
+
                         <p className="truncate text-sm font-semibold text-white/68">
                           {user.email}
                         </p>
@@ -220,7 +233,9 @@ function UsersAdminCardsRenderer({
                           Estado
                         </p>
                         <p className="mt-2 text-sm font-semibold text-white">
-                          {isApproved ? "Puede ingresar al sistema" : "Espera aprobación"}
+                          {isApproved
+                            ? "Puede ingresar al sistema"
+                            : "Cuenta deshabilitada"}
                         </p>
                       </div>
 

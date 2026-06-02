@@ -13,13 +13,9 @@ export const RULES_PAGE_INTRO = {
 
 export const RULES_EDITABLE_CONTENT: RulesEditableContent = {
   premios: {
-    primerPuesto: "Premio a definir por la organización del Prode Mundial 2026.",
-    segundoPuesto:
-      "Reconocimiento o premio secundario a definir por la organización.",
-    tercerPuesto:
-      "Reconocimiento o premio para el tercer puesto a definir por la organización.",
-    otrosPremios:
-      "La organización podrá comunicar premios extra o menciones especiales si correspondiera.",
+    InstanciasDePremiacion: "Habrá dos entregas de premios: una al finalizar la fase de grupos y otra al terminar la fase de eliminación directa.",
+    FaseDeGrupos: "Premio : 1 Camiseta de la Selección para los 5 primeros puestos.",
+    FaseDeEliminatorias: "Premio :  1 Camiseta de la Selección para los 5 primeros puestos.",
   },
   participantesHabilitados: [
     "Usuarios registrados dentro del sistema.",
@@ -46,7 +42,6 @@ export const RULES_EDITABLE_CONTENT: RulesEditableContent = {
     "El usuario debe residir en San Miguel.",
     "El usuario debe mantener estado activo.",
     "El usuario debe cumplir las reglas del Prode.",
-    "El usuario no debe estar excluido por la organización.",
   ],
 };
 
@@ -61,7 +56,7 @@ export function buildRulesSections(
     {
       title: "Participación",
       description:
-        "Podrán participar del Prode Mundial 2026 solo los usuarios que residan en San Miguel, estén registrados y hayan sido aprobados por la administración del sistema.",
+        "Podrán participar del Prode Mundial 2026 solo los usuarios que residan en San Miguel, estén registrados y hayan sido aprobados por la administración del sistema. En caso de ganar deberán presentar el DNI con dirección en San Miguel.",
       icon: CheckCircle2,
     },
     {

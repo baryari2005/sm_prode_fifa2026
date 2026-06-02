@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
       rolId: userRole.id,
       nombre: values.nombre,
       apellido: values.apellido,
+      celular: values.celular,
       tipoDocumento: values.tipoDocumento,
       documento: values.documento,
       domicilio: values.domicilio,
@@ -60,11 +61,11 @@ export async function POST(req: NextRequest) {
 
     await prisma.usuario.update({
       where: { id: result.id },
-      data: { aprobado: false },
+      data: { aprobado: true },
     });
 
     return NextResponse.json({
-      message: "Usuario registrado correctamente. Pendiente de aprobación.",
+      message: "Usuario registrado correctamente. Ya podés iniciar sesión.",
       userId: result.id,
     });
   } catch (error: unknown) {

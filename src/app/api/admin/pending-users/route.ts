@@ -20,6 +20,7 @@ function noStoreJson(body: unknown, init?: ResponseInit) {
 export async function GET(req: NextRequest) {
   try {
     const loggedInUser = await requireAuth(req);
+
     requirePermission(loggedInUser, "usuarios", "ver");
 
     const count = await prisma.usuario.count({
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
       return noStoreJson(
-        { message: "No autorizado. Debes iniciar sesion." },
+        { message: "No autorizado. Debés iniciar sesión." },
         { status: 401 },
       );
     }
@@ -47,6 +48,9 @@ export async function GET(req: NextRequest) {
 
     console.error("GET /api/admin/pending-users error:", err);
 
-    return noStoreJson({ message: "Error interno del servidor" }, { status: 500 });
+    return noStoreJson(
+      { message: "Error al obtener usuarios deshabilitados." },
+      { status: 500 },
+    );
   }
 }

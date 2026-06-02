@@ -2,7 +2,7 @@ export const messages = {
   required: {},
   success: {
     userDeleted: "Usuario eliminado correctamente.",
-    registerPending: "Registro completado. Tu cuenta está pendiente de aprobación.",
+    registerPending: "Registro completado. Tu cuenta ya esta habilitada para ingresar.",
   },
   errors: {
     loginError: "Usuario y/o contraseña incorrectos.",

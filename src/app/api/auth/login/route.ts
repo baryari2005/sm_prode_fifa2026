@@ -67,7 +67,9 @@ export async function POST(req: NextRequest) {
 
     if (!user.aprobado) {
       return NextResponse.json(
-        { error: "Su cuenta está pendiente de aprobación por un administrador." },
+        {
+          error: "Tu cuenta fue deshabilitada. Contactá a un administrador.",
+        },
         { status: 403 }
       );
     }
