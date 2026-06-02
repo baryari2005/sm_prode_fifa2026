@@ -69,7 +69,7 @@ export function PronosticoRapidoDashboardFilters({
               Carga masiva de marcadores
             </h2>
             <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
-              Busca un partido puntual o recorre cada grupo para cargar rapido
+              Buscá un partido puntual o recorre cada grupo para cargar rápidamente
               tus resultados antes del cierre.
             </p>
           </div>

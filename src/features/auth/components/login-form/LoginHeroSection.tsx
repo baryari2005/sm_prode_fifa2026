@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import type { LucideIcon } from "lucide-react";
-import { Sparkles, Trophy, Users } from "lucide-react";
+import type { LucideIcon, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Sparkles, Trophy, Users } from "lucide-react";
 
 import { brandImages } from "@/config/brand-images";
 
@@ -29,6 +29,12 @@ export function LoginHeroSection() {
         </p>
 
         <div className="mt-8 space-y-4">
+          <FeatureItem
+            icon={AlertTriangle}
+            variant="danger"
+            title="Importante"
+            description="Para participar del Prode Mundial 2026, la solicitud será revisada y aprobada solo si residís en San Miguel."
+          />
           <FeatureItem
             icon={Trophy}
             title="Ranking en tiempo real"
@@ -63,24 +69,65 @@ export function LoginHeroSection() {
   );
 }
 
+// function FeatureItem({
+//   icon: Icon,
+//   title,
+//   description,
+// }: {
+//   icon: LucideIcon;
+//   title: string;
+//   description: string;
+// }) {
+//   return (
+//     <div className="flex items-start gap-3">
+//       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.08] text-[#FAB438] shadow-[0_12px_28px_rgba(0,0,0,0.14)]">
+//         <Icon className="h-5 w-5" />
+//       </div>
+
+//       <div>
+//         <p className="text-base font-semibold text-white">{title}</p>
+//         <p className="mt-1 text-sm leading-6 text-white/68">{description}</p>
+//       </div>
+//     </div>
+//   );
+// }
+
 function FeatureItem({
   icon: Icon,
   title,
   description,
+  variant = "default",
 }: {
-  icon: LucideIcon;
+  icon: typeof ShieldCheck;
   title: string;
   description: string;
+  variant?: "default" | "danger";
 }) {
+  const isDanger = variant === "danger";
+
   return (
     <div className="flex items-start gap-3">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.08] text-[#FAB438] shadow-[0_12px_28px_rgba(0,0,0,0.14)]">
+      <div
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border ${isDanger
+            ? "border-[#F16B6B]/35 bg-[#F16B6B]/14 text-[#FF9B9B]"
+            : "border-white/12 bg-white/10 text-[#FAB438]"
+          }`}
+      >
         <Icon className="h-5 w-5" />
       </div>
-
       <div>
-        <p className="text-base font-semibold text-white">{title}</p>
-        <p className="mt-1 text-sm leading-6 text-white/68">{description}</p>
+        <p
+          className={`text-base font-semibold ${isDanger ? "text-[#FFB3B3]" : "text-white"
+            }`}
+        >
+          {title}
+        </p>
+        <p
+          className={`mt-1 text-sm leading-6 ${isDanger ? "text-[#FFD1D1]/88" : "text-white/70"
+            }`}
+        >
+          {description}
+        </p>
       </div>
     </div>
   );

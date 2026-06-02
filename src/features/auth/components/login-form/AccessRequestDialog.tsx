@@ -3,17 +3,17 @@
 import Image from "next/image";
 import type { SubmitHandler } from "react-hook-form";
 import {
+  AlertTriangle,
   LogIn,
   ShieldCheck,
-  Sparkles,
   UserRound,
 } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { brandImages } from "@/config/brand-images";
 import type { RegisterSchemaValues } from "@/features/auth/schemas/schemas";
 import type { RegisterFormReturn } from "@/features/auth/types/registerFields.types";
@@ -114,22 +114,23 @@ export function AccessRequestDialog({
                   </h2>
 
                   <p className="max-w-[440px] text-base leading-7 text-white/78">
-                    Solicitá tu acceso al Prode Mundial 2026, esperá la aprobación y empezá a competir con identidad
-                    local.
+                    Solicitá tu acceso al Prode Mundial 2026, esperá la
+                    aprobación y empezá a competir con identidad local.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <FeatureItem
+                  icon={AlertTriangle}
+                  variant="danger"
+                  title="Importante"
+                  description="Para participar del Prode Mundial 2026, la solicitud será revisada y aprobada solo si residís en San Miguel."
+                />
+                <FeatureItem
                   icon={ShieldCheck}
                   title="Solicitud pendiente"
                   description="Tu cuenta quedará en revisión y será aprobada solo si residís en San Miguel."
-                />
-                <FeatureItem
-                  icon={Sparkles}
-                  title="Acceso interno"
-                  description="El registro está pensado para personas de la comunidad de San Miguel que participan del Prode."
                 />
                 <FeatureItem
                   icon={UserRound}
@@ -184,19 +185,41 @@ function FeatureItem({
   icon: Icon,
   title,
   description,
+  variant = "default",
 }: {
   icon: typeof ShieldCheck;
   title: string;
   description: string;
+  variant?: "default" | "danger";
 }) {
+  const isDanger = variant === "danger";
+
   return (
     <div className="flex items-start gap-3">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10 text-[#FAB438]">
+      <div
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border ${
+          isDanger
+            ? "border-[#F16B6B]/35 bg-[#F16B6B]/14 text-[#FF9B9B]"
+            : "border-white/12 bg-white/10 text-[#FAB438]"
+        }`}
+      >
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <p className="text-base font-semibold text-white">{title}</p>
-        <p className="mt-1 text-sm leading-6 text-white/70">{description}</p>
+        <p
+          className={`text-base font-semibold ${
+            isDanger ? "text-[#FFB3B3]" : "text-white"
+          }`}
+        >
+          {title}
+        </p>
+        <p
+          className={`mt-1 text-sm leading-6 ${
+            isDanger ? "text-[#FFD1D1]/88" : "text-white/70"
+          }`}
+        >
+          {description}
+        </p>
       </div>
     </div>
   );

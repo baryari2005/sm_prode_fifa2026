@@ -34,16 +34,16 @@ export function RankingHeader() {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute bottom-[-8px] right-[-30px] z-20 hidden h-[460px] w-[390px] xl:block 2xl:bottom-[-10px] 2xl:right-[-20px] 2xl:h-[560px] 2xl:w-[460px]">
+      <div className="pointer-events-none absolute bottom-[-6px] right-[-14px] z-20 hidden h-[384px] w-[330px] xl:block 2xl:bottom-[-8px] 2xl:right-[-10px] 2xl:h-[470px] 2xl:w-[386px]">
         <div className="absolute inset-2 rounded-full bg-[#5993B6]/22 blur-[120px]" />
         <div className="absolute inset-x-[-8%] top-[18%] h-[52%] rounded-[999px] bg-[radial-gradient(ellipse_at_center,rgba(174,235,255,0.18)_0%,rgba(89,147,182,0.16)_36%,rgba(30,44,70,0.08)_64%,transparent_92%)] blur-[34px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(30,44,70,0)_48%,rgba(30,44,70,0.16)_78%,rgba(30,44,70,0.32)_100%)]" />
         <HeroVisualImage
           src={brandImages.mascots.ranking}
           alt=""
-          sizes="(min-width: 1536px) 460px, 390px"
+          sizes="(min-width: 1536px) 386px, 330px"
           baseClassName="relative object-contain object-[center_bottom] drop-shadow-[0_28px_64px_rgba(0,0,0,0.34)] [mask-image:radial-gradient(circle_at_center,rgba(0,0,0,0.98)_44%,rgba(0,0,0,0.82)_62%,rgba(0,0,0,0.42)_82%,transparent_100%)] [-webkit-mask-image:radial-gradient(circle_at_center,rgba(0,0,0,0.98)_44%,rgba(0,0,0,0.82)_62%,rgba(0,0,0,0.42)_82%,transparent_100%)]"
-          loadedClassName="scale-[1.42] opacity-[0.82]"
+          loadedClassName="scale-[1.12] opacity-[0.82]"
           loadingClassName="scale-[0.97] opacity-0"
         />
       </div>

@@ -78,7 +78,7 @@ export function PronosticoRapidoDashboardHero({
               </h1>
 
               <p className="font-brand max-w-[560px] text-[1.9rem] font-semibold leading-[0.96] tracking-[0.04em] text-white md:text-[2rem] xl:text-[2.25rem] 2xl:text-[2.55rem]">
-                Pronostica por zona, fecha y cierre
+                Pronostica por zona, <br/>fecha y cierre
               </p>
 
               <p className="max-w-[560px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">

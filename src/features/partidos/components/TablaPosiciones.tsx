@@ -55,7 +55,7 @@ export function TablaPosiciones({
             Explorador de posiciones
           </h2>
           <p className="max-w-[760px] text-base leading-relaxed text-white/76">
-            uscá una selección puntual o recorré cada grupo para ver puntos, diferencia, goles y el estado de clasificación.
+            Buscá una selección puntual o recorré cada grupo para ver puntos, diferencia, goles y el estado de clasificación.
           </p>
         </div>
         

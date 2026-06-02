@@ -23,7 +23,7 @@ export function RegisterFields({ form }: Props) {
   return (
     <Tabs defaultValue="acceso" className="space-y-4 overflow-x-hidden">
       <div className="border-b border-white/10 pb-3">
-        <TabsList className="grid h-auto w-full grid-cols-4 gap-2 rounded-none !border-0 !bg-transparent p-0 !shadow-none !backdrop-blur-none">
+        <TabsList className="grid h-auto w-full grid-cols-5 gap-2 rounded-none !border-0 !bg-transparent p-0 !shadow-none !backdrop-blur-none">
           <TabsTrigger value="acceso" className={tabTriggerClassName}>
             Acceso
           </TabsTrigger>
@@ -38,6 +38,10 @@ export function RegisterFields({ form }: Props) {
 
           <TabsTrigger value="domicilio" className={tabTriggerClassName}>
             Domicilio
+          </TabsTrigger>
+
+          <TabsTrigger value="bases" className={tabTriggerClassName}>
+            Bases
           </TabsTrigger>
         </TabsList>
       </div>
@@ -72,6 +76,13 @@ export function RegisterFields({ form }: Props) {
         className="space-y-4 data-[state=inactive]:hidden"
       >
         <AddressFields form={form} />
+      </TabsContent>
+
+      <TabsContent
+        value="bases"
+        forceMount
+        className="space-y-4 data-[state=inactive]:hidden"
+      >
         <TermsAndConditionsField form={form} />
       </TabsContent>
     </Tabs>

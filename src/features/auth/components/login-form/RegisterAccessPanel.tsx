@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { AlertCircle, ArrowBigRight, Info, RefreshCw } from "lucide-react";
+import { Info, RefreshCw, Send } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/dialog";
 
 import { BrandWatermark } from "@/components/brand/BrandWatermark";
-import { RegisterFields } from "./RegisterFields";
 import { brandImages } from "@/config/brand-images";
+
 import { RegisterFormReturn } from "../../types/registerFields.types";
 import { ErrorBannerInput } from "../ErrorBannerInput";
+import { RegisterFields } from "./RegisterFields";
 
 type RegisterAccessPanelProps = {
   registerForm: RegisterFormReturn;
@@ -79,11 +80,6 @@ export function RegisterAccessPanel({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="rounded-2xl border border-[#FDBA3B]/30 bg-[#FDBA3B]/10 px-4 py-3 text-sm font-semibold leading-6 text-[#FFE4A3]">
-            <AlertCircle className="mr-2 inline h-4 w-4" />
-            Acceso exclusivo para residentes de San Miguel. Para participar del Prode Mundial 2026, la solicitud será revisada y aprobada solo si la persona reside en San Miguel.
-          </div>
-
           {registerTopError && !hasFieldErrors ? (
             <div className="relative">
               <ErrorBannerInput
@@ -111,7 +107,7 @@ export function RegisterAccessPanel({
               ) : (
                 <span className="inline-flex items-center gap-2">
                   Enviar solicitud
-                  <ArrowBigRight className="h-4 w-4" />
+                  <Send className="h-4 w-4" />
                 </span>
               )}
             </Button>
