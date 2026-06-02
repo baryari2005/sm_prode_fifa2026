@@ -1871,7 +1871,7 @@ Genera SQL necesario
 
 NO ejecuta nada
 
-✅ PASO 3 — Revisa el SQL
+✅ PASO 3 — Revisá el SQL
 
 Abre rbac_update.sql.
 

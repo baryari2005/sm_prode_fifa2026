@@ -117,7 +117,7 @@ export function PartidosResetImportacion({
         <p className="text-sm font-semibold text-white">Resultado</p>
         <p className="mt-1 text-sm text-white/72">
           {summary?.message ??
-            "Todavia no ejecutaste la reimportacion total del fixture."}
+            "Todavía no ejecutaste la reimportación total del fixture."}
         </p>
         <p className="mt-2 text-xs text-white/52">
           Total recibido desde API: {summary?.meta?.totalApi ?? 0}

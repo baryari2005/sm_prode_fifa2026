@@ -73,7 +73,7 @@ export function PartidosHeader({
       >
         <div className="flex flex-wrap items-center gap-2 text-sm text-white/66">
           <CalendarDays className="h-4 w-4 text-sky-200/70" />
-          <span>Calendario ordenado por fecha, fase y acciones administrativas.</span>
+          <span>Fixture ordenado por fecha, fase y acciones administrativas.</span>
           <Info className="h-4 w-4 text-sky-200/70" />
         </div>
       </PageHeaderWithBrand>

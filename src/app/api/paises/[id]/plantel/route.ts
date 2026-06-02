@@ -71,7 +71,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para ver el plantel." },
+        { message: "No tenés permisos para ver el plantel." },
         { status: 403 }
       );
     }
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para editar el plantel." },
+        { message: "No tenés permisos para editar el plantel." },
         { status: 403 }
       );
     }

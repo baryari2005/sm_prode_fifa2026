@@ -186,8 +186,8 @@ export function ReglaPuntajeForm({
             </p>
             <p className="mt-2 text-sm leading-6 text-white/68">
               {reglaActual
-                ? "Esta fase ya tiene una configuracion guardada y puedes actualizarla mientras siga habilitada."
-                : "Todavia no hay una configuracion registrada para esta fase."}
+                ? "Esta fase ya tiene una configuración guardada y puedes actualizarla mientras siga habilitada."
+                : "Todavía no hay una configuración registrada para esta fase."}
             </p>
           </div>
         </div>
@@ -196,7 +196,7 @@ export function ReglaPuntajeForm({
       {loadingRegla ? (
         <div className="flex items-center gap-2 rounded-[22px] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white/72">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Cargando configuracion de puntaje...
+          Cargando configuración de puntaje...
         </div>
       ) : null}
 
@@ -204,7 +204,7 @@ export function ReglaPuntajeForm({
         <div className="flex items-start gap-3 rounded-[22px] border border-[#FAB438]/18 bg-[#FAB438]/10 px-4 py-3 text-sm text-[#FFE4A3]">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
-            <p className="font-semibold">Edicion no disponible</p>
+            <p className="font-semibold">Edición no disponible</p>
             <p className="mt-1 text-white/72">
               Esta fase ya comenzo. Las reglas de puntaje no pueden modificarse.
             </p>
@@ -280,7 +280,7 @@ export function ReglaPuntajeForm({
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Guardar configuracion
+                Guardar configuración
               </>
             )}
           </Button>

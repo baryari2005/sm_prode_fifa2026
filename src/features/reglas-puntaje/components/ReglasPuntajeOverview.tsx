@@ -60,14 +60,14 @@ export function ReglasPuntajeOverview({
     },
     {
       label: "Puntaje exacto",
-      detail: selectedFase ? "Valor actual" : "Selecciona una fase",
+      detail: selectedFase ? "Valor actual" : "Seleccioná una fase",
       value: String(values.puntosExacto),
       icon: Trophy,
       toneClass: "bg-[#FAB438]/14 text-[#FFE4A3]",
     },
     {
       label: "Puntaje parcial",
-      detail: selectedFase ? "Valor actual" : "Selecciona una fase",
+      detail: selectedFase ? "Valor actual" : "Seleccioná una fase",
       value: String(values.puntosParcial),
       icon: Target,
       toneClass: "bg-emerald-400/14 text-emerald-200",
@@ -136,7 +136,7 @@ export function ReglasPuntajeOverview({
                     className="rounded-2xl bg-[#FAB438] font-semibold text-[#1E2C46] hover:bg-[#F7C45A]"
                   >
                     <Trophy className="mr-2 h-4 w-4" />
-                    {saving ? "Guardando..." : "Guardar configuracion"}
+                    {saving ? "Guardando..." : "Guardar configuración"}
                   </Button>
 
                   <Button
@@ -179,7 +179,7 @@ export function ReglasPuntajeOverview({
 
             <div className="mb-3">
               <p className="mt-4 flex justify-center text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                Resumen lateral
+                Vista rápida
               </p>
             </div>
 
@@ -225,7 +225,7 @@ export function ReglasPuntajeOverview({
         <div className="relative z-10 space-y-5">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-              Configuracion real
+              Configuración real
             </p>
             <h2 className="mt-2 font-brand text-[2rem] leading-[0.92] tracking-[0.04em] text-white">
               Puntos por tipo de acierto

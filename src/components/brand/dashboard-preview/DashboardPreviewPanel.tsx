@@ -73,7 +73,7 @@ export function DashboardPreviewPanel({
 
       <section className="grid min-w-0 gap-4 xl:grid-cols-2 2xl:grid-cols-[1.42fr_1.16fr_0.9fr] 2xl:gap-5">
         <PanelCard
-          eyebrow={variant === "admin" ? "Partidos en juego" : "Proximos partidos"}
+          eyebrow={variant === "admin" ? "Partidos en juego" : "Próximos partidos"}
           title={content.primaryPanelTitle}
           actionLabel={variant === "admin" ? "Ver fixture completo" : "Ver todos los pronosticos"}
         >

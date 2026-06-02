@@ -24,7 +24,7 @@ export function MatchIncidentSummary() {
   return (
     <aside className="space-y-4">
       <LateralSummaryHeader
-        title="Resumen lateral"
+        title="Vista rápida"
         description="Lectura rapida del flujo de incidencias y del estado del partido."
       />
 

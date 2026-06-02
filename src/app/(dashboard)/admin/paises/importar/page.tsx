@@ -102,7 +102,7 @@ export default function PaisesImportarPage() {
                   </p>
 
                   <p className="max-w-[470px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">
-                    Sincroniza paises desde la API, revisa los cambios y valida
+                    Sincroniza paises desde la API, revisá los cambios y valida
                     rapidamente grupos, confederaciones y teamId sin salir del flujo.
                   </p>
                 </div>
@@ -145,7 +145,7 @@ export default function PaisesImportarPage() {
               </div>
               
               <LateralSummaryHeader
-                title="Resumen lateral"
+                title="Vista rápida"
                 description="Estado rapido del flujo y de los campos que se van a actualizar."
               />
 
@@ -195,7 +195,7 @@ export default function PaisesImportarPage() {
                   Identidad y estructura inicial
                 </h2>
                 <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
-                  Ejecuta la sincronizacion principal y luego revisa abajo el
+                  Ejecuta la sincronizacion principal y luego revisá abajo el
                   resultado por seleccion con el detalle completo.
                 </p>
               </div>

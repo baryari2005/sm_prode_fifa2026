@@ -25,7 +25,7 @@ export function UserHeader({
   cantApproveAll = true,
   title = "Usuarios",
   icon: Icon = UserPlus,
-  description = "Administra usuarios, accesos y datos principales desde un mismo panel.",
+  description = "Administrá usuarios, accesos y datos principales desde un mismo panel.",
   onApprovedAll,
 }: UserHeaderProps) {
   const [approvingAll, setApprovingAll] = useState(false);

@@ -12,6 +12,7 @@ import { PartidoDetalleDashboardLineups } from "@/features/partidos/components/d
 import type { PartidoDetalleViewModel } from "@/features/partidos/types/partido-detalle.types";
 import { TEAM_STAT_DEFINITIONS } from "@/features/partidos/types/fixture-details";
 import {
+  DASHBOARD_HERO_PATTERN,
   DASHBOARD_PANEL,
   DASHBOARD_TOP_LINE,
   DASHBOARD_TOP_LINE_GLOW,
@@ -79,6 +80,7 @@ export function PartidoDetalleDashboardView({
               <div className="pointer-events-none absolute inset-0">
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(30,44,70,0.94)_0%,rgba(30,44,70,0.9)_36%,rgba(37,53,80,0.62)_62%,rgba(30,44,70,0.76)_100%)]" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_35%,rgba(89,147,182,0.22),transparent_30%),radial-gradient(circle_at_34%_0%,rgba(246,180,56,0.14),transparent_35%),linear-gradient(135deg,rgba(30,44,70,0.24)_0%,rgba(37,53,80,0.14)_46%,rgba(30,44,70,0.24)_100%)]" />
+                <div className={DASHBOARD_HERO_PATTERN} />
                 <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.06)_48%,transparent_62%)] opacity-45" />
                 <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#061B33]/75 via-[#061B33]/24 to-transparent" />
                 <div className="absolute right-10 top-8 h-56 w-56 rounded-full bg-sky-300/18 blur-3xl" />
@@ -96,11 +98,11 @@ export function PartidoDetalleDashboardView({
                   </h1>
 
                   <p className="font-brand max-w-[560px] text-[1.9rem] font-semibold leading-[0.96] tracking-[0.04em] text-white md:text-[2rem] xl:text-[2.25rem] 2xl:text-[2.55rem]">
-                    Estadisticas y seguimiento
+                    Estadísticas y seguimiento
                   </p>
 
                   <p className="max-w-[560px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">
-                    Revisa el cruce completo, valida estadisticas oficiales y <br />mira las incidencias del partido.
+                    Revisá el cruce completo, validá estadísticas oficiales y <br />mirá las incidencias del partido.
                   </p>
                 </div>
 
@@ -158,10 +160,10 @@ export function PartidoDetalleDashboardView({
                   <div className="min-w-0 space-y-1">
                     <h1 className="flex items-center gap-2 text-xl font-semibold text-white md:text-2xl">
                       <BarChart3 className="h-6 w-6 shrink-0 text-[#AEEBFF]" />
-                      Estadisticas del partido
+                      Estadísticas del partido
                     </h1>
                     <div className="flex flex-wrap items-center gap-2 text-sm text-white/68">
-                      <span>Alineaciones y estadisticas del partido.</span>
+                      <span>Alineaciones y estadísticas del partido.</span>
                       <Info className="h-4 w-4 text-white/38" />
                     </div>
                   </div>
@@ -234,7 +236,7 @@ export function PartidoDetalleDashboardView({
                    hover:bg-white/12 data-[state=active]:border-transparent 
                    data-[state=active]:!bg-[#5993B6] data-[state=active]:text-white data-[state=active]:shadow-sm hover:data-[state=active]:bg-[#4B84A6]"
                 >
-                  Estadisticas
+                  Estadísticas
                 </TabsTrigger>
                 <TabsTrigger
                   value="alineaciones"
@@ -248,7 +250,7 @@ export function PartidoDetalleDashboardView({
               <TabsContent value="estadisticas">
                 <div className="space-y-4">
                     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-                      <DashboardCard title="Estadisticas del partido">
+                      <DashboardCard title="Estadísticas del partido">
                         <div className="space-y-4">
                           <div className="grid grid-cols-[minmax(0,1fr)_96px_minmax(0,1fr)] items-center gap-3 rounded-[28px] border border-white/10 bg-[#223553] px-4 py-4 md:px-5">
                             <TeamVsHeader
@@ -309,7 +311,7 @@ export function PartidoDetalleDashboardView({
                         </p>
                         <p className="flex items-center gap-2 text-sm text-white/72">
                           <Activity className="h-4 w-4 text-[#AEEBFF]" />
-                          Partido listo para gestion administrativa
+                          Partido listo para gestión administrativa
                         </p>
                         <p className="flex items-center gap-2 text-sm text-white/72">
                           <Users className="h-4 w-4 text-[#AEEBFF]" />

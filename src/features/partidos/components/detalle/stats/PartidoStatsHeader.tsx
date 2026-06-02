@@ -12,7 +12,7 @@ type PartidoStatsHeaderProps = {
 export function PartidoStatsHeader({
   local,
   visitante,
-  title = "Estadisticas del partido",
+  title = "Estadísticas del partido",
   subtitle,
 }: PartidoStatsHeaderProps) {
   return (

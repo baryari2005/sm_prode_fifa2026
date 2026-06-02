@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
+  DASHBOARD_HERO_PATTERN,
   DASHBOARD_PANEL,
   DASHBOARD_SUBCARD,
   DASHBOARD_TOP_LINE,
@@ -136,6 +137,7 @@ export function PlantelManager({
               <div className="pointer-events-none absolute inset-0">
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(30,44,70,0.94)_0%,rgba(30,44,70,0.9)_36%,rgba(37,53,80,0.62)_62%,rgba(30,44,70,0.76)_100%)]" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_35%,rgba(89,147,182,0.22),transparent_30%),radial-gradient(circle_at_34%_0%,rgba(246,180,56,0.14),transparent_35%),linear-gradient(135deg,rgba(30,44,70,0.24)_0%,rgba(37,53,80,0.14)_46%,rgba(30,44,70,0.24)_100%)]" />
+                <div className={DASHBOARD_HERO_PATTERN} />
                 <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.06)_48%,transparent_62%)] opacity-45" />
                 <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#061B33]/75 via-[#061B33]/24 to-transparent" />
                 <div className="absolute right-10 top-8 h-56 w-56 rounded-full bg-sky-300/18 blur-3xl" />
@@ -149,15 +151,15 @@ export function PlantelManager({
 
                 <div className="mt-6 space-y-2.5 xl:mt-8">
                   <h1 className="text-[2.1rem] font-bold leading-[0.98] tracking-[-0.065em] md:text-[2.35rem] xl:text-[2.55rem] 2xl:text-[2.9rem]">
-                    Gestion de <span className="text-[#5993B6]">convocados</span>
+                    Gestión de <span className="text-[#5993B6]">convocados</span>
                   </h1>
 
                   <p className="font-brand max-w-[540px] text-[1.9rem] font-semibold leading-[0.96] tracking-[0.04em] text-white md:text-[2rem] xl:text-[2.25rem] 2xl:text-[2.55rem]">
-                    {selectedSeleccion?.nombre ?? "Selecciona una seleccion"}
+                    {selectedSeleccion?.nombre ?? "Seleccioná una selección"}
                   </p>
 
                   <p className="max-w-[470px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">
-                    Revisa altas, importacion y control visual del plantel con el
+                    Revisá altas, importacion y control visual del plantel con el
                     mismo lenguaje del dashboard.
                   </p>
                 </div>
@@ -214,8 +216,8 @@ export function PlantelManager({
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_42%,transparent_62%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             
               <LateralSummaryHeader
-                title="Resumen lateral"
-                description="Estado del plantel y accesos rapidos para la gestion."
+                title="Vista rápida"
+                description="Estado del plantel y accesos rapidos para la gestión."
               />
 
               <div className="space-y-2.5">
@@ -262,7 +264,7 @@ export function PlantelManager({
                       Estado general
                     </span>
                     <span className="mt-0.5 block text-[11px] font-semibold leading-4 text-white/64">
-                      {selectedSeleccion ? "Listo para competir" : "Selecciona una seleccion"}
+                      {selectedSeleccion ? "Listo para competir" : "Seleccioná una selección"}
                     </span>
                   </span>
                   <span className="font-brand text-[1.7rem] leading-none tracking-[0.03em] text-white">

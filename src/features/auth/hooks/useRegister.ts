@@ -1,16 +1,20 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, type DefaultValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { messages } from "@/utils/messages";
-import { registerSchema } from "../schemas/schemas";
+import {
+  registerSchema,
+  type RegisterSchemaInput,
+  type RegisterSchemaValues,
+} from "../schemas/schemas";
 
-export type Values = z.infer<typeof registerSchema>;
+export type Values = RegisterSchemaValues;
+type FormValues = RegisterSchemaInput;
 
-const REGISTER_DEFAULT_VALUES: Values = {
+const REGISTER_DEFAULT_VALUES: DefaultValues<FormValues> = {
   userId: "",
   email: "",
   password: "",
@@ -18,15 +22,8 @@ const REGISTER_DEFAULT_VALUES: Values = {
   apellido: "",
   tipoDocumento: "DNI",
   documento: "",
-  cuil: "",
-  celular: "",
   domicilio: "",
-  localidad: "",
-  codigoPostal: "",
-  fechaNacimiento: "",
-  genero: "PREFIERE_NO_DECIR",
-  estadoCivil: "SOLTERO",
-  nacionalidad: "ARGENTINA",
+  localidad: "San Miguel",
   acceptedTerms: false,
 };
 
@@ -34,7 +31,7 @@ export function useRegister() {
   const [registerError, setRegisterError] = useState<string | null>(null);
   const netSubmittingRef = useRef(false);
 
-  const form = useForm<Values, undefined, Values>({
+  const form = useForm<FormValues, undefined, Values>({
     resolver: zodResolver(registerSchema),
     defaultValues: REGISTER_DEFAULT_VALUES,
     mode: "onChange",
@@ -69,10 +66,15 @@ export function useRegister() {
     setRegisterError(null);
 
     try {
+      const payload = {
+        ...values,
+        localidad: "San Miguel" as const,
+      };
+
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -83,12 +85,10 @@ export function useRegister() {
         return;
       }
 
-      // Registration successful, but user is pending approval
-      // Show success message and reset form
       form.reset(REGISTER_DEFAULT_VALUES);
 
       return { success: true, message: messages.success.registerPending };
-    } catch  {
+    } catch {
       const message = messages.errors.registerError;
       setRegisterError(message);
       return { success: false, message };

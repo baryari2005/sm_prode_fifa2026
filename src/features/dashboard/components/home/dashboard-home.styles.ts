@@ -18,3 +18,6 @@ export const DASHBOARD_TOP_LINE_GLOW =
 
 export const DASHBOARD_TOP_LINE_HAIR =
   "absolute inset-x-0 top-0 h-px bg-white/0 transition-all duration-300 group-hover:bg-white/55";
+
+export const DASHBOARD_HERO_PATTERN =
+  "absolute inset-0 bg-[url('/brand/pattern-cover.png')] bg-cover bg-center opacity-[0.09] mix-blend-screen";

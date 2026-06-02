@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 
 import { BrandWatermark } from "@/components/brand/BrandWatermark";
 import { Badge } from "@/components/ui/badge";
+import { DASHBOARD_HERO_PATTERN } from "@/features/dashboard/components/home/dashboard-home.styles";
 
 type PageHeaderWithBrandProps = {
   title: string;
@@ -65,6 +66,7 @@ export function PageHeaderWithBrand({
       ) : null}
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(117,215,255,0.18),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(246,200,95,0.08),transparent_22%),linear-gradient(90deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]" />
+      <div className={`pointer-events-none ${DASHBOARD_HERO_PATTERN}`} />
 
       <div
         className={`${layoutClassName ?? ""} relative grid h-full ${

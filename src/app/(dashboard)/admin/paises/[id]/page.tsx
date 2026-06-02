@@ -453,7 +453,7 @@ export default function EditarPaisPage() {
               <div className="space-y-3">
                 {[
                   "Edita nombre, código, grupo y confederación.",
-                  "Puedes reemplazar la bandera por drag and drop o URL.",
+                  "Podés reemplazar la bandera con drag and drop o una URL.",
                   "Los cambios siguen usando la misma validación del formulario real.",
                 ].map((idea) => (
                   <div key={idea} className={`rounded-2xl p-4 ${DASHBOARD_SUBCARD}`}>

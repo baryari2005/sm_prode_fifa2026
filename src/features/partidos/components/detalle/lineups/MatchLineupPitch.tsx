@@ -247,7 +247,7 @@ export function MatchLineupPitch({
           {!hasPlayers ? (
             <div className="relative z-10 flex h-full items-center justify-center px-6">
               <div className="rounded-[24px] border border-white/12 bg-slate-950/58 px-5 py-3 text-center text-sm font-semibold text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] backdrop-blur-sm">
-                Todavia no hay alineacion disponible para este partido.
+                Todavía no hay alineación disponible para este partido.
               </div>
             </div>
           ) : (

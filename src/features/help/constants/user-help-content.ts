@@ -39,6 +39,17 @@ export function buildUserHelpSections(
       ],
     },
     {
+      title: "¿Quiénes pueden participar?",
+      description:
+        "La participación está reservada únicamente para personas que residan en San Miguel y cuya solicitud haya sido aprobada por la administración.",
+      icon: CircleHelp,
+      points: [
+        "No alcanza con registrarse: la cuenta debe ser aprobada.",
+        "La aprobación valida que la persona resida en San Miguel.",
+        "Los usuarios no aprobados o que no residan en San Miguel no quedan habilitados para jugar.",
+      ],
+    },
+    {
       title: "¿Cómo cargar un pronóstico?",
       icon: ClipboardList,
       steps: [
@@ -115,7 +126,8 @@ export function buildUserHelpSections(
 export const USER_HELP_FAQS: HelpFaqItem[] = [
   {
     question: "¿Puedo cambiar mi pronóstico?",
-    answer: `Sí. Podés editarlo mientras el partido siga abierto y no haya llegado al cierre de ${PREDICTION_CLOSE_MINUTES_BEFORE} minutos previos al inicio.`,
+    answer: `Sí. Podés cargar o cambiar tu pronóstico hasta ${PREDICTION_CLOSE_MINUTES_BEFORE} minutos antes de que empiece el partido. Una
+vez cerrado ese plazo, ya no se aceptan cambios, aunque tengas la pantalla abierta.`,
   },
   {
     question: "¿Qué pasa si no cargo un pronóstico?",
@@ -136,5 +148,10 @@ export const USER_HELP_FAQS: HelpFaqItem[] = [
     question: "¿Puedo ver los pronósticos de otros usuarios?",
     answer:
       "Depende de la visibilidad que tenga habilitada la organización. Si no existe una pantalla específica, el sistema prioriza mostrar tu desempeño y el ranking.",
+  },
+  {
+    question: "¿Quiénes pueden quedar habilitados para participar?",
+    answer:
+      "Solo las personas que residan en San Miguel y cuya solicitud haya sido aprobada por la administración pueden quedar habilitadas para participar del Prode.",
   },
 ];

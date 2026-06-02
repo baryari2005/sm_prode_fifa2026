@@ -114,7 +114,7 @@ export function MatchIncidentRealSummary({
     <aside className="space-y-4">
       <DecorativeCard>
         <LateralSummaryHeader
-          title="Resumen lateral"
+          title="Vista rápida"
           description="Lectura rápida del flujo de incidencias y del estado actual del partido."
         />
 

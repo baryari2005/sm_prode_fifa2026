@@ -509,7 +509,7 @@ Generar y mantener:
 - calcula suplentes por diferencia
 - permite reutilizar formacion previa
 
-### Clasificacion de partidos
+### clasificación de partidos
 - partido finalizado no aparece en `no cerrados`
 - partido viejo no finalizado aparece en `Partidos no cerrados`
 - partido actual aparece en `Live`

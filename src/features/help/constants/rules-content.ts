@@ -25,11 +25,13 @@ export const RULES_EDITABLE_CONTENT: RulesEditableContent = {
     "Usuarios registrados dentro del sistema.",
     "Usuarios aprobados por la administración.",
     "Usuarios con estado activo al momento de participar.",
+    "Usuarios que residan en San Miguel.",
   ],
   participantesExcluidos: [
     "Usuarios no aprobados.",
     "Usuarios rechazados.",
     "Usuarios bloqueados o suspendidos.",
+    "Usuarios que no residan en San Miguel.",
     "Usuarios que participen fuera de las reglas definidas por la organización.",
     "Cuentas duplicadas si la organización decide excluirlas.",
     "Administradores u organizadores, si la organización así lo define.",
@@ -41,6 +43,7 @@ export const RULES_EDITABLE_CONTENT: RulesEditableContent = {
   ],
   condicionesPremio: [
     "El usuario debe estar registrado y aprobado.",
+    "El usuario debe residir en San Miguel.",
     "El usuario debe mantener estado activo.",
     "El usuario debe cumplir las reglas del Prode.",
     "El usuario no debe estar excluido por la organización.",
@@ -58,20 +61,20 @@ export function buildRulesSections(
     {
       title: "Participación",
       description:
-        "Podrán participar del Prode Mundial 2026 los usuarios registrados y aprobados por la administración del sistema.",
+        "Podrán participar del Prode Mundial 2026 solo los usuarios que residan en San Miguel, estén registrados y hayan sido aprobados por la administración del sistema.",
       icon: CheckCircle2,
     },
     {
       title: "Usuarios habilitados",
       description:
-        "Solo los usuarios con estado activo pueden participar y cargar pronósticos dentro del sistema.",
+        "Solo los usuarios con estado activo y residencia en San Miguel pueden participar y cargar pronósticos dentro del sistema.",
       icon: CheckCircle2,
       points: RULES_EDITABLE_CONTENT.participantesHabilitados,
     },
     {
       title: "Usuarios no habilitados",
       description:
-        "Los usuarios pendientes, rechazados, bloqueados o sin aprobación administrativa no podrán participar ni acceder a premios.",
+        "Los usuarios pendientes, rechazados, bloqueados, sin aprobación administrativa o que no residan en San Miguel no podrán participar ni acceder a premios.",
       icon: Lock,
       points: RULES_EDITABLE_CONTENT.participantesExcluidos,
     },

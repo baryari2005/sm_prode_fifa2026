@@ -222,7 +222,7 @@ export async function POST(req: NextRequest) {
         });
 
         return NextResponse.json(
-          ok("Estadisticas cargadas correctamente.", {
+          ok("Estadísticas cargadas correctamente.", {
             estadisticasLocal: result.estadisticasLocal ?? null,
             estadisticasVisitante: result.estadisticasVisitante ?? null,
           }),

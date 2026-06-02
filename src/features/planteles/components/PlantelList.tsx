@@ -201,7 +201,7 @@ export function PlantelList({
           Plantel vacio
         </p>
         <p className="mt-3 text-sm leading-6 text-white/68">
-          Todavia no hay jugadores cargados para esta seleccion. Podes importar
+          Todavía no hay jugadores cargados para esta selección. Podés importar
           desde archivo, desde API o dar de alta manualmente.
         </p>
       </div>
@@ -301,7 +301,7 @@ export function PlantelList({
                                 confirmTone: "danger",
                                 confirmIcon: <ShieldX className="h-4 w-4" />,
                                 confirmNote:
-                                  "Esta accion afecta solo al jugador seleccionado. Revisa antes de confirmar porque puede impactar el plantel cargado.",
+                                  "Esta accion afecta solo al jugador seleccionado. Revisá antes de confirmar porque puede impactar el plantel cargado.",
                                 onConfirm: async () => {
                                   onDelete(player.id);
                                 },

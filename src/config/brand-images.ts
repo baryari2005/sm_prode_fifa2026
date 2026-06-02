@@ -36,7 +36,7 @@ export const brandImages = {
     masSanMiguelLogo: sharedBrandAssets.masSanMiguelLogo,
     orgulloBarrioPanel: withVersion("/mas/orgullo.png"),
     barrioMundial: withVersion(
-      "/mas/2026-06-21 mÃ¡s mundial _ diseÃ±o pagina 29_pages-to-jpg-0001.jpg",
+      "/mas/2026-06-21 mÃ¡s mundial _ diseÃ±o página 29_pages-to-jpg-0001.jpg",
     ),
   },
   mascots: {
@@ -53,6 +53,11 @@ export const brandImages = {
     tabla: withVersion("/mascotas/posiciones.png"),
     fixture: withVersion("/mascotas/fixture.png"),
     ranking: withVersion("/mascotas/ranking.png"),
+    ayuda:withVersion("/mascotas/ayuda.png"),
+    usuarios:withVersion("/mascotas/usuarios.png"),
+    roles:withVersion("/mascotas/roles.png"),
+    bases:withVersion("/mascotas/bases.png"),
+    goleadores: withVersion("/mascotas/goleadores.png"),
     byConfederation: {
       conmebol: withVersion("/mascotas/confederaciones/conmebol.png"),
       concacaf: withVersion("/mascotas/confederaciones/concacaf.png"),

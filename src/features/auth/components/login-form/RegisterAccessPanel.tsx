@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowBigRight, Info, RefreshCw } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
+import { AlertCircle, ArrowBigRight, Info, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,12 +13,11 @@ import {
 import { BrandWatermark } from "@/components/brand/BrandWatermark";
 import { RegisterFields } from "./RegisterFields";
 import { brandImages } from "@/config/brand-images";
-import { RegisterFormValues } from "../../types/registerFields.types";
+import { RegisterFormReturn } from "../../types/registerFields.types";
 import { ErrorBannerInput } from "../ErrorBannerInput";
 
-
 type RegisterAccessPanelProps = {
-  registerForm: UseFormReturn<RegisterFormValues>;
+  registerForm: RegisterFormReturn;
   registerTopError?: string | null;
   hasFieldErrors: boolean;
   isLoading: boolean;
@@ -76,10 +74,15 @@ export function RegisterAccessPanel({
 
             <DialogDescription className="text-sm leading-6 text-white/70">
               <Info className="mr-2 inline h-4 w-4 text-white/50" />
-              Completa tus datos y espera la aprobacion de un administrador. Tu
-              cuenta quedara pendiente hasta que sea aprobada.
+              Completá tus datos y esperá la aprobación de un administrador. Tu
+              cuenta quedará pendiente hasta que sea aprobada.
             </DialogDescription>
           </DialogHeader>
+
+          <div className="rounded-2xl border border-[#FDBA3B]/30 bg-[#FDBA3B]/10 px-4 py-3 text-sm font-semibold leading-6 text-[#FFE4A3]">
+            <AlertCircle className="mr-2 inline h-4 w-4" />
+            Acceso exclusivo para residentes de San Miguel. Para participar del Prode Mundial 2026, la solicitud será revisada y aprobada solo si la persona reside en San Miguel.
+          </div>
 
           {registerTopError && !hasFieldErrors ? (
             <div className="relative">

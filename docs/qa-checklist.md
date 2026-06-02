@@ -128,7 +128,7 @@
 
 ## USR-LIST-006 - El ordenamiento funciona
 - [ ] Estado
-- Resultado esperado: ordena por las columnas permitidas
+- Resultado esperado: ordená por las columnas permitidas
 - Resultado obtenido:
 - Observaciones:
 

@@ -1,8 +1,16 @@
 import type { UseFormReturn } from "react-hook-form";
-import type { RegisterSchemaValues } from "@/features/auth/schemas/schemas";
+import type {
+  RegisterSchemaInput,
+  RegisterSchemaValues,
+} from "@/features/auth/schemas/schemas";
 
-export type RegisterFormValues = RegisterSchemaValues;
+export type RegisterFormValues = RegisterSchemaInput;
+export type RegisterFormReturn = UseFormReturn<
+  RegisterFormValues,
+  undefined,
+  RegisterSchemaValues
+>;
 
 export type RegisterFieldsSectionProps = {
-  form: UseFormReturn<RegisterFormValues>;
+  form: RegisterFormReturn;
 };

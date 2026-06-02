@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import { brandImages } from "@/config/brand-images";
 import { useCan } from "@/hooks/useCan";
 
 import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
@@ -20,43 +21,43 @@ export default function GoleadoresPage() {
     goleadoresFiltrados,
     loading,
     cargandoApi,
-    cargandoMock,
     busqueda,
     setBusqueda,
     source,
-    loadInitialMock,
+    loadInitialData,
     loadFromApi,
-    loadFromMock,
   } = useGoleadoresPage();
 
   useEffect(() => {
     if (canVerPartidos) {
-      loadInitialMock();
+      loadInitialData();
     }
-  }, [canVerPartidos, loadInitialMock]);
+  }, [canVerPartidos, loadInitialData]);
 
   if (!canVerPartidos) {
     return <AccessDenied403Page />;
   }
 
   if (loading) {
-    return <DashboardLoading source="Admin goleadores" />;
+    return <DashboardLoading badgeLabel="Admin goleadores" />;
   }
 
   return (
     <main className="min-h-full bg-transparent px-3 py-4 md:px-5 md:py-5 xl:px-4">
       <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 xl:gap-6">
-        <GoleadoresOverview goleadores={goleadores} source={source} />
+        <GoleadoresOverview
+          goleadores={goleadores}
+          source={source}
+          heroImageSrc={brandImages.mascots.goleadores}
+          heroImageAlt="Mascota del ranking de goleadores"
+        />
 
         <GoleadoresHeader
           total={goleadores.length}
-          source={source}
           busqueda={busqueda}
           onBusquedaChange={setBusqueda}
           cargandoApi={cargandoApi}
-          cargandoMock={cargandoMock}
           onCargarDesdeApi={loadFromApi}
-          onCargarDesdeMock={loadFromMock}
         />
 
         <GoleadoresTable

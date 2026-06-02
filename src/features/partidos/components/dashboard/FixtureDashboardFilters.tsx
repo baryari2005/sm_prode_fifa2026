@@ -71,8 +71,7 @@ export function FixtureDashboardFilters({
               Explorador de partidos
             </h2>
             <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
-              Busca un partido puntual o recorre cada grupo para revisar rapido
-              sede, fase y accesos operativos del fixture.
+              Buscá un partido puntual o recorré cada grupo para revisar rápido la sede, la fase y las acciones disponibles del fixture.
             </p>
           </div>
 

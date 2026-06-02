@@ -109,12 +109,12 @@ function UsersAdminCardsRenderer({
         icon: <Trash2 className="h-4 w-4" />,
         confirmTitle: "Eliminar usuario",
         confirmDescription:
-          "Vas a quitar este usuario de la gestion activa del sistema.",
+          "Vas a quitar este usuario de la gestión activa del sistema.",
         confirmActionLabel: "Confirmar eliminacion",
         confirmTone: "danger",
         confirmIcon: <ShieldX className="h-4 w-4" />,
         confirmNote:
-          "Esta accion afecta solo al usuario seleccionado. Si necesitas recuperarlo, requerira una gestion posterior.",
+          "Esta accion afecta solo al usuario seleccionado. Si necesitas recuperarlo, requerira una gestión posterior.",
         onConfirm: async () => {
           await axiosInstance.delete(`/users/${user.id}`);
           toast.success(formatApiMessage("success.userDeleted"));
@@ -220,7 +220,7 @@ function UsersAdminCardsRenderer({
                           Estado
                         </p>
                         <p className="mt-2 text-sm font-semibold text-white">
-                          {isApproved ? "Puede ingresar al sistema" : "Espera aprobacion"}
+                          {isApproved ? "Puede ingresar al sistema" : "Espera aprobación"}
                         </p>
                       </div>
 
@@ -253,7 +253,7 @@ function UsersAdminCardsRenderer({
 
       <div className="flex w-full flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <Badge className="rounded-full border-white/10 bg-white/10 px-4 py-1.5 text-sm font-medium text-[#AEEBFF] hover:bg-white/10">
-          Pagina {safePage} de {safeTotalPages}
+          Página {safePage} de {safeTotalPages}
         </Badge>
 
         <div className="grid w-full grid-cols-2 gap-2 lg:w-auto lg:min-w-[320px]">

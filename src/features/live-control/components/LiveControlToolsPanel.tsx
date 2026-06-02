@@ -43,7 +43,7 @@ const ACTION_OPTIONS = [
   { value: "set_finished", label: "Marcar partido como finalizado" },
   { value: "update_minute", label: "Actualizar minuto actual" },
   { value: "create_manual_goal", label: "Cargar gol manual" },
-  { value: "upsert_stats", label: "Cargar estadisticas" },
+  { value: "upsert_stats", label: "Cargar estadísticas" },
   { value: "upsert_lineup", label: "Cargar formacion" },
   { value: "upsert_squad_note", label: "Cargar plantel" },
   { value: "upsert_scorer_note", label: "Cargar goleador" },
@@ -151,7 +151,7 @@ export function LiveControlToolsPanel({
     } catch {
       return {
         value: undefined,
-        error: "JSON invalido. Revisa comas, llaves y comillas.",
+        error: "JSON invalido. Revisá comas, llaves y comillas.",
       };
     }
   }, [jsonPayload]);
@@ -458,7 +458,7 @@ export function LiveControlToolsPanel({
               <Label>Partido</Label>
               <Select value={selectedMatchId ?? ""} onValueChange={onSelectMatch}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un partido" />
+                  <SelectValue placeholder="Seleccioná un partido" />
                 </SelectTrigger>
                 <SelectContent>
                   {matches.map((match) => (
@@ -526,7 +526,7 @@ export function LiveControlToolsPanel({
                   <Select value={selectedPlayerId} onValueChange={setSelectedPlayerId}>
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={loadingSquad ? "Cargando plantel..." : "Selecciona un jugador"}
+                        placeholder={loadingSquad ? "Cargando plantel..." : "Seleccioná un jugador"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -589,7 +589,7 @@ export function LiveControlToolsPanel({
                   <Select value={selectedPlayerId} onValueChange={setSelectedPlayerId}>
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={loadingSquad ? "Cargando plantel..." : "Selecciona un jugador"}
+                        placeholder={loadingSquad ? "Cargando plantel..." : "Seleccioná un jugador"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -666,7 +666,7 @@ export function LiveControlToolsPanel({
                   <Select value={selectedPlayerId} onValueChange={setSelectedPlayerId}>
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={loadingSquad ? "Cargando plantel..." : "Selecciona un jugador"}
+                        placeholder={loadingSquad ? "Cargando plantel..." : "Seleccioná un jugador"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -729,7 +729,7 @@ export function LiveControlToolsPanel({
                         onValueChange={(value) => handleFormationAssignmentChange(slot.id, value)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona un jugador" />
+                          <SelectValue placeholder="Seleccioná un jugador" />
                         </SelectTrigger>
                         <SelectContent>
                           {squad.map((player) => (
@@ -847,7 +847,7 @@ export function LiveControlToolsPanel({
           ) : action === "upsert_stats" ? (
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label>Estadisticas del partido</Label>
+                <Label>Estadísticas del partido</Label>
                 <p className="text-xs text-white/52">
                   Carga valores para local y visitante por cada rubro.
                 </p>
@@ -936,7 +936,7 @@ export function LiveControlToolsPanel({
               </div>
               <pre className="overflow-x-auto rounded-[20px] border border-white/8 bg-[#07111D] p-4 text-xs text-white/82">
                 {JSON.stringify(
-                  response ?? { message: "Todavia no se ejecuto ninguna accion." },
+                  response ?? { message: "Todavía no se ejecutó ninguna acción." },
                   null,
                   2,
                 )}

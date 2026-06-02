@@ -167,7 +167,7 @@ export function IncidenciasEditor({
 
   function persistIncident() {
     if (!canSubmitIncident) {
-      toast.error("Completa los campos necesarios para guardar la incidencia");
+      toast.error("Completá los campos necesarios para guardar la incidencia");
       return;
     }
 
@@ -257,7 +257,7 @@ export function IncidenciasEditor({
             </p>
             <p className="max-w-[780px] text-sm font-medium leading-6 text-[#FFE3A1] md:text-[0.95rem]">
               Para que las incidencias impacten en el marcador y en los datos
-              guardados, despuÃ©s actualizÃ¡ el resultado del partido.
+              guardados, después actualizá el resultado del partido.
             </p>
           </div>
         </div>
@@ -380,7 +380,7 @@ export function IncidenciasEditor({
 
         <div className="rounded-2xl border border-[#FAB438]/25 bg-[#FAB438]/10 px-4 py-3 text-sm font-medium text-[#FFE3A1]">
           Las incidencias se agregan al timeline, pero para que impacten el
-          marcador y los datos guardados tenÃ©s que actualizar el resultado del
+          marcador y los datos guardados tenés que actualizar el resultado del
           partido.
         </div>
 
@@ -645,7 +645,7 @@ function PlayerSelect({
   players,
   value,
   onChange,
-  placeholder = "Selecciona un jugador",
+  placeholder = "Seleccioná un jugador",
 }: {
   players: JugadorSeleccion[];
   value: string;

@@ -236,7 +236,7 @@ export default function PlantelesImportarPage() {
                   </p>
 
                   <p className="max-w-[470px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">
-                    Ejecuta la importacion en serie desde la API y revisa abajo
+                    Ejecuta la importacion en serie desde la API y revisá abajo
                     el estado de cada seleccion sin salir del dashboard.
                   </p>
                 </div>
@@ -279,7 +279,7 @@ export default function PlantelesImportarPage() {
               </div>
               
               <LateralSummaryHeader
-                title="Resumen lateral"
+                title="Vista rápida"
                 description="Estado rapido del lote, de la fuente y del resultado esperado por plantel."
               />
 

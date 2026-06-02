@@ -50,7 +50,7 @@ function handleRouteError(method: "GET" | "POST", err: unknown) {
 
   if (err instanceof Error && err.message === "FORBIDDEN") {
     return NextResponse.json(
-      { message: "No tenes permisos para sincronizar partidos en juego." },
+      { message: "No tenés permisos para sincronizar partidos en juego." },
       { status: 403 },
     );
   }

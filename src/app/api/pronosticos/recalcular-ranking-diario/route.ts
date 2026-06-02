@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para recalcular ranking." },
+        { message: "No tenés permisos para recalcular ranking." },
         { status: 403 },
       );
     }

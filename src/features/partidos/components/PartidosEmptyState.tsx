@@ -52,7 +52,7 @@ export function PartidosEmptyState({
           <p className="mb-6 max-w-md text-sm text-white/64">
             {hasPartidos
               ? "Proba cambiando el texto de busqueda o actualizando el listado."
-              : "Todavia no hay partidos cargados. Podes cargarlos desde la API o crearlos manualmente."}
+              : "Todavía no hay partidos cargados. Podés cargarlos desde la API o crearlos manualmente."}
           </p>
 
           {canCrearPartidos && !hasPartidos ? (

@@ -9,6 +9,7 @@ import { HeroVisualImage } from "@/components/brand/HeroVisualImage";
 import { BrandWatermark } from "@/components/brand/BrandWatermark";
 import { ProdeIcon } from "@/components/icons/Iconos";
 import { brandImages } from "@/config/brand-images";
+import { DASHBOARD_HERO_PATTERN } from "@/features/dashboard/components/home/dashboard-home.styles";
 import { useAuth } from "@/stores/auth";
 
 type DashboardHeroProps = {
@@ -89,7 +90,7 @@ export function DashboardHero({
     ? {
       title: "Tenes el torneo bajo control",
       description:
-        "Gestiona usuarios, partidos, resultados y el avance del Prode en tiempo real.",
+        "Gestioná usuarios, partidos, resultados y el avance del Prode en tiempo real.",
     }
     : {
       title: "Tu barrio tambien juega el Mundial",
@@ -117,6 +118,7 @@ export function DashboardHero({
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.18),transparent_18%),radial-gradient(circle_at_68%_26%,rgba(255,255,255,0.12),transparent_22%),radial-gradient(circle_at_86%_18%,rgba(255,255,255,0.18),transparent_16%)] opacity-70" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(30,44,70,0.94)_0%,rgba(30,44,70,0.9)_36%,rgba(37,53,80,0.62)_62%,rgba(30,44,70,0.76)_100%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_35%,rgba(89,147,182,0.22),transparent_30%),radial-gradient(circle_at_34%_0%,rgba(246,180,56,0.14),transparent_35%),linear-gradient(135deg,rgba(30,44,70,0.24)_0%,rgba(37,53,80,0.14)_46%,rgba(30,44,70,0.24)_100%)]" />
+      <div className={`pointer-events-none ${DASHBOARD_HERO_PATTERN}`} />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.06)_48%,transparent_62%)] opacity-45" />
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#061B33]/75 via-[#061B33]/24 to-transparent" />
       <div className="pointer-events-none absolute right-10 top-8 h-56 w-56 rounded-full bg-sky-300/18 blur-3xl" />

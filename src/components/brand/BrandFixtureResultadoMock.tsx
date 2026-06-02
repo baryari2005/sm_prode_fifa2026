@@ -470,7 +470,7 @@ export function BrandFixtureResultadoMock() {
             </TabsList>
 
             <TabsContent value="estadisticas">
-              <DashboardCard title="Estadisticas del equipo">
+              <DashboardCard title="Estadísticas del equipo">
                 <div className="space-y-3 rounded-[1.5rem] border border-white/10 bg-white/[0.05] p-4">
                   <div className="grid grid-cols-[minmax(0,1fr)_80px_minmax(0,1fr)] items-center gap-3 border-b border-white/10 px-2 pb-4">
                     <div className="text-left text-base font-black text-white">Nueva Zelanda</div>

@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para ver resultados." },
+        { message: "No tenés permisos para ver resultados." },
         { status: 403 }
       );
     }
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para crear resultados." },
+        { message: "No tenés permisos para crear resultados." },
         { status: 403 }
       );
     }
@@ -168,7 +168,7 @@ export async function PUT(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para editar resultados." },
+        { message: "No tenés permisos para editar resultados." },
         { status: 403 }
       );
     }

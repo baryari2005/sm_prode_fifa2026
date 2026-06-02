@@ -26,7 +26,7 @@ export function Topbar() {
                 Orgullo de barrio
               </p>
               <p className="font-brand text-[30px] font-black leading-none tracking-[0.08em] text-brand-blue 2xl:text-[30px]">
-                Pasion mundial
+                Pasión mundial
               </p>
             </div>
           </div>

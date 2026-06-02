@@ -41,14 +41,14 @@ export function BrandAccessRequestMock() {
             </Badge>
 
             <h1 className="brand-hero-title max-w-[560px] text-5xl text-white md:text-6xl xl:text-7xl">
-              Tu barrio tambien
+              Tu barrio también
               <br />
               juega el Mundial.
             </h1>
 
             <p className="max-w-[470px] text-base leading-7 text-white/78 md:text-lg">
-              Solicita tu acceso al Prode Mundial 2026, suma a tu grupo y espera
-              la aprobacion para empezar a competir con identidad local.
+              Solicitá tu acceso al Prode Mundial 2026, sumate a tu grupo y esperá
+              la aprobación para empezar a competir con identidad local.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export function BrandAccessRequestMock() {
             <FeatureItem
               icon={ShieldCheck}
               title="Solicitud pendiente"
-              description="Tu cuenta quedara en revision hasta que un administrador la apruebe."
+              description="Tu cuenta quedará en revisión hasta que un administrador la apruebe."
             />
             <FeatureItem
               icon={Sparkles}
@@ -80,7 +80,7 @@ export function BrandAccessRequestMock() {
             </Link>
 
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/72">
-              Pasion mundial
+              Pasión mundial
             </div>
           </div>
         </div>
@@ -123,16 +123,16 @@ export function BrandAccessRequestMock() {
                 </div>
 
                 <Badge className="rounded-full border border-white/12 bg-white/[0.08] px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-white/78">
-                  Tu barrio tambien juega
+                  Tu barrio también juega
                 </Badge>
 
                 <div>
                   <h2 className="brand-heading text-3xl text-white">
-                    Solicita tu acceso
+                    Solicitá tu acceso
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-white/70">
-                    Completa tus datos y espera la aprobacion de un
-                    administrador. Tu cuenta quedara pendiente hasta que sea
+                    Completá tus datos y esperá la aprobación de un
+                    administrador. Tu cuenta quedará pendiente hasta que sea
                     aprobada.
                   </p>
                 </div>
@@ -177,7 +177,7 @@ export function BrandAccessRequestMock() {
                         className="sm:col-span-2"
                       />
                       <MockField
-                        label="Contrasena"
+                        label="Contraseña"
                         placeholder="Minimo 6 caracteres"
                       />
                     </div>
@@ -314,7 +314,7 @@ export function BrandAccessRequestMock() {
                           className="mt-1 h-4 w-4 rounded border-white/30 bg-transparent"
                         />
                         <span>
-                          Lei y acepto las bases y condiciones para solicitar
+                          Leí y acepto las bases y condiciones para solicitar
                           acceso.
                         </span>
                       </label>
@@ -342,7 +342,7 @@ export function BrandAccessRequestMock() {
 
                 <div className="space-y-1 text-center lg:text-left">
                   <p className="text-sm text-white/58">
-                    Ya tienes acceso al Prode?
+                    ¿Ya tenés acceso al Prode?
                   </p>
                   <Link
                     href="/brand-preview/login"

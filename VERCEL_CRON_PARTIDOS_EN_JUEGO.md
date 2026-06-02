@@ -103,7 +103,7 @@ El endpoint ya esta preparado para aceptar:
 
 Ir a:
 
-- `Gestion Mundial > Gestionar fixture`
+- `Gestión Mundial > Gestionar fixture`
 
 Y ejecutar:
 

@@ -10,6 +10,7 @@ import { HeroVisualImage } from "@/components/brand/HeroVisualImage";
 import { LiveRefreshBadge } from "@/components/live-refresh-badge";
 import { brandImages } from "@/config/brand-images";
 import {
+  DASHBOARD_HERO_PATTERN,
   DASHBOARD_PANEL,
   DASHBOARD_SUBCARD,
   DASHBOARD_TOP_LINE,
@@ -53,6 +54,7 @@ export function FixtureDashboardHero({
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(30,44,70,0.94)_0%,rgba(30,44,70,0.9)_36%,rgba(37,53,80,0.62)_62%,rgba(30,44,70,0.76)_100%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_35%,rgba(89,147,182,0.22),transparent_30%),radial-gradient(circle_at_34%_0%,rgba(246,180,56,0.14),transparent_35%),linear-gradient(135deg,rgba(30,44,70,0.24)_0%,rgba(37,53,80,0.14)_46%,rgba(30,44,70,0.24)_100%)]" />
+            <div className={DASHBOARD_HERO_PATTERN} />
             <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.06)_48%,transparent_62%)] opacity-45" />
             <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#061B33]/75 via-[#061B33]/24 to-transparent" />
             <div className="absolute right-10 top-8 h-56 w-56 rounded-full bg-sky-300/18 blur-3xl" />
@@ -62,12 +64,12 @@ export function FixtureDashboardHero({
           <div className="relative z-10 flex h-full max-w-[62%] min-w-0 flex-col">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#FAB438]/28 bg-[#FAB438]/12 px-5 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-[#FFE4A3] backdrop-blur-md">
               <CalendarClock className="h-3.5 w-3.5" />
-              Gestion de fixture
+              Gestión de fixture
             </div>
 
             <div className="mt-6 space-y-2.5 xl:mt-8">
               <h1 className="text-[2.1rem] font-bold leading-[0.98] tracking-[-0.065em] text-white md:text-[2.35rem] xl:text-[2.55rem] 2xl:text-[2.9rem]">
-                Ordena el <span className="text-[#5993B6]">calendario</span>
+                Ordená el <span className="text-[#5993B6]">fixture</span>
               </h1>
 
               <p className="font-brand max-w-[560px] text-[1.9rem] font-semibold leading-[0.96] tracking-[0.04em] text-white md:text-[2rem] xl:text-[2.25rem] 2xl:text-[2.55rem]">
@@ -75,10 +77,7 @@ export function FixtureDashboardHero({
               </p>
 
               <p className="max-w-[560px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">
-                Una vista pensada para revisar fechas, detectar huecos del 
-                <br/>fixture y
-                entrar rapido al detalle o al 
-                <br/>resultado oficial de cada partido.
+                Una vista pensada para revisar fechas <br/> e ingresar rápido al detalle o al resultado oficial de cada partido.
               </p>
             </div>
 
@@ -116,12 +115,12 @@ export function FixtureDashboardHero({
 
           <div className="mb-3">
             <p className="mt-4 flex justify-center text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-              Resumen lateral
+              Vista rápida
             </p>
             <p className="mt-1.5 flex items-start justify-center gap-2 text-center text-sm font-semibold leading-5 text-white/68">
               <Info className="mt-0.5 h-4 w-4 shrink-0" />
               <span className="max-w-[260px]">
-                Lectura rapida del bloque visible y del estado general del calendario.
+                Lectura rapida del bloque visible y del estado general del fixture.
               </span>
             </p>
           </div>
@@ -138,7 +137,7 @@ export function FixtureDashboardHero({
               icon={<Trophy className="h-4.5 w-4.5" />}
               tone="gold"
               title="Fase activa"
-              detail="Lectura del calendario"
+              detail="Lectura del fixture"
               value={faseActivaLabel === "Fixture" ? "ALL" : faseActivaLabel.slice(0, 2).toUpperCase()}
             />
             <MetricCard
@@ -147,7 +146,7 @@ export function FixtureDashboardHero({
               title="Estado general"
               detail={
                 hasLiveMatches
-                  ? "Hay partidos en juego y el calendario sigue activo"
+                  ? "Hay partidos en juego y el fixture sigue activo"
                   : `${gruposVisibles} grupos visibles en la lectura actual`
               }
               value={hasLiveMatches ? "LIVE" : "OK"}

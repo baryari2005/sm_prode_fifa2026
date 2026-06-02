@@ -125,7 +125,7 @@ export function RolesAdminDataTable<T>({
 
       <div className="flex w-full flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <Badge className="rounded-full border-white/10 bg-white/10 px-4 py-1.5 text-sm font-medium text-[#AEEBFF] hover:bg-white/10">
-          Pagina {safePage} de {safeTotalPages}
+          Página {safePage} de {safeTotalPages}
         </Badge>
 
         <div className="grid w-full grid-cols-2 gap-2 lg:w-auto lg:min-w-[320px]">

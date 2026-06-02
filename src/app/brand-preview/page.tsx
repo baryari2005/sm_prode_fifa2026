@@ -43,10 +43,10 @@ export default function BrandPreviewPage() {
             <h1 className="brand-hero-title max-w-3xl text-5xl text-white md:text-7xl">
               Orgullo de barrio.
               <br />
-              Pasion mundial.
+              Pasión mundial.
             </h1>
             <p className="max-w-2xl text-base text-white/76 md:text-lg">
-              Preview de identidad para validar paleta, tipografias, componentes
+              Preview de identidad para validar paleta, tipografías, componentes
               base y el lenguaje visual de la experiencia antes de tocar pantallas reales.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -165,10 +165,10 @@ export default function BrandPreviewPage() {
         <Card className="brand-card-dark">
           <CardContent className="space-y-6 p-6">
             <BrandTitle
-              eyebrow="Tipografias"
+              eyebrow="Tipografías"
               description="Poppins como base y Cheddar Gothic Sans como fuente de impacto."
             >
-              Sistema tipografico
+              Sistema tipográfico
             </BrandTitle>
             <div className="space-y-4">
               <p className="brand-heading text-4xl text-white">Titular de marca</p>
@@ -203,17 +203,17 @@ export default function BrandPreviewPage() {
             <div className="flex flex-wrap gap-3">
               <Badge className="brand-badge px-3 py-1">Orgullo de barrio</Badge>
               <Badge variant="secondary" className="px-3 py-1">
-                Pasion mundial
+                Pasión mundial
               </Badge>
               <Badge variant="outline" className="px-3 py-1">
                 Abierto a pronosticar
               </Badge>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <Input placeholder="Ingresa tu usuario" className="h-11" />
+              <Input placeholder="Ingresá tu usuario" className="h-11" />
               <Select>
                 <SelectTrigger className="h-11 w-full">
-                  <SelectValue placeholder="Elegi una fase" />
+                  <SelectValue placeholder="Elegí una fase" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="grupos">Fase de grupos</SelectItem>
@@ -227,7 +227,7 @@ export default function BrandPreviewPage() {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
           <BrandStatsCard
             icon={CalendarDays}
-            title="Pronosticos cargados"
+            title="Pronósticos cargados"
             value="12 / 32"
             detail="fecha 1 completada"
           />
@@ -273,13 +273,13 @@ export default function BrandPreviewPage() {
           </BrandTitle>
           <div className="grid gap-4">
             <BrandRankingCard
-              position="Posicion #1"
+              position="Posición #1"
               name="Sergio Ariel Manzoni"
               points="18"
               detail="Liderando el torneo"
             />
             <BrandRankingCard
-              position="Posicion #2"
+              position="Posición #2"
               name="Maria Gomez"
               points="14"
               detail="Muy cerca de la cima"
@@ -290,9 +290,9 @@ export default function BrandPreviewPage() {
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <BrandEmptyState
-          title="Todavia no hay partidos para pronosticar"
-          description="El Mundial se esta preparando. Volve pronto para jugar por el orgullo del barrio."
-          actionLabel="Ver proximos partidos"
+          title="Todavía no hay partidos para pronosticar"
+          description="El Mundial se está preparando. Volvé pronto para jugar por el orgullo del barrio."
+          actionLabel="Ver próximos partidos"
         />
         <BrandLoadingState label="Preparando el fixture y cargando tu ranking..." />
       </section>
@@ -312,12 +312,12 @@ export default function BrandPreviewPage() {
                 Mas San Miguel
               </Badge>
               <h3 className="brand-hero-title max-w-[420px] text-5xl text-white">
-                Juga por la gloria.
+                Jugá por la gloria.
                 <br />
-                Representa al barrio.
+                Representá al barrio.
               </h3>
               <p className="max-w-[420px] text-base text-white/76">
-                Vivi el Mundial 2026 con tu grupo, segui el ranking y demostra quien manda en la tabla.
+                Viví el Mundial 2026 con tu grupo, seguí el ranking y demostrá quién manda en la tabla.
               </p>
             </div>
 
@@ -337,18 +337,18 @@ export default function BrandPreviewPage() {
                   Orgullo de barrio
                 </Badge>
                 <div>
-                  <p className="brand-heading text-3xl text-white">Ingresa a Mas San Miguel</p>
+                  <p className="brand-heading text-3xl text-white">Ingresá a Mas San Miguel</p>
                   <p className="mt-2 text-sm text-white/72">
-                    Accede para pronosticar, competir y vivir el Mundial con identidad local.
+                    Accedé para pronosticar, competir y vivir el Mundial con identidad local.
                   </p>
                 </div>
                 <Input placeholder="Usuario" className="h-11" />
-                <Input placeholder="Contrasena" className="h-11" />
+                <Input placeholder="Contraseña" className="h-11" />
                 <BrandActionButton className="w-full justify-center">
                   Entrar a la cancha
                 </BrandActionButton>
                 <button className="text-sm font-semibold text-[#AEEBFF]">
-                  Solicita tu acceso
+                  Solicitá tu acceso
                 </button>
               </div>
             </div>

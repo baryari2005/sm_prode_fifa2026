@@ -403,7 +403,7 @@ export async function POST(req: NextRequest) {
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
         {
-          message: "No tenes permisos para cargar partidos.",
+          message: "No tenés permisos para cargar partidos.",
         },
         { status: 403 }
       );

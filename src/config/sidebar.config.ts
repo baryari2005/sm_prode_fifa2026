@@ -46,21 +46,21 @@ export const SIDEBAR_CONFIG: SidebarItemConfig[] = [
     icon: Home,
   },
   {
-    section: "Gestion Usuarios",
+    section: "Gestión Usuarios",
     title: "Administrar",
     href: "/users",
     icon: UserCog,
     permission: { modulo: "usuarios", accion: "ver" },
   },
   {
-    section: "Gestion Usuarios",
+    section: "Gestión Usuarios",
     title: "Roles y Permisos",
     href: "/roles",
     icon: ShieldCheck,
     permission: { modulo: "roles", accion: "ver" },
   },
   {
-    section: "Gestion Mundial",
+    section: "Gestión Mundial",
     title: "Selecciones",
     href: "",
     icon: Globe2,
@@ -109,7 +109,7 @@ export const SIDEBAR_CONFIG: SidebarItemConfig[] = [
     ],
   },
   {
-    section: "Gestion Mundial",
+    section: "Gestión Mundial",
     title: "Gestionar fixture",
     href: "/admin/partidos/gestionar",
     permission: { modulo: "partidos", accion: "ver" },

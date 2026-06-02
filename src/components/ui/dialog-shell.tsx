@@ -120,10 +120,20 @@ export function DialogHighlightCard({
   );
 }
 
-export function DialogMutedNote({ children, className }: DialogMutedNoteProps) {
+export function DialogMutedNote({
+  children,
+  className,
+}: DialogMutedNoteProps) {
   return (
-    <div className={cn("rounded-2xl bg-slate-50 px-4 py-3", className)}>
-      <p className="text-sm leading-5 text-slate-600">{children}</p>
+    <div
+      className={cn(
+        "rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3",
+        className
+      )}
+    >
+      <p className="text-sm font-semibold leading-5 text-white/75">
+        {children}
+      </p>
     </div>
   );
 }

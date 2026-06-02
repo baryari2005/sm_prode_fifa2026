@@ -80,7 +80,7 @@ export function PartidoDetalleIncidenciasCard({
 
         {incidencias.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/12 bg-white/[0.04] px-4 py-6 text-sm text-white/60">
-            Todavia no hay incidencias cargadas para este partido.
+            Todavía no hay incidencias cargadas para este partido.
           </div>
         ) : (
           <div className="space-y-3">

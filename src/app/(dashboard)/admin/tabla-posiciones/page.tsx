@@ -89,7 +89,7 @@ export default function TablaPosicionesPage() {
   }
 
   if (loading) {
-    return <DashboardLoading badgeLabel="Loading tabla posiciones" />;
+    return <DashboardLoading badgeLabel="Cargando tabla de posiciones" />;
   }
 
   return (
@@ -120,15 +120,14 @@ export default function TablaPosicionesPage() {
 
                 <div className="mt-7 space-y-4">
                   <h1 className="text-4xl font-extrabold tracking-[-0.04em] text-white md:text-6xl">
-                    Asi se ordena
+                    Clasificación 
                     <span className="text-[#5993B6]"> cada grupo</span>
                   </h1>
                   <p className="brand-heading max-w-[680px] text-[2.25rem] uppercase !tracking-[0.04em] text-white md:text-[3.2rem] md:leading-[1.1]">
-                    puntos, diferencia y clasificacion
+                    puntos y diferencia
                   </p>
                   <p className="max-w-[640px] text-base leading-relaxed text-white/82 md:text-[1.02rem]">
-                    Visualiza rapidamente quienes lideran cada zona, revisa goles,
-                    diferencia y puntos acumulados sin perder el lenguaje del dashboard.
+                    Seguí el minuto a minuto de cada zona, controlá los goles, la diferencia y los puntos acumulados bajo la interfaz unificada del panel de control.
                   </p>
                 </div>
 
@@ -144,13 +143,13 @@ export default function TablaPosicionesPage() {
                 </div>
               </div>
 
-              <div className="pointer-events-none absolute bottom-[-16px] right-[0px] z-20 hidden h-[482px] w-[408px] xl:block 2xl:bottom-[-24px] 2xl:right-[2px] 2xl:h-[564px] 2xl:w-[468px]">
+              <div className="pointer-events-none absolute bottom-[-12px] right-[8px] z-20 hidden h-[371px] w-[315px] xl:block 2xl:bottom-[-18px] 2xl:right-[10px] 2xl:h-[435px] 2xl:w-[361px]">
                 <div className="absolute inset-3 rounded-full bg-[#5993B6]/18 blur-[110px]" />
                 <div className="absolute inset-x-[-8%] top-[12%] h-[74%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(174,235,255,0.18)_0%,rgba(89,147,182,0.12)_34%,rgba(30,44,70,0.02)_72%,transparent_100%)] blur-[18px]" />
                 <HeroVisualImage
                   src={brandImages.mascots.tabla}
                   alt="Hero visual de tabla de posiciones"
-                  sizes="(min-width: 1536px) 468px, 408px"
+                  sizes="(min-width: 1536px) 361px, 315px"
                   priority
                   baseClassName="object-contain object-[center_bottom] opacity-[0.88] brightness-110 drop-shadow-[0_30px_68px_rgba(0,0,0,0.32)] [mask-image:radial-gradient(circle_at_center,rgba(0,0,0,0.98)_44%,rgba(0,0,0,0.82)_62%,rgba(0,0,0,0.42)_82%,transparent_100%)] [-webkit-mask-image:radial-gradient(circle_at_center,rgba(0,0,0,0.98)_44%,rgba(0,0,0,0.82)_62%,rgba(0,0,0,0.42)_82%,transparent_100%)]"
                 />
@@ -167,8 +166,8 @@ export default function TablaPosicionesPage() {
               <div className="space-y-6">
 
                 <LateralSummaryHeader
-                  title="Resumen lateral"
-                  description="Estado general de los grupos y lectura rápida del corte de clasificación."
+                  title="Vista rápida"
+                  description="Estado general de los grupos y monitoreo directo de la zona de clasificación."
                 />
 
                 <div className="space-y-4">

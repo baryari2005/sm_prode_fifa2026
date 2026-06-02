@@ -4,6 +4,14 @@ const nextConfig = {
   },
 
   images: {
+    localPatterns: [
+      {
+        pathname: "/**",
+      },
+      {
+        search: "?v=2026-05-28-3",
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",

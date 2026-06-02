@@ -61,14 +61,14 @@ const chromeCopy: Record<
         items: [{ label: "Inicio", icon: Home, active: true }],
       },
       {
-        label: "Gestion Usuarios",
+        label: "Gestión Usuarios",
         items: [
           { label: "Administrar", icon: UserCog, badge: "7" },
           { label: "Roles y permisos", icon: ShieldCheck },
         ],
       },
       {
-        label: "Gestion Mundial",
+        label: "Gestión Mundial",
         items: [
           { label: "Selecciones", icon: Flag },
           { label: "Gestionar fixture", icon: CalendarDays },
@@ -83,7 +83,7 @@ const chromeCopy: Record<
   },
   user: {
     topbarBadge: "Modo jugador",
-    topbarHint: "Pronosticos, ranking y calendario a mano.",
+    topbarHint: "Pronosticos, ranking y fixture a mano.",
     userName: "Sergio Ariel",
     userRole: "Participante",
     sections: [

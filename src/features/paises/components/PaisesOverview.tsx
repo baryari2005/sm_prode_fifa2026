@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { brandImages } from "@/config/brand-images";
 import {
+  DASHBOARD_HERO_PATTERN,
   DASHBOARD_PANEL,
   DASHBOARD_SUBCARD,
   DASHBOARD_TOP_LINE,
@@ -103,6 +104,7 @@ export function PaisesOverview({
               <div className="pointer-events-none absolute inset-0">
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(30,44,70,0.94)_0%,rgba(30,44,70,0.9)_36%,rgba(37,53,80,0.62)_62%,rgba(30,44,70,0.76)_100%)]" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_35%,rgba(89,147,182,0.22),transparent_30%),radial-gradient(circle_at_34%_0%,rgba(246,180,56,0.14),transparent_35%),linear-gradient(135deg,rgba(30,44,70,0.24)_0%,rgba(37,53,80,0.14)_46%,rgba(30,44,70,0.24)_100%)]" />
+                <div className={DASHBOARD_HERO_PATTERN} />
                 <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.06)_48%,transparent_62%)] opacity-45" />
                 <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#061B33]/75 via-[#061B33]/24 to-transparent" />
                 <div className="absolute right-10 top-8 h-56 w-56 rounded-full bg-sky-300/18 blur-3xl" />
@@ -120,11 +122,11 @@ export function PaisesOverview({
                   </h1>
 
                   <p className="font-brand max-w-[540px] text-[1.9rem] font-semibold leading-[0.96] tracking-[0.04em] text-white md:text-[2rem] xl:text-[2.25rem] 2xl:text-[2.55rem]">
-                    Administra grupos, identidades y planteles
+                    Administrá grupos, identidades y planteles
                   </p>
 
                   <p className="max-w-[470px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">
-                    Revisa las selecciones agrupadas por zona y entra rápido al detalle o al plantel de cada país.
+                    Revisá las selecciones agrupadas por zona y entrá rápido al detalle o al plantel de cada país.
                   </p>
                 </div>
 
@@ -191,8 +193,8 @@ export function PaisesOverview({
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_42%,transparent_62%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               <LateralSummaryHeader
-                title="Resumen lateral"
-                description="Métricas rápidas para administrar las selecciones."
+                title="Vista rápida"
+                description="Vista rápida de estadísticas de las selecciones."
               />
 
               <div className="space-y-2.5">
@@ -271,8 +273,7 @@ export function PaisesOverview({
                     Explorador de selecciones
                   </h2>
                   <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
-                    Busca una seleccion puntual o recorre cada grupo para entrar al
-                    detalle y administrar su plantel.
+                    Buscá una selección puntual o recorré cada grupo para ingresar al detalle y administrar su plantel.
                   </p>
                 </div>
 
@@ -296,7 +297,7 @@ export function PaisesOverview({
               {!loading && groupedPaises.length === 0 ? (
                 <BrandEmptyState
                   title="No encontramos selecciones"
-                  description="Prueba con otro termino de busqueda o revisa si hay grupos cargados."
+                  description="Prueba con otro termino de busqueda o revisá si hay grupos cargados."
                 />
               ) : null}
 

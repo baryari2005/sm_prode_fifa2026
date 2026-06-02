@@ -37,7 +37,7 @@ export function PartidoDetalleTabs({
             value="estadisticas"
             className="rounded-2xl px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white/62 data-[state=active]:bg-[#5993B6] data-[state=active]:text-white data-[state=active]:shadow-[0_10px_24px_rgba(89,147,182,0.24)]"
           >
-            Estadisticas
+            Estadísticas
           </TabsTrigger>
           <TabsTrigger
             value="alineaciones"

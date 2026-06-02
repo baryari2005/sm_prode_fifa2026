@@ -26,11 +26,11 @@ export function BrandLoginMock() {
             <h1 className="brand-hero-title max-w-[460px] text-5xl text-white md:text-6xl xl:text-7xl">
               Orgullo de barrio.
               <br />
-              Pasion mundial.
+              Pasión mundial.
             </h1>
 
             <p className="max-w-[430px] text-base leading-7 text-white/78 md:text-lg">
-              Vivi el Mundial con tu grupo, segui cada punto y demostra quien representa mejor a San Miguel.
+              Viví el Mundial con tu grupo, seguí cada punto y demostrá quién representa mejor a San Miguel.
             </p>
           </div>
 
@@ -43,7 +43,7 @@ export function BrandLoginMock() {
             <FeatureItem
               icon={Users}
               title="Tu grupo, tu competencia"
-              description="Juga con amigos y comparti la pasion mundialista."
+              description="Jugá con amigos y compartí la pasión mundialista."
             />
             <FeatureItem
               icon={Sparkles}
@@ -92,16 +92,16 @@ export function BrandLoginMock() {
 
             <div>
               <h2 className="brand-heading text-3xl text-white">
-                Ingresa a Mas San Miguel
+                Ingresá a Mas San Miguel
               </h2>
               <p className="mt-2 text-sm leading-6 text-white/70">
-                Accede para pronosticar, competir y vivir el Mundial con identidad local.
+                Accedé para pronosticar, competir y vivir el Mundial con identidad local.
               </p>
             </div>
 
             <div className="space-y-4">
               <Input placeholder="Usuario" className="h-12 border-white/14 bg-white/[0.1] text-white placeholder:text-white/42" />
-              <Input placeholder="Contrasena" className="h-12 border-white/14 bg-white/[0.1] text-white placeholder:text-white/42" />
+              <Input placeholder="Contraseña" className="h-12 border-white/14 bg-white/[0.1] text-white placeholder:text-white/42" />
             </div>
 
             <BrandActionButton className="h-12 w-full justify-center text-base">
@@ -110,9 +110,9 @@ export function BrandLoginMock() {
             </BrandActionButton>
 
             <div className="space-y-1 text-center lg:text-left">
-              <p className="text-sm text-white/58">Todavia no jugas?</p>
+              <p className="text-sm text-white/58">¿Todavía no jugás?</p>
               <button className="text-sm font-semibold text-[#AEEBFF]">
-                Solicita tu acceso
+                Solicitá tu acceso
               </button>
             </div>
           </div>

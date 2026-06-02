@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para importar planteles." },
+        { message: "No tenés permisos para importar planteles." },
         { status: 403 }
       );
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { SubmitHandler, UseFormReturn } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import {
   LogIn,
   ShieldCheck,
@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { brandImages } from "@/config/brand-images";
 import type { RegisterSchemaValues } from "@/features/auth/schemas/schemas";
+import type { RegisterFormReturn } from "@/features/auth/types/registerFields.types";
 import { formatMessage } from "@/utils/formatters";
 
 import { RegisterAccessPanel } from "./RegisterAccessPanel";
@@ -23,7 +24,7 @@ import { RegisterAccessPanel } from "./RegisterAccessPanel";
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  registerForm: UseFormReturn<RegisterSchemaValues>;
+  registerForm: RegisterFormReturn;
   onRegisterSubmit: SubmitHandler<RegisterSchemaValues>;
   registerTopError?: string | null;
   onDismissRegisterError: () => void;
@@ -107,14 +108,13 @@ export function AccessRequestDialog({
 
                 <div className="space-y-4">
                   <h2 className="brand-hero-title max-w-[500px] text-4xl !tracking-[0.04em] text-white xl:text-5xl">
-                    Tu barrio tambien
+                    Tu barrio también
                     <br />
                     <span className="text-[#5993B6]">juega el Mundial.</span>
                   </h2>
 
                   <p className="max-w-[440px] text-base leading-7 text-white/78">
-                    Solicita tu acceso al Prode Mundial 2026,
-                    espera la aprobación y empezá a competir con identidad
+                    Solicitá tu acceso al Prode Mundial 2026, esperá la aprobación y empezá a competir con identidad
                     local.
                   </p>
                 </div>
@@ -124,17 +124,17 @@ export function AccessRequestDialog({
                 <FeatureItem
                   icon={ShieldCheck}
                   title="Solicitud pendiente"
-                  description="Tu cuenta quedara en revision hasta que un administrador la apruebe."
+                  description="Tu cuenta quedará en revisión y será aprobada solo si residís en San Miguel."
                 />
                 <FeatureItem
                   icon={Sparkles}
-                  title="Misma identidad del login"
-                  description="Un flujo claro, premium y alineado a Mas Mundial / Mas San Miguel."
+                  title="Acceso interno"
+                  description="El registro está pensado para personas de la comunidad de San Miguel que participan del Prode."
                 />
                 <FeatureItem
                   icon={UserRound}
-                  title="Pensado para tu grupo"
-                  description="Entra al prode, representa a tu barrio y vive el Mundial con tu comunidad."
+                  title="Validación simple"
+                  description="Te pedimos solo los datos necesarios para identificarte y revisar tu solicitud."
                 />
               </div>
             </div>
@@ -161,7 +161,7 @@ export function AccessRequestDialog({
               </button>
 
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/72">
-                Pasion mundial
+                Pasión mundial
               </div>
             </div>
           </div>

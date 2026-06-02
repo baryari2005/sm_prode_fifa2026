@@ -56,10 +56,10 @@ export function useGoleadoresPage() {
     }
   }, []);
 
-  const loadInitialMock = useCallback(async () => {
+  const loadInitialData = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await getGoleadores(true);
+      const result = await getGoleadores(false);
       setGoleadores(result.goleadores);
       setSource(result.source);
     } catch (error) {
@@ -99,7 +99,7 @@ export function useGoleadoresPage() {
     busqueda,
     setBusqueda,
     source,
-    loadInitialMock,
+    loadInitialData,
     loadFromApi,
     loadFromMock,
   };

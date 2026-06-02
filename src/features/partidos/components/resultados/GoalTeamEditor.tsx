@@ -151,7 +151,7 @@ export function GoalTeamEditor({
                 disabled={players.length === 0}
               >
                 <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-white text-base shadow-sm">
-                  <SelectValue placeholder="Selecciona un jugador" />
+                  <SelectValue placeholder="Seleccioná un jugador" />
                 </SelectTrigger>
 
                 <SelectContent>

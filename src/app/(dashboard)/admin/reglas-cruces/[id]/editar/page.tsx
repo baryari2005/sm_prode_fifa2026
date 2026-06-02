@@ -265,7 +265,7 @@ export default function EditarReglaCrucePage({ params }: EditarReglaProps) {
               </p>
               <p className="max-w-[640px] text-sm leading-6 text-white/74">
                 Modifica origenes, fase y programacion del cruce manteniendo la
-                configuracion real ya cargada en el sistema.
+                configuración real ya cargada en el sistema.
               </p>
             </div>
 
@@ -305,7 +305,7 @@ export default function EditarReglaCrucePage({ params }: EditarReglaProps) {
           <div className="relative z-10 space-y-5">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                Configuracion actual
+                Configuración actual
               </p>
               <h2 className="mt-2 font-brand text-[2rem] leading-[0.92] tracking-[0.04em] text-white">
                 Actualizar regla
@@ -359,7 +359,7 @@ export default function EditarReglaCrucePage({ params }: EditarReglaProps) {
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Selecciona una fase" />
+                                <SelectValue placeholder="Seleccioná una fase" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -483,7 +483,7 @@ export default function EditarReglaCrucePage({ params }: EditarReglaProps) {
                                 >
                                   {field.value
                                     ? format(field.value, "PPP", { locale: es })
-                                    : "Selecciona una fecha"}
+                                    : "Seleccioná una fecha"}
                                   <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
@@ -550,7 +550,7 @@ export default function EditarReglaCrucePage({ params }: EditarReglaProps) {
                 </p>
                 <p className="mt-3 text-sm leading-6 text-white/74">
                   Partido {regla.partidoNumero}. Ajusta origenes y programacion sin
-                  perder la configuracion ya existente.
+                  perder la configuración ya existente.
                 </p>
               </div>
             </div>
@@ -581,7 +581,7 @@ export default function EditarReglaCrucePage({ params }: EditarReglaProps) {
                 <div className="flex items-start gap-3">
                   <CalendarRange className="mt-0.5 h-4.5 w-4.5 text-[#AEEBFF]" />
                   <p className="text-sm leading-6 text-white/72">
-                    Si tocas fecha y hora, revisa que la programacion siga consistente con
+                    Si tocas fecha y hora, revisá que la programacion siga consistente con
                     el resto del cuadro.
                   </p>
                 </div>

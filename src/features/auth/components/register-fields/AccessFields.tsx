@@ -82,7 +82,7 @@ export function AccessFields({ form }: RegisterFieldsSectionProps) {
 
           <div className="min-w-0 space-y-1">
             <Label htmlFor="password" className="text-sm text-muted-foreground">
-              Contrasena
+              Contraseña
             </Label>
 
             <IconInput

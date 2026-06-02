@@ -20,11 +20,11 @@ export function LoginHeroSection() {
         <h1 className="brand-hero-title text-[3.1rem] text-white !tracking-[0.03em] drop-shadow-[0_10px_30px_rgba(0,0,0,0.22)] sm:text-[3.8rem] xl:text-[4.45rem]">
           Orgullo de barrio.
           <br />
-          <span className="text-[#AEEBFF]">Pasion mundial.</span>
+          <span className="text-[#AEEBFF]">Pasión mundial.</span>
         </h1>
 
         <p className="mt-6 max-w-[420px] text-base leading-7 text-white/78 md:text-lg">
-          Vivi el Mundial con tu grupo, segui cada punto y demostra quien
+          Viví el Mundial con tu grupo, seguí cada punto y demostrá quién
           representa mejor a San Miguel.
         </p>
 
@@ -37,7 +37,7 @@ export function LoginHeroSection() {
           <FeatureItem
             icon={Users}
             title="Tu grupo, tu competencia"
-            description="Juga con amigos y comparti la pasion mundialista."
+            description="Jugá con amigos y compartí la pasión mundialista."
           />
           <FeatureItem
             icon={Sparkles}

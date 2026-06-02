@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para completar confederaciones." },
+        { message: "No tenés permisos para completar confederaciones." },
         { status: 403 },
       );
     }

@@ -11,7 +11,7 @@ type LateralSummaryHeaderProps = {
 };
 
 export function LateralSummaryHeader({
-  title = "Resumen lateral",
+  title = "Vista rápida",
   description,
   icon: Icon = Info,
   className,

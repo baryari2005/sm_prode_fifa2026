@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return noStoreJson(
-        { message: "No tenes permisos para ver usuarios." },
+        { message: "No tenés permisos para ver usuarios." },
         { status: 403 },
       );
     }

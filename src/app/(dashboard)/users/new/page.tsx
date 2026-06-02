@@ -39,7 +39,7 @@ export default function NewUserPage() {
           <div className="rounded-[28px] border border-white/10 bg-[#1E2C46] px-5 py-5 text-white shadow-[0_24px_70px_rgba(2,6,23,0.24)] md:px-6">
             <div className="space-y-3">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#FAB438]/28 bg-[#FAB438]/12 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-[#FFE4A3]">
-                Administracion de usuarios
+                Administración de usuarios
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
@@ -55,8 +55,7 @@ export default function NewUserPage() {
               </div>
 
               <p className="max-w-[760px] text-sm leading-6 text-white/72">
-                Completa los datos principales para registrar un nuevo usuario
-                dentro del mismo lenguaje visual del panel administrativo.
+                Completá la información principal para el registro del nuevo usuario.
               </p>
             </div>
           </div>

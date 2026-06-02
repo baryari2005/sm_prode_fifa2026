@@ -38,7 +38,7 @@ export function PronosticoRapidoHeader({
     <>
       <PageHeaderWithBrand
         title="Hace tu jugada"
-        description="Cada resultado suma en el ranking del barrio. Completa varios pronosticos en una sola pantalla y guardalos juntos."
+        description="Cada resultado suma en el ranking del barrio. Completá varios pronósticos en una sola pantalla y guardalos juntos."
         badge="Carga masiva"
         metricLabel="partidos"
         metricValue={`${total}`}
@@ -82,7 +82,7 @@ export function PronosticoRapidoHeader({
       >
         <div className="flex flex-wrap items-center gap-2 text-sm text-white/66">
           <CalendarDays className="h-4 w-4 text-sky-200/70" />
-          <span>Edicion rapida para escritorio, clara y compacta.</span>
+          <span>Edición rápida para escritorio, clara y compacta.</span>
         </div>
       </PageHeaderWithBrand>
 

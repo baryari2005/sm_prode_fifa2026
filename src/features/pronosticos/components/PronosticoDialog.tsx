@@ -244,12 +244,12 @@ export function PronosticoDialog({
                           Datos del <span className="text-[#5993B6]">encuentro</span>
                           {/* <br />
                           <span className="font-brand text-[2rem] tracking-[0.04em] md:text-[2.35rem]">
-                            Estadisticas y seguimiento
+                            Estadísticas y seguimiento
                           </span> */}
                         </DialogTitle>
 
                         <p className="max-w-[520px] text-sm leading-6 text-white/78 md:text-[0.95rem]">
-                          Revisa el cruce completo, valida estadisticas oficiales y
+                          Revisá el cruce completo, validá estadísticas oficiales y
                           confirma tu pronostico desde el mismo panel.
                         </p>
                       </div>
@@ -257,7 +257,7 @@ export function PronosticoDialog({
                       <div className="flex flex-wrap items-center gap-2 text-sm text-white/68">
                         <span className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-2">
                           <Info className="h-4 w-4 text-[#AEEBFF]" />
-                          Edicion rapida del resultado del partido.
+                          Edición rápida del resultado del partido.
                         </span>
                         {miPronostico ? (
                           <Badge
@@ -426,7 +426,7 @@ export function PronosticoDialog({
                   className={`${DASHBOARD_SUBCARD} relative z-10 flex flex-col gap-3 rounded-[24px] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5`}
                 >
                 <p className="text-sm font-medium text-white/58">
-                  Revisa el marcador y confirma el guardado desde este mismo panel.
+                  Revisá el marcador y confirma el guardado desde este mismo panel.
                 </p>
                 <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                   <Button

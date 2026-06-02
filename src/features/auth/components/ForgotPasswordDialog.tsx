@@ -30,12 +30,16 @@ export function ForgotPasswordDialog(props: ForgotPasswordDialogProps) {
   useEffect(() => setMounted(true), []);
   const emailId = useId();
 
-  
-  const { triggerText = "¿Olvidó su contraseña?", onSent, openControlled, onOpenChangeControlled } = props;
-  
+  const {
+    triggerText = "¿Olvidaste tu contraseña?",
+    onSent,
+    openControlled,
+    onOpenChangeControlled,
+  } = props;
+
   const open = openControlled ?? openUncontrolled;
   const setOpen = onOpenChangeControlled ?? setOpenUncontrolled;
-  
+
   const {
     register,
     handleSubmit,
@@ -46,7 +50,7 @@ export function ForgotPasswordDialog(props: ForgotPasswordDialogProps) {
     mode: "onChange",
     defaultValues: { email: "" },
   });
-  
+
   const onSubmit = async (values: ForgotPasswordValues) => {
     try {
       await requestPasswordReset(values.email);
@@ -54,12 +58,12 @@ export function ForgotPasswordDialog(props: ForgotPasswordDialogProps) {
       reset();
       setOpen(false);
       onSent?.();
-    } catch  {      
+    } catch {
       toast.error("No se pudo procesar la solicitud. Intentá nuevamente en unos minutos.");
     }
   };
-  
-  if (!mounted) return null; 
+
+  if (!mounted) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -79,12 +83,16 @@ export function ForgotPasswordDialog(props: ForgotPasswordDialogProps) {
               id={emailId}
               leftIcon={<Mail className="h-4 w-4 text-muted-foreground" />}
               input={
-                <Input id={emailId}
+                <Input
+                  id={emailId}
                   type="email"
                   autoComplete="email"
                   inputMode="email"
                   placeholder="tu@correo.com"
-                  {...register("email")} aria-invalid={!!errors.email} className="h-11 rounded border pl-9 pr-10" />
+                  {...register("email")}
+                  aria-invalid={!!errors.email}
+                  className="h-11 rounded border pl-9 pr-10"
+                />
               }
             />
           </div>
@@ -99,7 +107,9 @@ export function ForgotPasswordDialog(props: ForgotPasswordDialogProps) {
                 <RefreshCw className="animate-spin" size={18} />
                 {formatMessage("Enviando...")}
               </span>
-            ) : ("Enviar enlace")}
+            ) : (
+              "Enviar enlace"
+            )}
           </Button>
 
           <p className="text-xs text-muted-foreground">

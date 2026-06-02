@@ -115,7 +115,7 @@ export function PartidoDetalleHeader({
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#AEEBFF]">
-                Resumen lateral
+                Vista rápida
               </p>
               <p className="mt-1 text-sm text-white/68">
                 Lectura rapida del partido.

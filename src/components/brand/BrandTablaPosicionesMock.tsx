@@ -153,10 +153,10 @@ export function BrandTablaPosicionesMock() {
                   <span className="text-[#5993B6]"> cada grupo</span>
                 </h1>
                 <p className="brand-heading max-w-[680px] text-[2.25rem] uppercase tracking-[0.02em] text-white md:text-[3.2rem] md:leading-[0.9]">
-                  puntos, diferencia y clasificacion
+                  puntos, diferencia y clasificación
                 </p>
                 <p className="max-w-[640px] text-base leading-relaxed text-white/82 md:text-[1.02rem]">
-                  Visualiza rapidamente quienes lideran cada zona, revisa goles,
+                  Visualiza rapidamente quienes lideran cada zona, revisá goles,
                   diferencia y puntos acumulados sin perder el lenguaje del dashboard.
                 </p>
               </div>
@@ -200,10 +200,10 @@ export function BrandTablaPosicionesMock() {
             <div className="space-y-6">
               <div className="space-y-2 text-center text-white">
                 <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                  Resumen lateral
+                  Vista rápida
                 </p>
                 <p className="mx-auto max-w-[22rem] text-[0.95rem] leading-relaxed text-white/76">
-                  Estado general de los grupos y lectura rapida del corte de clasificacion.
+                  Estado general de los grupos y lectura rapida del corte de clasificación.
                 </p>
               </div>
 
@@ -257,7 +257,7 @@ export function BrandTablaPosicionesMock() {
               </h2>
               <p className="max-w-[760px] text-base leading-relaxed text-white/76">
                 Busca una seleccion puntual o recorre cada grupo para ver puntos,
-                diferencia, goles y el corte de clasificacion.
+                diferencia, goles y el corte de clasificación.
               </p>
             </div>
 

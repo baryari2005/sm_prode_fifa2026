@@ -39,7 +39,7 @@ function getStatusMeta(code: Props["code"]) {
       };
     case "404":
       return {
-        label: "Pagina no encontrada",
+        label: "Página no encontrada",
         icon: AlertTriangle,
         badgeClass: "border-amber-300/20 bg-amber-300/12 text-amber-100",
       };
@@ -156,7 +156,7 @@ export function StatusPage({
                   <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     <Button
                       asChild
-                      className="h-11 rounded-xl bg-[#008C93] px-5 text-white shadow-[0_12px_24px_rgba(0,140,147,0.28)] hover:bg-[#007381]"
+                      className="h-11 rounded-2xl bg-[#FAB438] px-5 font-semibold text-[#1E2C46] shadow-[0_16px_34px_rgba(250,180,56,0.24)] transition hover:bg-[#FFD06E]"
                     >
                       <Link href={primaryAction.href} className="inline-flex items-center gap-2">
                         <Home className="h-4 w-4" />
@@ -167,7 +167,8 @@ export function StatusPage({
                     {secondaryAction ? (
                       <Button
                         asChild
-                        className="h-11 min-w-[180px] rounded-xl bg-[#008C93] px-5 text-white shadow-[0_12px_24px_rgba(0,140,147,0.28)] hover:bg-[#007381]"
+                        variant="outline"
+                        className="h-11 min-w-[180px] rounded-2xl border-[#5993B6]/32 bg-[#20314D] px-5 font-semibold text-white shadow-none transition hover:bg-[#294564] hover:text-white"
                       >
                         <Link href={secondaryAction.href}>{secondaryAction.label}</Link>
                       </Button>

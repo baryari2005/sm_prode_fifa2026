@@ -205,7 +205,7 @@ export default function NuevoReglaCrucePage() {
                 Nueva <span className="text-[#5993B6]">regla de cruce</span>
               </h1>
               <p className="font-brand text-[1.8rem] leading-[0.96] tracking-[0.04em] text-white md:text-[2.05rem]">
-                Configuracion manual
+                Configuración manual
               </p>
               <p className="max-w-[640px] text-sm leading-6 text-white/74">
                 Configura el nombre del partido, origenes, fase y programacion para
@@ -309,7 +309,7 @@ export default function NuevoReglaCrucePage() {
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Selecciona una fase" />
+                                <SelectValue placeholder="Seleccioná una fase" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -433,7 +433,7 @@ export default function NuevoReglaCrucePage() {
                                 >
                                   {field.value
                                     ? format(field.value, "PPP", { locale: es })
-                                    : "Selecciona una fecha"}
+                                    : "Seleccioná una fecha"}
                                   <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
@@ -523,7 +523,7 @@ export default function NuevoReglaCrucePage() {
                   <CalendarRange className="mt-0.5 h-4.5 w-4.5 text-[#AEEBFF]" />
                   <p className="text-sm leading-6 text-white/72">
                     Fecha y hora son opcionales, pero ayudan a dejar la llave lista para
-                    el calendario real.
+                    el fixture real.
                   </p>
                 </div>
               </div>

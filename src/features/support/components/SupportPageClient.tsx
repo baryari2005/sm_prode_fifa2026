@@ -32,7 +32,7 @@ const categoryMeta = {
     description: "Recibos, firmas y seguimiento.",
   },
   gestion: {
-    label: "Gestion",
+    label: "Gestión",
     icon: Settings2,
     description: "Usuarios, catalogos y administracion.",
   },
@@ -178,7 +178,7 @@ export function SupportPageClient() {
         <TabsList className="grid h-11 w-full grid-cols-3">
           <TabsTrigger value="solicitudes">Solicitudes</TabsTrigger>
           <TabsTrigger value="documentos">Documentos</TabsTrigger>
-          <TabsTrigger value="gestion">Gestion</TabsTrigger>
+          <TabsTrigger value="gestion">Gestión</TabsTrigger>
         </TabsList>
 
         {(["solicitudes", "documentos", "gestion"] as const).map((category) => {

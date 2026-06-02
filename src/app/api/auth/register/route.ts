@@ -18,11 +18,12 @@ function getErrorMessage(error: unknown): string {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const normalizedBody = {
+      ...body,
+      localidad: "San Miguel",
+    };
 
-    console.log(body);
-    
-    const parsed = registerSchema.safeParse(body);
-
+    const parsed = registerSchema.safeParse(normalizedBody);
 
     if (!parsed.success) {
       return NextResponse.json(
@@ -53,15 +54,8 @@ export async function POST(req: NextRequest) {
       apellido: values.apellido,
       tipoDocumento: values.tipoDocumento,
       documento: values.documento,
-      cuil: values.cuil,
-      celular: values.celular,
       domicilio: values.domicilio,
-      localidad: values.localidad,
-      codigoPostal: values.codigoPostal,
-      fechaNacimiento: new Date(`${values.fechaNacimiento}T00:00:00`),
-      genero: values.genero,
-      estadoCivil: values.estadoCivil,
-      nacionalidad: values.nacionalidad,
+      localidad: "San Miguel",
     });
 
     await prisma.usuario.update({

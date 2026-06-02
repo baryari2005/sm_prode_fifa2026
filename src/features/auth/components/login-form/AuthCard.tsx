@@ -61,15 +61,14 @@ export function AuthCard({
 
             <div>
               <h2 className="brand-heading !tracking-[0.04em] text-3xl text-white">
-                Ingresa a{" "}
+                Ingresá a{" "}
                 <span className="inline-block align-baseline text-[2.7rem] !tracking-[0.04em] leading-none text-[#5993B6]">
                   Más
                 </span>{" "}
                 San Miguel
               </h2>
               <p className="mt-2 text-sm leading-6 text-white/70">
-                Accede para pronosticar, competir y vivir el Mundial con
-                identidad local.
+                Accedé para pronosticar, competir y vivir el Mundial con identidad local.
               </p>
             </div>
 
@@ -130,14 +129,14 @@ export function AuthCard({
               </Button>
 
               <div className="space-y-1 pt-1 text-center lg:text-left">
-                <p className="text-sm text-white/58">Todavia no jugas?</p>
+                <p className="text-sm text-white/58">¿Todavía no jugás?</p>
                 <Button
                   type="button"
                   variant="link"
                   className="h-auto p-0 text-sm font-semibold text-[#AEEBFF] underline-offset-4 hover:text-white"
                   onClick={onOpenAccessRequest}
                 >
-                  Solicita tu acceso
+                  Solicitá tu acceso
                 </Button>
               </div>
             </form>

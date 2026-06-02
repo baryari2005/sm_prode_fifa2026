@@ -328,7 +328,7 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json(
-        { message: "No tenes permisos para reimportar partidos." },
+        { message: "No tenés permisos para reimportar partidos." },
         { status: 403 }
       );
     }

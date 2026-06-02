@@ -8,6 +8,7 @@ import { KeyRound, ShieldCheck, ShieldPlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  DASHBOARD_HERO_PATTERN,
   DASHBOARD_PANEL,
   DASHBOARD_SUBCARD,
   DASHBOARD_TOP_LINE,
@@ -20,6 +21,7 @@ import { usePermissionGroups } from "@/features/roles/hooks/usePermissionGroups"
 import { useRoles } from "@/features/roles/hooks/useRoles";
 import { RolesList } from "./RolesTable";
 import { LateralSummaryHeader } from "@/components/ui/lateralSummaryHeader";
+import { brandImages } from "@/config/brand-images";
 
 type RolesAdminOverviewProps = {
   canCreate: boolean;
@@ -85,6 +87,7 @@ export function RolesAdminOverview({ canCreate }: RolesAdminOverviewProps) {
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(30,44,70,0.94)_0%,rgba(30,44,70,0.9)_36%,rgba(37,53,80,0.62)_62%,rgba(30,44,70,0.76)_100%)]" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_35%,rgba(89,147,182,0.22),transparent_30%),radial-gradient(circle_at_34%_0%,rgba(246,180,56,0.14),transparent_35%),linear-gradient(135deg,rgba(30,44,70,0.24)_0%,rgba(37,53,80,0.14)_46%,rgba(30,44,70,0.24)_100%)]" />
+              <div className={DASHBOARD_HERO_PATTERN} />
               <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.06)_48%,transparent_62%)] opacity-45" />
               <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#061B33]/75 via-[#061B33]/24 to-transparent" />
               <div className="absolute right-10 top-8 h-56 w-56 rounded-full bg-sky-300/18 blur-3xl" />
@@ -99,16 +102,15 @@ export function RolesAdminOverview({ canCreate }: RolesAdminOverviewProps) {
 
                 <div className="mt-6 space-y-3 xl:mt-8">
                   <h1 className="text-[2.1rem] font-bold leading-[0.98] tracking-[-0.065em] md:text-[2.35rem] xl:text-[2.55rem] 2xl:text-[2.9rem]">
-                    Gestion de <span className="text-[#5993B6]">roles y permisos</span>
+                    Gestión de <span className="text-[#5993B6]">roles y permisos</span>
                   </h1>
 
                   <p className="max-w-[540px] font-brand text-[1.9rem] font-semibold leading-[0.96] tracking-[0.04em] text-white md:text-[2rem] xl:text-[2.25rem] 2xl:text-[2.55rem]">
-                    Cobertura real
+                    Alcance actual
                   </p>
 
                   <p className="max-w-[560px] pt-1 text-[0.95rem] leading-6 text-white/78 xl:text-[1rem]">
-                    Aca tenes todos los roles actuales con su nombre real, cantidad de
-                    usuarios asignados y el mapa de permisos agrupado por modulo.
+                    Acá tenés todos los roles vigentes con su denominación real, la cantidad de usuarios asignados y el mapa de permisos agrupado por módulo.
                   </p>
                 </div>
 
@@ -145,12 +147,13 @@ export function RolesAdminOverview({ canCreate }: RolesAdminOverviewProps) {
               <div className="absolute right-[18%] top-[14%] h-28 w-28 rounded-full bg-[#FAB438]/12 blur-3xl" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_58%_45%,rgba(255,255,255,0.06),transparent_42%),radial-gradient(circle_at_50%_100%,rgba(8,26,48,0.2),transparent_52%)]" />
               <Image
-                src="/brand/roles_permisos.png"
+                src={brandImages.mascots.roles}
                 alt="Ilustracion de roles y permisos"
                 fill
                 priority
                 sizes="(min-width: 1536px) 500px, 420px"
-                className="relative object-contain object-bottom opacity-[0.92] drop-shadow-[0_42px_88px_rgba(0,0,0,0.48)] [mask-image:radial-gradient(circle_at_50%_58%,black_64%,transparent_96%)] [-webkit-mask-image:radial-gradient(circle_at_50%_58%,black_64%,transparent_96%)]"
+                className="relative translate-y-15 scale-[0.92] object-contain object-bottom opacity-[0.92] drop-shadow-[0_42px_88px_rgba(0,0,0,0.48)] 
+                [mask-image:radial-gradient(circle_at_50%_62%,black_56%,rgba(0,0,0,0.8)_76%,transparent_100%)] [-webkit-mask-image:radial-gradient(circle_at_50%_62%,black_56%,rgba(0,0,0,0.8)_76%,transparent_100%)]"
               />
             </div>
           </section>
@@ -164,8 +167,8 @@ export function RolesAdminOverview({ canCreate }: RolesAdminOverviewProps) {
             </div>
             
             <LateralSummaryHeader
-              title="Resumen lateral"
-              description="Conteo real de roles, usuarios asignados y permisos actualmente activos."
+              title="Vista rápida"
+              description="Total de roles vigentes, usuarios asignados y permisos activos."
             />
 
             <div className="space-y-2.5">
@@ -214,14 +217,14 @@ export function RolesAdminOverview({ canCreate }: RolesAdminOverviewProps) {
             <div className="relative z-10 space-y-6">
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                  Catalogo actual
+                  Catálogo actual
                 </p>
                 <h2 className="mt-2 font-brand text-[2rem] leading-[0.92] tracking-[0.04em] text-white">
                   Todos los roles
                 </h2>
                 <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
                   Cada tarjeta toma nombre, descripcion, estado y cantidad de usuarios
-                  desde la data real que ya usa la pagina.
+                  desde la data real que ya usa la página.
                 </p>
               </div>
 
@@ -294,11 +297,10 @@ export function RolesAdminOverview({ canCreate }: RolesAdminOverviewProps) {
                   Tabla operativa
                 </p>
                 <h2 className="mt-2 font-brand text-[2rem] leading-[0.92] tracking-[0.04em] text-white">
-                  Gestion detallada
+                  Gestión detallada
                 </h2>
                 <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
-                  Debajo del catalogo arranca directo la gestion real con busqueda,
-                  paginado y acceso al detalle de cada rol.
+                  gestión en tiempo real, provista de búsqueda, paginado y acceso directo al detalle de cada rol.
                 </p>
               </div>
 
@@ -327,7 +329,7 @@ export function RolesAdminOverview({ canCreate }: RolesAdminOverviewProps) {
               </h3>
               <p className="mt-2 text-sm leading-6 text-white/72">
                 {loadingPermissions
-                  ? "Leyendo la configuracion actual..."
+                  ? "Leyendo la configuración actual..."
                   : `${totalModules} modulos y ${totalPermissions} permisos activos en total.`}
               </p>
             </div>

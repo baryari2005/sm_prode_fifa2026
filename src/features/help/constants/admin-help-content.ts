@@ -39,12 +39,12 @@ export const ADMIN_HELP_SECTIONS: HelpSection[] = [
       {
         title: "Aprobar usuarios pendientes",
         description:
-          "Las altas pendientes deben aprobarse antes de que puedan participar del Prode.",
+          "Las altas pendientes deben aprobarse antes de que puedan participar del Prode, y solo si la persona reside en San Miguel.",
       },
       {
         title: "Rechazar o bloquear usuarios",
         description:
-          "Usá las acciones disponibles cuando un usuario no deba participar o necesite un ajuste administrativo.",
+          "Usá las acciones disponibles cuando un usuario no deba participar, no resida en San Miguel o necesite un ajuste administrativo.",
       },
     ],
   },
@@ -106,6 +106,7 @@ export const ADMIN_RECOMMENDATIONS: string[] = [
   "Revisá los datos del partido antes de pasarlo a finalizado.",
   "No modifiques resultados ya publicados salvo que haga falta una corrección real.",
   "Mantené las reglas del Prode claras y visibles para todos los participantes.",
+  "Aprobá únicamente a usuarios que residan en San Miguel.",
 ];
 
 export const ADMIN_HELP_FAQS: HelpFaqItem[] = [
@@ -127,11 +128,11 @@ export const ADMIN_HELP_FAQS: HelpFaqItem[] = [
   {
     question: "¿Qué usuarios pueden participar?",
     answer:
-      "Solo los usuarios registrados y habilitados por la administración. Los pendientes, rechazados o bloqueados no deberían participar.",
+      "Solo los usuarios registrados, aprobados por la administración, activos y residentes en San Miguel. Los pendientes, rechazados, bloqueados o no residentes no deberían participar.",
   },
   {
     question: "¿Cómo se gestionan usuarios pendientes?",
     answer:
-      "Desde la administración de usuarios podés revisar el listado pendiente y aprobar o rechazar cada alta según corresponda.",
+      "Desde la administración de usuarios podés revisar el listado pendiente y aprobar o rechazar cada alta según corresponda, validando que la persona resida en San Miguel.",
   },
 ];

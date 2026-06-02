@@ -7,7 +7,7 @@ export default function AccessDenied403Page() {
     <StatusPage
       code="403"
       title="Acceso denegado"
-      description="No tenes permisos para entrar a esta seccion del panel. Si pensas que deberias verla, pedi acceso a un administrador."
+      description="No tenés permisos para entrar a esta sección del panel. Si pensás que deberías verla, pedí acceso a un administrador."
       imageSrc="/mascotas/error-403.png"
       imageWrapperClassName="max-w-[920px] lg:max-w-[980px]"
       showBrandHeader

@@ -68,7 +68,7 @@ export const dashboardPreviewContent: Record<
     title: "Tenes el torneo bajo control",
     subtitle: "Panel de control del torneo",
     description:
-      "Gestiona usuarios, partidos, resultados y el avance del Prode con una vista compacta, operativa y con identidad Mas San Miguel.",
+      "Gestioná usuarios, partidos, resultados y el avance del Prode con una vista compacta, operativa y con identidad Mas San Miguel.",
     badge: "Vista operativa",
     statusTitle: "Estado del sistema",
     statusBody:
@@ -81,7 +81,7 @@ export const dashboardPreviewContent: Record<
       { label: "Auto refresh", value: "30s", detail: "estado live", tone: "sky" },
     ],
     kpis: [
-      { label: "Pronosticos cargados", value: "548", detail: "sobre 672 posibles", tone: "mint" },
+      { label: "Pronósticos cargados", value: "548", detail: "sobre 672 posibles", tone: "mint" },
       { label: "Participantes activos", value: "186", detail: "usuarios con actividad", tone: "sky" },
       { label: "Partidos en juego", value: "4", detail: "con seguimiento ahora", tone: "navy" },
       { label: "Sistema", value: "OK", detail: "sin alertas criticas", tone: "gold" },
@@ -89,7 +89,7 @@ export const dashboardPreviewContent: Record<
     importantActions: [
       {
         title: "Aprobar usuarios pendientes",
-        description: "Revisa altas nuevas y habilita acceso al torneo.",
+        description: "Revisá altas nuevas y habilita acceso al torneo.",
         badge: "7 pendientes",
       },
       {
@@ -98,7 +98,7 @@ export const dashboardPreviewContent: Record<
       },
       {
         title: "Gestionar fixture",
-        description: "Controla horarios, fases y estados del calendario.",
+        description: "Controla horarios, fases y estados del fixture.",
       },
     ],
     primaryPanelTitle: "Partidos en juego y proximos cierres",
@@ -142,7 +142,7 @@ export const dashboardPreviewContent: Record<
       { position: "#3", name: "Paula Diaz", points: "92", detail: "podio parcial" },
     ],
     quickLinks: [
-      { label: "Usuarios", caption: "Aprobaciones y gestion" },
+      { label: "Usuarios", caption: "Aprobaciones y gestión" },
       { label: "Resultados", caption: "Carga oficial" },
       { label: "Fixture", caption: "Partidos y fases" },
       { label: "Cruces", caption: "Simulacion y llaves" },
@@ -166,12 +166,12 @@ export const dashboardPreviewContent: Record<
     ctaPrimary: "Cargar pronostico",
     ctaSecondary: "Ver mi ranking",
     heroStats: [
-      { label: "Proximo cierre", value: "21:00", detail: "hoy", tone: "gold" },
+      { label: "Próximo cierre", value: "21:00", detail: "hoy", tone: "gold" },
       { label: "Puntos", value: "84", detail: "acumulados", tone: "sky" },
       { label: "Posicion", value: "#12", detail: "ranking general", tone: "mint" },
     ],
     kpis: [
-      { label: "Pronosticos cargados", value: "18/24", detail: "fecha actual", tone: "mint" },
+      { label: "Pronósticos cargados", value: "18/24", detail: "fecha actual", tone: "mint" },
       { label: "Ranking actual", value: "#12", detail: "subiste 3 puestos", tone: "sky" },
       { label: "Puntos totales", value: "84", detail: "con 9 exactos", tone: "gold" },
       { label: "Estado", value: "Abierto", detail: "todavia podes jugar", tone: "navy" },
@@ -191,7 +191,7 @@ export const dashboardPreviewContent: Record<
         description: "Compara tu avance contra el top del torneo.",
       },
     ],
-    primaryPanelTitle: "Proximos partidos para pronosticar",
+    primaryPanelTitle: "Próximos partidos para pronosticar",
     primaryPanelDescription:
       "Lista corta, visible y bien accionable para entrar a jugar sin demasiado scroll.",
     primaryMatches: [
@@ -239,7 +239,7 @@ export const dashboardPreviewContent: Record<
     ],
     quickLinks: [
       { label: "Mis pronosticos", caption: "Carga y seguimiento" },
-      { label: "Fixture", caption: "Calendario completo" },
+      { label: "Fixture", caption: "Fixture completo" },
       { label: "Ranking", caption: "Tabla general" },
       { label: "Mi participacion", caption: "Estado y puntos" },
     ],

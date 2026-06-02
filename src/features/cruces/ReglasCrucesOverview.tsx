@@ -173,8 +173,8 @@ export function ReglasCrucesOverview({
             </div>            
 
             <LateralSummaryHeader
-              title="Resumen lateral"
-              description="Cobertura real de reglas, fases y cruces que ya estan programados"
+              title="Vista rápida"
+              description="Alcance actual de reglas, fases y cruces que ya estan programados"
             />
 
             <div className="space-y-2.5">
@@ -223,7 +223,7 @@ export function ReglasCrucesOverview({
             <div className="relative z-10 space-y-6">
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                  Catalogo actual
+                  Catálogo actual
                 </p>
                 <h2 className="mt-2 font-brand text-[2rem] leading-[0.92] tracking-[0.04em] text-white">
                   Cruces destacados
@@ -274,7 +274,7 @@ export function ReglasCrucesOverview({
                 {reglasDestacadas.length === 0 ? (
                   <article className={`rounded-[24px] border border-white/10 p-4 ${DASHBOARD_SUBCARD}`}>
                     <p className="text-sm font-semibold text-white/72">
-                      Todavia no hay reglas cargadas para mostrar en el resumen.
+                      Todavía no hay reglas cargadas para mostrar en el resumen.
                     </p>
                   </article>
                 ) : null}
@@ -296,10 +296,10 @@ export function ReglasCrucesOverview({
                   Tabla operativa
                 </p>
                 <h2 className="mt-2 font-brand text-[2rem] leading-[0.92] tracking-[0.04em] text-white">
-                  Gestion detallada
+                  Gestión detallada
                 </h2>
                 <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
-                  Debajo del resumen arranca la gestion real con busqueda, paginado y
+                  Debajo del resumen arranca la gestión real con busqueda, paginado y
                   acceso al detalle de cada regla.
                 </p>
               </div>
@@ -333,7 +333,7 @@ export function ReglasCrucesOverview({
               <p className="text-sm font-semibold text-white">Origenes consistentes</p>
               <p className="mt-2 text-sm leading-6 text-white/72">
                 Revisar que local y visitante mantengan una nomenclatura clara por
-                posicion o clasificacion.
+                posicion o clasificación.
               </p>
             </div>
 

@@ -47,12 +47,14 @@ export function GoleadoresTable({
 
           <div className="mt-5 space-y-2">
             <h3 className="text-xl font-bold text-white">
-              {isEmptyBySearch ? "No hay resultados para esa búsqueda" : "Todavía no hay goleadores cargados."}
+              {isEmptyBySearch
+                ? "No hay resultados para esa busqueda"
+                : "Todavía no hay goleadores cargados."}
             </h3>
             <p className="max-w-[560px] text-sm leading-6 text-white/72">
               {isEmptyBySearch
-                ? "Probá con otro jugador, selección o posición para volver a cruzar la tabla."
-                : "Podés cargar datos desde la API o desde mock para iniciar la tabla."}
+                ? "Proba con otro jugador, seleccion o posicion para volver a cruzar la tabla."
+                : "Podes cargar datos desde la API o desde mock para iniciar la tabla."}
             </p>
           </div>
         </div>
@@ -76,15 +78,17 @@ export function GoleadoresTable({
           </Badge>
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <h2 className="brand-heading text-[2rem] text-white md:text-[2.35rem]">
+              <h2 className="font-brand text-[2rem] leading-[0.92] tracking-[0.04em] text-white md:text-[2.2rem]">
                 Goleadores del Mundial
               </h2>
-              <p className="max-w-[760px] text-sm leading-6 text-white/72">
-                Mantenemos las mismas columnas y datos reales, ahora con una lectura compacta para desktop y mobile.
-              </p>
+              {/* <p className="max-w-[760px] text-sm leading-6 text-white/72">
+                Mantenemos las mismas columnas y datos reales con una lectura mas clara
+                para desktop y mobile.
+              </p> */}
             </div>
-            <div className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white/84">
-              {goleadores.length} resultado{goleadores.length === 1 ? "" : "s"} visible{goleadores.length === 1 ? "" : "s"}
+            <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white/84">
+              {goleadores.length} resultado{goleadores.length === 1 ? "" : "s"} visible
+              {goleadores.length === 1 ? "" : "s"}
             </div>
           </div>
         </div>
@@ -162,7 +166,7 @@ export function GoleadoresTable({
                 <tr className="text-left text-[11px] font-black uppercase tracking-[0.22em] text-[#AEEBFF]">
                   <th className="px-4 py-4">#</th>
                   <th className="px-4 py-4">Jugador</th>
-                  <th className="px-4 py-4">Selección</th>
+                  <th className="px-4 py-4">Seleccion</th>
                   <th className="px-4 py-4 text-center">Goles</th>
                   <th className="px-4 py-4 text-center">Asist.</th>
                   <th className="px-4 py-4 text-center">Pen.</th>

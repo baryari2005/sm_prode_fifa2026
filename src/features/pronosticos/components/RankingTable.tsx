@@ -42,7 +42,7 @@ export function RankingTable({ rows }: Props) {
                   colSpan={6}
                   className="px-5 py-10 text-center text-sm font-semibold text-white/60"
                 >
-                  Todavia no hay ranking disponible.
+                  Todavía no hay ranking disponible.
                 </td>
               </tr>
             ) : (

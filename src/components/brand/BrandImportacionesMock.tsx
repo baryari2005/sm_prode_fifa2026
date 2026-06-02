@@ -154,7 +154,7 @@ export function BrandImportacionesMock() {
 
                 <p className="max-w-[560px] pt-2 text-[0.95rem] leading-5 text-white/78 xl:text-[1rem]">
                   Este mock junta importaciones de selecciones y convocados en la misma
-                  pantalla, con feedback rapido, resumen lateral y resultado visible
+                  pantalla, con feedback rapido, Vista rápida y resultado visible
                   antes de entrar al detalle.
                 </p>
               </div>
@@ -192,7 +192,7 @@ export function BrandImportacionesMock() {
 
             <div className="mb-3">
               <p className="mt-4 flex justify-center text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                Resumen lateral
+                Vista rápida
               </p>
               <p className="mt-1.5 flex items-start justify-center gap-2 text-center text-sm font-semibold leading-5 text-white/68">
                 <Info className="mt-0.5 h-4 w-4 shrink-0" />
@@ -289,7 +289,7 @@ export function BrandImportacionesMock() {
                   Convocados y datos complementarios
                 </h2>
                 <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
-                  En la misma pagina, la parte de planteles se siente como segundo
+                  En la misma página, la parte de planteles se siente como segundo
                   paso natural: eliges fuente, revisas duplicados y disparas la carga.
                 </p>
               </div>

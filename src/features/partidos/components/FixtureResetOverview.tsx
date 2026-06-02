@@ -160,7 +160,7 @@ export function FixtureResetOverview({
 
             <div className="mb-3">
               <p className="mt-4 flex justify-center text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                Resumen lateral
+                Vista rápida
               </p>
             </div>
 

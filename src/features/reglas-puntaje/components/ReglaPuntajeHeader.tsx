@@ -48,7 +48,7 @@ export function ReglasPuntajeHeader({
               : "bg-emerald-100 text-emerald-700",
           ].join(" ")}
         >
-          {bloqueada ? "Edicion bloqueada" : "Configuracion editable"}
+          {bloqueada ? "Edición bloqueada" : "Configuración editable"}
         </div>
       </div>
     </CardHeader>

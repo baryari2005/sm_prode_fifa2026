@@ -262,7 +262,7 @@ export function BrandSeleccionesMock() {
 
             <div className="relative z-10 space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#AEEBFF]">
-                Resumen lateral
+                Vista rápida
               </p>
 
               <div className="space-y-3">
@@ -334,7 +334,7 @@ export function BrandSeleccionesMock() {
                 {[
                   "Cards mas editoriales para cada seleccion.",
                   "Jerarquia fuerte con Cheddar en nombre del pais.",
-                  "Filtros arriba y resumen lateral persistente.",
+                  "Filtros arriba y Vista rápida persistente.",
                   "Top line y hover alineados al dashboard aprobado.",
                 ].map((idea) => (
                   <div key={idea} className={`rounded-2xl p-4 ${DASHBOARD_SUBCARD}`}>

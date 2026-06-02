@@ -100,7 +100,7 @@ export function LiveMatchesCard({
       {nextPredictionClose ? (
         <div className="mt-4 flex flex-col gap-2 rounded-[22px] border border-white/10 bg-white/[0.08] px-4 py-3 text-sm font-semibold text-white/82 sm:flex-row sm:items-center sm:justify-between">
           <span className="min-w-0">
-            Proximo cierre de pronosticos:{" "}
+            Próximo cierre de pronosticos:{" "}
             <span className="font-black">
               {nextPredictionClose.seleccionLocal?.nombre ?? "Local"} vs{" "}
               {nextPredictionClose.seleccionVisitante?.nombre ?? "Visitante"}

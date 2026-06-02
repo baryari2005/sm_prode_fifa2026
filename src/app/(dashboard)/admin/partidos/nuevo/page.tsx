@@ -139,7 +139,7 @@ export default function NuevoPartidoPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Crear Nuevo Partido</h1>
           <p className="text-muted-foreground">
-            Ingresa los detalles del partido
+            Ingresá los detalles del partido
           </p>
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function NuevoPartidoPage() {
         <CardHeader>
           <CardTitle>Información del Partido</CardTitle>
           <CardDescription>
-            Completa todos los campos requeridos para crear el partido.
+            Completá todos los campos requeridos para crear el partido.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -174,7 +174,7 @@ export default function NuevoPartidoPage() {
                               {field.value ? (
                                 format(field.value, "PPP 'a las' p", { locale: es })
                               ) : (
-                                <span>Selecciona fecha y hora</span>
+                                <span>Seleccioná fecha y hora</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -206,7 +206,7 @@ export default function NuevoPartidoPage() {
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecciona una fase" />
+                            <SelectValue placeholder="Seleccioná una fase" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -231,7 +231,7 @@ export default function NuevoPartidoPage() {
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecciona selección local" />
+                            <SelectValue placeholder="Seleccioná selección local" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -256,7 +256,7 @@ export default function NuevoPartidoPage() {
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecciona selección visitante" />
+                            <SelectValue placeholder="Seleccioná selección visitante" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>

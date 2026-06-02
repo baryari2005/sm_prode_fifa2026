@@ -298,7 +298,7 @@ export function BrandFixtureDetalleMock() {
   return (
     <BrandFixtureActionShell
       eyebrow="Ver detalle"
-      title="Estadisticas del"
+      title="Estadísticas del"
       accent="partido"
       subtitle="alineaciones, lectura y seguimiento"
       description="Preview de la pantalla pensada para revisar un cruce completo antes de pasar a la carga manual de resultado o de formaciones."
@@ -344,7 +344,7 @@ export function BrandFixtureDetalleMock() {
                 <div className="min-w-0 space-y-1">
                   <h2 className="flex items-center gap-2 text-xl font-semibold text-white md:text-2xl">
                     <BarChart3 className="h-6 w-6 shrink-0 text-[#AEEBFF]" />
-                    Estadisticas del partido
+                    Estadísticas del partido
                   </h2>
                   <div className="flex flex-wrap items-center gap-2 text-sm text-white/68">
                     <span>Alineaciones y estadisticas del partido.</span>
@@ -421,7 +421,7 @@ export function BrandFixtureDetalleMock() {
 
             <TabsContent value="estadisticas">
               <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-                <DashboardMockCard title="Estadisticas del partido">
+                <DashboardMockCard title="Estadísticas del partido">
                   <div className="space-y-4">
                     {estadisticas.map((stat) => (
                       <div
@@ -448,7 +448,7 @@ export function BrandFixtureDetalleMock() {
                     </p>
                     <p className="flex items-center gap-2 text-sm text-white/72">
                       <Activity className="h-4 w-4 text-[#AEEBFF]" />
-                      Partido listo para gestion administrativa
+                      Partido listo para gestión administrativa
                     </p>
                     <p className="flex items-center gap-2 text-sm text-white/72">
                       <Users className="h-4 w-4 text-[#AEEBFF]" />

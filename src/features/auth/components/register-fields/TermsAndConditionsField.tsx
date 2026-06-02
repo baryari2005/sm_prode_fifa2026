@@ -39,7 +39,7 @@ export function TermsAndConditionsField({ form }: RegisterFieldsSectionProps) {
             {...register("acceptedTerms")}
           />
 
-          <span>Lei y acepto las bases y condiciones para solicitar acceso.</span>
+          <span>Leí y acepto las bases y condiciones, incluida la regla de participación exclusiva para residentes de San Miguel.</span>
         </label>
 
         {errors.acceptedTerms?.message ? (

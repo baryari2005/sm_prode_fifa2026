@@ -91,7 +91,7 @@ const metricas = [
   {
     icon: Trophy,
     title: "Fase activa",
-    detail: "Lectura del calendario",
+    detail: "Lectura del fixture",
     value: "GR",
     accent: "text-[#FFE4A3]",
     ring: "bg-[#FAB438]/12",
@@ -154,13 +154,13 @@ export function BrandFixtureMock() {
             <div className="relative z-10 flex h-full max-w-[62%] flex-col">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#FAB438]/28 bg-[#FAB438]/12 px-5 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-[#FFE4A3] backdrop-blur-md">
                 <CalendarClock className="h-3.5 w-3.5" />
-                Gestion de fixture
+                Gestión de fixture
               </div>
 
               <div className="mt-6 space-y-2.5 xl:mt-8">
                 <h1 className="text-[2.1rem] font-bold leading-[0.98] tracking-[-0.065em] text-white md:text-[2.35rem] xl:text-[2.55rem] 2xl:text-[2.9rem]">
-                  Ordena el
-                  <span className="text-[#5993B6]"> calendario</span>
+                  ordená el
+                  <span className="text-[#5993B6]"> fixture</span>
                 </h1>
                 <p className="font-brand max-w-[560px] text-[1.9rem] font-semibold leading-[0.96] tracking-[0.04em] text-white md:text-[2rem] xl:text-[2.25rem] 2xl:text-[2.55rem]">
                   fases, grupos y resultados
@@ -202,12 +202,12 @@ export function BrandFixtureMock() {
             <div className="space-y-6">
               <div className="space-y-2 text-center text-white">
                 <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                  Resumen lateral
+                  Vista rápida
                 </p>
                 <div className="mx-auto flex max-w-[22rem] items-start justify-center gap-2 text-[0.95rem] leading-relaxed text-white/76">
                   <Info className="mt-0.5 h-4 w-4 shrink-0 text-white/58" />
                   <p>
-                    Lectura rapida del bloque visible y del estado general del calendario.
+                    Lectura rapida del bloque visible y del estado general del fixture.
                   </p>
                 </div>
               </div>

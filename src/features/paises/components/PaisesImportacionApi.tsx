@@ -84,7 +84,7 @@ export function PaisesImportacionApi({ result }: PaisesImportacionApiProps) {
           </p>
           <p className="mt-3 text-sm leading-6 text-white/72">
             {result?.message ??
-              "Todavia no ejecutaste la importacion de selecciones."}
+              "Todavía no ejecutaste la importación de selecciones."}
           </p>
         </div>
       </section>

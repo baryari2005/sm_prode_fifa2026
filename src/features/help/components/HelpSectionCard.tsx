@@ -1,13 +1,15 @@
 import { CheckCircle2 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { HelpSection } from "../types/help-content.types";
 import {
-  HELP_TOP_ACCENT,
-  HELP_TOP_ACCENT_GLOW,
-  HELP_TOP_ACCENT_HAIR,
-  HELP_TOP_ACCENT_INNER,
-} from "./help-surface.styles";
+  DASHBOARD_SUBCARD,
+  DASHBOARD_TOP_LINE,
+  DASHBOARD_TOP_LINE_GLOW,
+  DASHBOARD_TOP_LINE_HAIR,
+  DASHBOARD_TOP_LINE_INNER,
+  DASHBOARD_TOP_LINE_SWEEP,
+} from "@/features/dashboard/components/home/dashboard-home.styles";
+import type { HelpSection } from "../types/help-content.types";
 
 type HelpSectionCardProps = {
   section: HelpSection;
@@ -18,38 +20,31 @@ type HelpSectionCardProps = {
 export function HelpSectionCard({
   section,
   variant = "light",
-  topAccentVariant = "default",
 }: HelpSectionCardProps) {
   const Icon = section.icon;
   const isDark = variant === "dark";
-  const useHelpAccent = isDark && topAccentVariant === "help";
 
   return (
     <Card
       className={
         isDark
-          ? "group relative h-fit gap-0 self-start overflow-hidden rounded-[24px] border-white/10 bg-[#1E2C46] py-0 text-white shadow-[0_18px_48px_rgba(2,6,23,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-[#5993B6]/42"
+          ? "group relative h-fit gap-0 self-start overflow-hidden rounded-[28px] border-white/10 bg-[#1E2C46] py-0 text-white shadow-[0_18px_48px_rgba(2,6,23,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-[#5993B6]/42"
           : "group relative h-fit gap-0 self-start overflow-hidden rounded-[24px] border-slate-200 bg-gradient-to-br from-white via-white to-slate-50 py-0 shadow-[0_14px_34px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-[#12b8c9]/35 hover:shadow-[0_18px_42px_rgba(20,184,166,0.14)]"
       }
     >
-      {useHelpAccent ? (
-        <div className={HELP_TOP_ACCENT}>
-          <div className={HELP_TOP_ACCENT_INNER} />
-          <div className={HELP_TOP_ACCENT_GLOW} />
-          <div className={HELP_TOP_ACCENT_HAIR} />
-        </div>
-      ) : isDark ? (
-        <div className="h-1 w-full bg-gradient-to-r from-[#FAB438] via-[#5993B6] to-[#AEEBFF]" />
+      {isDark ? (
+        <>
+          <div className={DASHBOARD_TOP_LINE}>
+            <div className={DASHBOARD_TOP_LINE_INNER} />
+            <div className={DASHBOARD_TOP_LINE_SWEEP} />
+            <div className={DASHBOARD_TOP_LINE_GLOW} />
+            <div className={DASHBOARD_TOP_LINE_HAIR} />
+          </div>
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(89,147,182,0.18),transparent_36%),radial-gradient(circle_at_14%_12%,rgba(250,180,56,0.12),transparent_22%)] opacity-70" />
+        </>
       ) : (
         <div className="h-1 w-full bg-gradient-to-r from-[#12b8c9] via-[#15aabf] to-[#8de4ee]" />
       )}
-      <div
-        className={
-          isDark
-            ? "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(89,147,182,0.18),transparent_36%)] opacity-70"
-            : "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,140,147,0.08),transparent_35%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        }
-      />
 
       <CardHeader className="relative space-y-3 px-6 py-5">
         <div className="flex items-start gap-3">
@@ -65,7 +60,7 @@ export function HelpSectionCard({
 
           <div className="min-w-0 space-y-1">
             <CardTitle
-              className={isDark ? "text-lg font-black text-white" : "text-lg font-black text-slate-950"}
+              className={isDark ? "text-xl font-black text-white" : "text-lg font-black text-slate-950"}
             >
               {section.title}
             </CardTitle>
@@ -86,7 +81,7 @@ export function HelpSectionCard({
                 key={`${section.title}-${step.title}-${index}`}
                 className={
                   isDark
-                    ? "flex gap-3 rounded-2xl border border-white/10 bg-[#425675]/55 px-4 py-3"
+                    ? `flex gap-3 rounded-2xl px-4 py-3 ${DASHBOARD_SUBCARD}`
                     : "flex gap-3 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 transition-colors duration-300 group-hover:border-[#12b8c9]/20 group-hover:bg-[#f8feff]"
                 }
               >
@@ -126,7 +121,7 @@ export function HelpSectionCard({
             className={
               isDark
                 ? "rounded-2xl border border-[#FAB438]/24 bg-[#FAB438]/10 px-4 py-3 text-sm leading-6 text-[#FFE4A3]"
-                : "rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm leading-6 text-amber-900 transition-colors duration-300 group-hover:bg-amber-50"
+                : "rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm leading-6 text-amber-900"
             }
           >
             {section.note}

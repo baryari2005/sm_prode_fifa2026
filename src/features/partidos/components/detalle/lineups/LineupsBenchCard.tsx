@@ -82,7 +82,7 @@ export function LineupsBenchCard({
 function EmptyBench() {
   return (
     <div className="px-4 py-6 text-center text-sm text-white/58">
-      Todavia no hay alineacion disponible para este partido.
+      Todavía no hay alineación disponible para este partido.
     </div>
   );
 }

@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-import { ESTADO_CIVIL_OPCIONES } from "@/constants/estadocivil";
-import { GENERO_OPCIONES } from "@/constants/genero";
-import { LOCALIDAD_OPCIONES } from "@/constants/localidades";
-import { NACIONALIDAD_VALUES } from "@/constants/nacionalidad";
 import { TIPOS_DOCUMENTO_OPCIONES } from "@/constants/tiposDocumento";
 
 export const loginSchema = z.object({
@@ -23,37 +19,19 @@ export const registerSchema = z.object({
     message: "Seleccione un tipo de documento",
   }),
   documento: z.string().min(7, "Ingrese un documento válido"),
-  cuil: z.string().min(11, "Ingrese un CUIL válido"),
-  celular: z.string().min(8, "Ingrese un celular válido"),
   domicilio: z.string().min(1, "Ingrese su domicilio"),
   localidad: z
     .string()
-    .min(1, "Seleccione un partido")
-    .refine((value) => LOCALIDAD_OPCIONES.includes(value as (typeof LOCALIDAD_OPCIONES)[number]), {
-      message: "Seleccione un partido valido",
-    })
-    .refine((value) => value !== "No Aplica", {
-      message: "Seleccione un partido",
+    .refine((value) => value === "San Miguel", {
+      message: "El registro está disponible solo para residentes de San Miguel",
     }),
-  codigoPostal: z.string().min(1, "Ingrese el código postal"),
-  fechaNacimiento: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Seleccione una fecha válida"),
-  genero: z.enum(GENERO_OPCIONES, {
-    message: "Seleccione un género",
-  }),
-  estadoCivil: z.enum(ESTADO_CIVIL_OPCIONES, {
-    message: "Seleccione un estado civil",
-  }),
-  nacionalidad: z.enum(NACIONALIDAD_VALUES, {
-    message: "Seleccione una nacionalidad",
-  }),
   acceptedTerms: z.boolean().refine((value) => value, {
     message: "Debe aceptar las bases y condiciones",
   }),
 });
 
-export type RegisterSchemaValues = z.infer<typeof registerSchema>;
+export type RegisterSchemaInput = z.input<typeof registerSchema>;
+export type RegisterSchemaValues = z.output<typeof registerSchema>;
 
 export const forgotPasswordSchema = z.object({
   email: z

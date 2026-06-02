@@ -1,9 +1,9 @@
 "use client";
 
-import type { UseFormReturn } from "react-hook-form";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { RegisterSchemaValues } from "@/features/auth/schemas/schemas";
+import type {
+  RegisterFormReturn,
+} from "@/features/auth/types/registerFields.types";
 
 import { AccessFields } from "../register-fields/AccessFields";
 import { AddressFields } from "../register-fields/AddressFields";
@@ -11,10 +11,8 @@ import { PersonalDataFields } from "../register-fields/PersonalDataFields";
 import { TermsAndConditionsField } from "../register-fields/TermsAndConditionsField";
 import { IdentificationDataFields } from "../register-fields/IdentificationDataFields";
 
-export type RegisterFormValues = RegisterSchemaValues;
-
 type Props = {
-  form: UseFormReturn<RegisterFormValues>;
+  form: RegisterFormReturn;
 };
 
 const tabTriggerClassName =
@@ -25,13 +23,13 @@ export function RegisterFields({ form }: Props) {
   return (
     <Tabs defaultValue="acceso" className="space-y-4 overflow-x-hidden">
       <div className="border-b border-white/10 pb-3">
-        <TabsList className="grid h-auto w-full grid-cols-5 gap-2 rounded-none !border-0 !bg-transparent p-0 !shadow-none !backdrop-blur-none">
+        <TabsList className="grid h-auto w-full grid-cols-4 gap-2 rounded-none !border-0 !bg-transparent p-0 !shadow-none !backdrop-blur-none">
           <TabsTrigger value="acceso" className={tabTriggerClassName}>
             Acceso
           </TabsTrigger>
 
           <TabsTrigger value="personales" className={tabTriggerClassName}>
-            Datos básicos
+            Datos personales
           </TabsTrigger>
 
           <TabsTrigger value="identificacion" className={tabTriggerClassName}>
@@ -40,10 +38,6 @@ export function RegisterFields({ form }: Props) {
 
           <TabsTrigger value="domicilio" className={tabTriggerClassName}>
             Domicilio
-          </TabsTrigger>
-
-          <TabsTrigger value="bases" className={tabTriggerClassName}>
-            Condiciones
           </TabsTrigger>
         </TabsList>
       </div>
@@ -78,13 +72,6 @@ export function RegisterFields({ form }: Props) {
         className="space-y-4 data-[state=inactive]:hidden"
       >
         <AddressFields form={form} />
-      </TabsContent>
-
-      <TabsContent
-        value="bases"
-        forceMount
-        className="space-y-4 data-[state=inactive]:hidden"
-      >
         <TermsAndConditionsField form={form} />
       </TabsContent>
     </Tabs>

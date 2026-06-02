@@ -39,13 +39,13 @@ export function LiveRefreshBadge({
   const statusText = isRefreshing
     ? "Actualizando..."
     : showJustUpdated
-      ? "Actualizado recien"
+      ? "Actualizado recién"
       : `Actualiza en ${nextRefreshIn}s`;
 
   const detailsText =
     shortText || !lastRefreshAt
       ? ""
-      : ` · ultimo refresh ${lastRefreshAt.toLocaleTimeString("es-AR", {
+      : ` · última actualización ${lastRefreshAt.toLocaleTimeString("es-AR", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",

@@ -2,6 +2,7 @@
 
 import { HeroVisualImage } from "@/components/brand/HeroVisualImage";
 import { brandImages } from "@/config/brand-images";
+import { DASHBOARD_HERO_PATTERN } from "@/features/dashboard/components/home/dashboard-home.styles";
 
 export function RankingHeader() {
   return (
@@ -9,6 +10,7 @@ export function RankingHeader() {
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(30,44,70,0.94)_0%,rgba(30,44,70,0.9)_36%,rgba(37,53,80,0.62)_62%,rgba(30,44,70,0.76)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_35%,rgba(89,147,182,0.22),transparent_30%),radial-gradient(circle_at_34%_0%,rgba(246,180,56,0.14),transparent_35%),linear-gradient(135deg,rgba(30,44,70,0.24)_0%,rgba(37,53,80,0.14)_46%,rgba(30,44,70,0.24)_100%)]" />
+        <div className={DASHBOARD_HERO_PATTERN} />
         <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.06)_48%,transparent_62%)] opacity-45" />
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#061B33]/75 via-[#061B33]/24 to-transparent" />
         <div className="absolute right-10 top-8 h-56 w-56 rounded-full bg-sky-300/18 blur-3xl" />
@@ -17,7 +19,7 @@ export function RankingHeader() {
 
       <div className="relative z-10 flex h-full max-w-[62%] min-w-0 flex-col">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#FAB438]/28 bg-[#FAB438]/12 px-5 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-[#FFE4A3] backdrop-blur-md">
-          Pasion mundial
+          Pasión mundial
         </div>
 
         <div className="mt-6 space-y-2.5 xl:mt-8">

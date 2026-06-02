@@ -108,7 +108,7 @@ export function FixtureImportOverview({
 
                   <p className="max-w-[560px] pt-1 text-[0.95rem] leading-6 text-white/78 xl:text-[1rem]">
                     Sincroniza partidos reales desde la API, valida la fase antes de importar
-                    y revisa el resultado completo de la corrida sin salir del flujo
+                    y revisá el resultado completo de la corrida sin salir del flujo
                     administrativo.
                   </p>
                 </div>
@@ -174,7 +174,7 @@ export function FixtureImportOverview({
             </div>
 
             <LateralSummaryHeader
-              title="Resumen lateral"
+              title="Vista rápida"
               description="Estado de la fase elegida y lectura rapida de la ultima importacion."
             />
 
@@ -224,7 +224,7 @@ export function FixtureImportOverview({
                 Operacion real
               </p>
               <h2 className="mt-2 font-brand text-[2rem] leading-[0.92] tracking-[0.04em] text-white">
-                Configuracion de importacion
+                Configuración de importación
               </h2>
               <p className="mt-2 max-w-[760px] text-sm leading-6 text-white/72">
                 Desde aca definis la fase, disparas la importacion y despues revisas el
@@ -277,7 +277,7 @@ export function FixtureImportOverview({
               </div>
               <div className={`rounded-[22px] p-4 ${DASHBOARD_SUBCARD}`}>
                 <p className="font-brand text-[1.7rem] leading-none tracking-[0.04em] text-white">
-                  3. Revisa errores
+                  3. Revisá errores
                 </p>
                 <p className="mt-3 text-sm leading-6 text-white/74">
                   Si algo falla, abajo ves errores, omitidos y partidos tocados en la

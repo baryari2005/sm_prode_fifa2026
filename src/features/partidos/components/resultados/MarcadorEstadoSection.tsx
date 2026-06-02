@@ -76,7 +76,7 @@ export function MarcadorEstadoSection({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un estado" />
+              <SelectValue placeholder="Seleccioná un estado" />
             </SelectTrigger>
 
             <SelectContent>

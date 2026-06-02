@@ -121,7 +121,7 @@ export function PartidosImportacionApi({
       <section className="rounded-[24px] border border-white/10 bg-white/[0.05] p-4">
         <p className="text-sm font-semibold text-white">Resultado</p>
         <p className="mt-1 text-sm text-white/72">
-          {result?.message ?? "Todavia no ejecutaste la importacion del fixture."}
+          {result?.message ?? "Todavía no ejecutaste la importación del fixture."}
         </p>
         {result?.meta ? (
           <p className="mt-2 text-xs leading-5 text-white/52">

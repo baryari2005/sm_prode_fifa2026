@@ -292,7 +292,7 @@ export function BrandPlantelesMock() {
 
             <div className="mb-3">
               <p className="mt-4 flex justify-center text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                Resumen lateral
+                Vista rápida
               </p>
               <p className="mt-1.5 flex items-start justify-center gap-2 text-center text-sm font-semibold leading-5 text-white/68">
                 <Info className="mt-0.5 h-4 w-4 shrink-0" />

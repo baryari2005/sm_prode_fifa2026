@@ -43,7 +43,7 @@ export function GroupStandingsInsightPanel({
     <div className="space-y-4">
       <InsightCard
         icon={CalendarClock}
-        title="Proximos partidos"
+        title="Próximos partidos"
         eyebrow="Agenda del grupo"
       >
         {proximosPartidos.length === 0 ? (

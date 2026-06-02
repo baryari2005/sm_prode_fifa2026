@@ -35,7 +35,7 @@ export default function RankingPage() {
   const lider = ranking[0] ?? null;
   const resumen = [
     {
-      label: "Tu posicion",
+      label: "Tu posición",
       detail: "ranking general",
       value: miRanking?.posicion ? `#${miRanking.posicion}` : "-",
       icon: Trophy,
@@ -57,7 +57,7 @@ export default function RankingPage() {
     },
     {
       label: "Historial",
-      detail: "pronosticos calificados",
+      detail: "pronósticos calificados",
       value: String(historial.length),
       icon: Medal,
       toneClass: "bg-white/10 text-white",
@@ -81,8 +81,8 @@ export default function RankingPage() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(89,147,182,0.18),transparent_36%)]" />
             <div className="relative flex h-full flex-col">
               <LateralSummaryHeader
-                title="Resumen lateral"
-                description="Estado rapido del flujo y de los campos que se van a actualizar."
+                title="Vista rápida"
+                description="Estado rápido del flujo y de los campos que se van a actualizar."
               />
 
               <div className="mt-3.5 space-y-2">
@@ -121,12 +121,12 @@ export default function RankingPage() {
                     <Award className="h-4.5 w-4.5" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-black text-white">Lider actual</p>
+                    <p className="text-sm font-black text-white">Líder actual</p>
                     <p className="mt-1 truncate text-sm font-semibold text-white/70">
-                      {lider?.nombre ?? "Ranking en preparacion"}
+                      {lider?.nombre ?? "Ranking en preparación"}
                     </p>
                     <p className="mt-1 text-xs font-semibold text-[#AEEBFF]">
-                      {lider ? `${lider.puntosTotales} puntos` : "Sin datos todavia"}
+                      {lider ? `${lider.puntosTotales} puntos` : "Sin datos todavía"}
                     </p>
                   </div>
                 </div>

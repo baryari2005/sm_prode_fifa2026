@@ -71,7 +71,7 @@ export function LiveControlPageClient({
         toneClassName: "bg-[#5993B6]/18 text-[#AEEBFF]",
       },
       {
-        label: "Proximos partidos",
+        label: "Próximos partidos",
         value: String(matchGroups.proximos.length),
         detail: "Ventana operativa",
         icon: CalendarClock,
@@ -190,7 +190,7 @@ export function LiveControlPageClient({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#AEEBFF]">
-                  Resumen lateral
+                  Vista rápida
                 </p>
                 <p className="mt-1 text-sm text-white/68">
                   Lectura rapida del estado operativo.
@@ -280,7 +280,7 @@ export function LiveControlPageClient({
               Live / actuales
             </TabsTrigger>
             <TabsTrigger value="proximos" className="rounded-2xl">
-              Proximos
+              Próximos
             </TabsTrigger>
             <TabsTrigger value="no-cerrados" className="rounded-2xl">
               No cerrados

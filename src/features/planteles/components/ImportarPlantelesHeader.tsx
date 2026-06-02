@@ -27,7 +27,7 @@ export function ImportarPlantelesHeader({
                         </CardTitle>
                     </div>
                     <CardDescription className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-                        <span>Ejecuta la recarga completa de los planteles desde la API y revisa el detalle por seleccion.</span>
+                        <span>Ejecuta la recarga completa de los planteles desde la API y revisá el detalle por seleccion.</span>
                         <Info className="h-4 w-4 text-slate-400" />
                     </CardDescription>
                 </div>

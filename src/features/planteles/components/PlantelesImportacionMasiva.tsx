@@ -63,7 +63,7 @@ export function PlantelesImportacionMasiva({
   const ignoredRows = result?.meta?.ignoredRows ?? [];
   const ignoredRowsCount = result?.meta?.ignoredRowsCount ?? 0;
   const statusLabel =
-    result?.message ?? "Todavia no se ejecuto la importacion masiva.";
+    result?.message ?? "Todavía no se ejecutó la importación masiva.";
   const failedSummaries = useMemo(
     () => summaries.filter((item) => !item.success),
     [summaries],

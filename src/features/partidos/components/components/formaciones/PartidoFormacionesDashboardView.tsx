@@ -244,7 +244,7 @@ export function PartidoFormacionesDashboardView({
             <SummaryCard>
               <div className="space-y-1">
                 <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                  Resumen lateral
+                  Vista rápida
                 </p>
                 <p className="text-sm leading-6 text-white/68">
                   Lectura rápida del estado de la carga y de los planteles disponibles.

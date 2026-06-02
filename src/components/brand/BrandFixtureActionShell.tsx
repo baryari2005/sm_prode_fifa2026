@@ -57,7 +57,7 @@ export function BrandFixtureActionShell({
               Mock visual temporal
             </p>
             <p className="mt-1 text-sm text-[#1E2C46]/72">
-              Preview aislada para validar el flujo interno de gestion de partidos.
+              Preview aislada para validar el flujo interno de gestión de partidos.
             </p>
           </div>
 
@@ -145,7 +145,7 @@ export function BrandFixtureActionShell({
             </div>
             
             <LateralSummaryHeader
-              title="Resumen lateral"
+              title="Vista rápida"
               description={summaryText}
             />
 

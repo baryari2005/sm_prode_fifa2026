@@ -51,7 +51,7 @@ export function EditRoleForm({
               Editar rol
             </CardTitle>
             <CardDescription className="text-sm text-white/68">
-              Ajusta la informacion del rol y sus permisos manteniendo una configuracion
+              Ajusta la informacion del rol y sus permisos manteniendo una configuración
               consistente dentro de la misma tematica visual del panel.
             </CardDescription>
           </div>

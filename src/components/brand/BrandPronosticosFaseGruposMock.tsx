@@ -156,7 +156,7 @@ const partidosPorGrupo = [
 
 const notasRapidas = [
   "Auto guardado sugerido cuando falten menos de 5 minutos para el cierre.",
-  "Resumen lateral con partidos abiertos, cambios pendientes y progreso de la fecha.",
+  "Vista rápida con partidos abiertos, cambios pendientes y progreso de la fecha.",
   "Cards compactas por grupo para evitar una lista larga de encuentros.",
 ];
 
@@ -278,7 +278,7 @@ export function BrandPronosticosFaseGruposMock() {
 
             <div className="mb-3">
               <p className="mt-4 flex justify-center text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-                Resumen lateral
+                Vista rápida
               </p>
               <p className="mt-1.5 flex items-start justify-center gap-2 text-center text-sm font-semibold leading-5 text-white/68">
                 <Info className="mt-0.5 h-4 w-4 shrink-0" />
@@ -292,7 +292,7 @@ export function BrandPronosticosFaseGruposMock() {
               <MockSummaryMetric
                 icon={<Target className="h-4.5 w-4.5" />}
                 tone="sky"
-                title="Pronosticos cargados"
+                title="Pronósticos cargados"
                 detail="6 de 8 partidos completos"
                 value="75%"
               />

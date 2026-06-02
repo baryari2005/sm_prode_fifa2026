@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return noStoreJson(
-        { message: "No tenes permisos para ver partidos." },
+        { message: "No tenés permisos para ver partidos." },
         { status: 403 },
       );
     }
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return noStoreJson(
-        { message: "No tenes permisos para crear partidos." },
+        { message: "No tenés permisos para crear partidos." },
         { status: 403 },
       );
     }

@@ -52,7 +52,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
 
     if (err instanceof Error && err.message === "FORBIDDEN") {
-      return NextResponse.json({ message: "No tenes permisos para importar plantel." }, { status: 403 });
+      return NextResponse.json({ message: "No tenés permisos para importar plantel." }, { status: 403 });
     }
 
     console.error("POST /api/paises/[id]/plantel/import error:", err);
