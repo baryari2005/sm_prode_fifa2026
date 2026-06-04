@@ -27,6 +27,10 @@ import {
 } from "@/features/live-control/services/live-control.service";
 import { sendPushNotificationToUser } from "@/features/push/services/push-notification.service";
 import {
+  notifyMatchFinished,
+  notifyPredictionClosingSoon,
+} from "@/features/push/services/push-notification-examples.service";
+import {
   generateMockPredictionsForPhase,
   recalculateRankingForPhase,
   simulatePhaseResults,
@@ -384,6 +388,46 @@ export async function POST(req: NextRequest) {
           ok("Push de prueba enviada.", result, result.total === 0
             ? ["El usuario autenticado no tiene suscripciones push activas."]
             : undefined),
+        );
+      }
+      case "notify_prediction_closing_soon": {
+        if (!parsed.partidoId) {
+          return NextResponse.json({ message: "partidoId es obligatorio." }, { status: 400 });
+        }
+
+        const result = await notifyPredictionClosingSoon({
+          partidoId: parsed.partidoId,
+          body: typeof payload.body === "string" ? payload.body : undefined,
+        });
+
+        return NextResponse.json(
+          ok(
+            "Recordatorio de cierre de pronostico enviado.",
+            result,
+            result.total === 0
+              ? ["No hay usuarios pendientes con suscripciones push activas para este partido."]
+              : undefined,
+          ),
+        );
+      }
+      case "notify_match_finished": {
+        if (!parsed.partidoId) {
+          return NextResponse.json({ message: "partidoId es obligatorio." }, { status: 400 });
+        }
+
+        const result = await notifyMatchFinished({
+          partidoId: parsed.partidoId,
+          body: typeof payload.body === "string" ? payload.body : undefined,
+        });
+
+        return NextResponse.json(
+          ok(
+            "Notificacion de partido finalizado enviada.",
+            result,
+            result.total === 0
+              ? ["No hay usuarios con pronosticos y suscripciones push activas para este partido."]
+              : undefined,
+          ),
         );
       }
       default:

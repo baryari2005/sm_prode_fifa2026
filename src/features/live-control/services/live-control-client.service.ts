@@ -24,6 +24,7 @@ export async function getLiveControlMatches() {
     });
 
     return (response.data.data ?? {
+      all: [],
       live: [],
       proximos: [],
       noCerrados: [],

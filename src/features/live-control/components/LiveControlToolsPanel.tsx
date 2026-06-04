@@ -60,6 +60,8 @@ const ACTION_OPTIONS = [
   { value: "bulk_update_selected_matches_metadata", label: "Actualizar sede de varios partidos" },
   { value: "reset_fixture_from_api", label: "Volver a foja cero desde API" },
   { value: "send_test_push", label: "Enviar push de prueba" },
+  { value: "notify_prediction_closing_soon", label: "Notificar cierre de pronostico (1h)" },
+  { value: "notify_match_finished", label: "Notificar resultado final" },
 ];
 
 const SUPPORTED_FORMATIONS = [
@@ -475,6 +477,17 @@ export function LiveControlToolsPanel({
           ? `/pronosticos/partidos/${selectedMatchId}/detalle`
           : "/inicio",
       };
+    }
+
+    if (
+      action === "notify_prediction_closing_soon" ||
+      action === "notify_match_finished"
+    ) {
+      return description.trim()
+        ? {
+            body: description.trim(),
+          }
+        : undefined;
     }
 
     if (description.trim()) {
@@ -1097,7 +1110,9 @@ export function LiveControlToolsPanel({
                 Usala solo cuando realmente necesites volver el torneo a foja cero para pruebas o reinicio completo.
               </p>
             </div>
-          ) : action === "send_test_push" ? (
+          ) : action === "send_test_push" ||
+            action === "notify_prediction_closing_soon" ||
+            action === "notify_match_finished" ? (
             <div className="grid gap-2">
               <Label>Mensaje opcional</Label>
               <Textarea
@@ -1108,7 +1123,11 @@ export function LiveControlToolsPanel({
                 placeholder="Si lo dejás vacío, se usa un texto de prueba por defecto."
               />
               <p className="text-xs text-white/52">
-                La push se envía al usuario autenticado que esté usando esta consola. Si elegís un partido, el link abre ese detalle.
+                {action === "send_test_push"
+                  ? "La push se envía al usuario autenticado que esté usando esta consola. Si elegís un partido, el link abre ese detalle."
+                  : action === "notify_prediction_closing_soon"
+                    ? "Envía un recordatorio a usuarios con push activo que todavía no cargaron pronóstico para este partido."
+                    : "Envía el resultado final a usuarios con push activo que hayan pronosticado este partido."}
               </p>
             </div>
           ) : action !== "upsert_cards_note" && action !== "create_manual_goal" ? (

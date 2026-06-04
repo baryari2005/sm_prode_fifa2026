@@ -93,6 +93,7 @@ export type LiveControlMatch = {
 };
 
 export type LiveControlMatchesResponse = {
+  all: LiveControlMatch[];
   live: LiveControlMatch[];
   proximos: LiveControlMatch[];
   noCerrados: LiveControlMatch[];

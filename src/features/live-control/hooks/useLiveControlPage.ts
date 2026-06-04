@@ -20,6 +20,7 @@ import type {
 
 export function useLiveControlPage() {
   const [matchGroups, setMatchGroups] = useState<LiveControlMatchesResponse>({
+    all: [],
     live: [],
     proximos: [],
     noCerrados: [],
@@ -54,7 +55,21 @@ export function useLiveControlPage() {
   }, [load]);
 
   const matches = useMemo(
-    () => [...matchGroups.live, ...matchGroups.proximos, ...matchGroups.noCerrados],
+    () => {
+      if (matchGroups.all.length > 0) {
+        return matchGroups.all;
+      }
+
+      const merged = [
+        ...matchGroups.live,
+        ...matchGroups.proximos,
+        ...matchGroups.noCerrados,
+      ];
+
+      const uniqueMatches = new Map(merged.map((match) => [match.id, match]));
+
+      return Array.from(uniqueMatches.values());
+    },
     [matchGroups],
   );
 

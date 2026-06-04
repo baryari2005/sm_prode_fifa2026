@@ -53,6 +53,8 @@ export const liveToolActionSchema = z.object({
     "bulk_update_selected_matches_metadata",
     "reset_fixture_from_api",
     "send_test_push",
+    "notify_prediction_closing_soon",
+    "notify_match_finished",
   ]),
   partidoId: z.string().uuid().optional(),
   payload: z.record(z.string(), z.unknown()).optional(),

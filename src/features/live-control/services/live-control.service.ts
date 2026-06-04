@@ -948,8 +948,6 @@ export async function listLiveControlMatches() {
   const now = new Date();
   const start = new Date(now);
   start.setHours(0, 0, 0, 0);
-  const upcomingEnd = new Date(start);
-  upcomingEnd.setDate(upcomingEnd.getDate() + 2);
 
   const classifyMatches = (matches: LiveControlMatch[]): LiveControlMatchesResponse => {
     const liveStates = new Set<EstadoPartido>([
@@ -990,6 +988,7 @@ export async function listLiveControlMatches() {
     }
 
     return {
+      all: matches,
       live,
       proximos,
       noCerrados,
@@ -1046,39 +1045,6 @@ export async function listLiveControlMatches() {
     const matches = await prisma.partido.findMany({
       where: {
         activo: true,
-        OR: [
-          {
-            fecha: {
-              gte: start,
-              lte: upcomingEnd,
-            },
-          },
-          {
-            fecha: {
-              lt: start,
-            },
-            resultado: {
-              is: {
-                estado: {
-                  in: [
-                    EstadoPartido.PENDIENTE,
-                    EstadoPartido.EN_JUEGO,
-                    EstadoPartido.ENTRETIEMPO,
-                    EstadoPartido.SUSPENDIDO,
-                  ],
-                },
-              },
-            },
-          },
-          {
-            fecha: {
-              lt: start,
-            },
-            resultado: {
-              is: null,
-            },
-          },
-        ],
       },
       include: {
         fase: true,
@@ -1112,39 +1078,6 @@ export async function listLiveControlMatches() {
     const matches = await prisma.partido.findMany({
       where: {
         activo: true,
-        OR: [
-          {
-            fecha: {
-              gte: start,
-              lte: upcomingEnd,
-            },
-          },
-          {
-            fecha: {
-              lt: start,
-            },
-            resultado: {
-              is: {
-                estado: {
-                  in: [
-                    EstadoPartido.PENDIENTE,
-                    EstadoPartido.EN_JUEGO,
-                    EstadoPartido.ENTRETIEMPO,
-                    EstadoPartido.SUSPENDIDO,
-                  ],
-                },
-              },
-            },
-          },
-          {
-            fecha: {
-              lt: start,
-            },
-            resultado: {
-              is: null,
-            },
-          },
-        ],
       },
       include: {
         fase: true,
