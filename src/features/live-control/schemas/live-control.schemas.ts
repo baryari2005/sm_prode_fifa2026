@@ -47,9 +47,45 @@ export const liveToolActionSchema = z.object({
     "upsert_scorer_note",
     "upsert_cards_note",
     "upsert_penalties_note",
+    "simulate_phase_results",
+    "generate_mock_predictions",
+    "recalculate_phase_ranking",
+    "bulk_update_selected_matches_metadata",
+    "reset_fixture_from_api",
+    "send_test_push",
   ]),
   partidoId: z.string().uuid().optional(),
   payload: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const simulatorPhaseSchema = z.enum([
+  "grupos",
+  "dieciseisavos",
+  "octavos",
+  "cuartos",
+  "semis",
+  "tercer-puesto",
+  "final",
+]);
+
+export const simulatorPhaseResultsSchema = z.object({
+  phase: simulatorPhaseSchema,
+});
+
+export const simulatorMockPredictionsSchema = z.object({
+  phase: simulatorPhaseSchema,
+  userCount: z.number().int().min(4).max(5),
+});
+
+export const simulatorPhaseRankingSchema = z.object({
+  phase: simulatorPhaseSchema,
+});
+
+export const bulkSelectedMatchesMetadataSchema = z.object({
+  partidoIds: z.array(z.string().uuid()).min(1, "Selecciona al menos un partido"),
+  estadio: z.string().trim().min(1, "El estadio es requerido"),
+  ciudad: z.string().trim().min(1, "La ciudad es requerida"),
+  fecha: z.string().trim().optional(),
 });
 
 export const liveLineupPayloadSchema = z.union([

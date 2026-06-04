@@ -29,6 +29,11 @@ import {
 } from "@/features/partidos/types/fixture-details";
 import type { JugadorSeleccion } from "@/features/partidos/types/types";
 import type { LiveActionResponse, LiveControlMatch } from "@/features/live-control/types/live-control.types";
+import {
+  FIXTURE_PHASE_OPTIONS,
+  getFixturePhaseSlugFromText,
+  type FixturePhaseSlug,
+} from "@/features/partidos/constants/fixture-phase-filter.constants";
 
 const ACTION_OPTIONS = [
   { value: "sync_match", label: "Sincronizar partido especifico" },
@@ -49,6 +54,12 @@ const ACTION_OPTIONS = [
   { value: "upsert_scorer_note", label: "Cargar goleador" },
   { value: "upsert_cards_note", label: "Cargar tarjetas" },
   { value: "upsert_penalties_note", label: "Cargar penales" },
+  { value: "simulate_phase_results", label: "Simular resultados aleatorios por fase" },
+  { value: "generate_mock_predictions", label: "Generar pronosticos mock por fase" },
+  { value: "recalculate_phase_ranking", label: "Recalcular ranking por fase" },
+  { value: "bulk_update_selected_matches_metadata", label: "Actualizar sede de varios partidos" },
+  { value: "reset_fixture_from_api", label: "Volver a foja cero desde API" },
+  { value: "send_test_push", label: "Enviar push de prueba" },
 ];
 
 const SUPPORTED_FORMATIONS = [
@@ -137,6 +148,12 @@ export function LiveControlToolsPanel({
     LOCAL: { ...EMPTY_STATS },
     VISITANTE: { ...EMPTY_STATS },
   });
+  const [phase, setPhase] = useState<FixturePhaseSlug>("grupos");
+  const [mockUserCount, setMockUserCount] = useState("4");
+  const [bulkEstadio, setBulkEstadio] = useState("");
+  const [bulkCiudad, setBulkCiudad] = useState("");
+  const [bulkFecha, setBulkFecha] = useState("");
+  const [bulkSelectedMatchIds, setBulkSelectedMatchIds] = useState<string[]>([]);
 
   const parsedJsonPayload = useMemo(() => {
     if (!jsonPayload.trim()) {
@@ -160,6 +177,12 @@ export function LiveControlToolsPanel({
     () => matches.find((match) => match.id === selectedMatchId) ?? null,
     [matches, selectedMatchId],
   );
+
+  const phaseMatches = useMemo(() => {
+    return matches.filter(
+      (match) => getFixturePhaseSlugFromText(match.fase?.nombre) === phase,
+    );
+  }, [matches, phase]);
 
   const currentFormationSlots = useMemo(
     () => buildFormationSlots(lineupFormacion),
@@ -354,6 +377,14 @@ export function LiveControlToolsPanel({
     }));
   }
 
+  function toggleBulkMatchSelection(partidoId: string) {
+    setBulkSelectedMatchIds((current) =>
+      current.includes(partidoId)
+        ? current.filter((id) => id !== partidoId)
+        : [...current, partidoId],
+    );
+  }
+
   const payload = useMemo(() => {
     if (action === "create_manual_goal") {
       return {
@@ -404,6 +435,48 @@ export function LiveControlToolsPanel({
       };
     }
 
+    if (action === "simulate_phase_results") {
+      return {
+        phase,
+      };
+    }
+
+    if (action === "generate_mock_predictions") {
+      return {
+        phase,
+        userCount: Number(mockUserCount),
+      };
+    }
+
+    if (action === "recalculate_phase_ranking") {
+      return {
+        phase,
+      };
+    }
+
+    if (action === "bulk_update_selected_matches_metadata") {
+      return {
+        partidoIds: bulkSelectedMatchIds,
+        estadio: bulkEstadio.trim(),
+        ciudad: bulkCiudad.trim(),
+        ...(bulkFecha ? { fecha: new Date(bulkFecha).toISOString() } : {}),
+      };
+    }
+
+    if (action === "send_test_push") {
+      return {
+        title: selectedMatch
+          ? `Prueba push: ${selectedMatch.seleccionLocal?.nombre ?? "Local"} vs ${selectedMatch.seleccionVisitante?.nombre ?? "Visitante"}`
+          : "Prueba de notificacion",
+        body:
+          description.trim() ||
+          "Esta es una push de prueba enviada desde Live Control.",
+        url: selectedMatchId
+          ? `/pronosticos/partidos/${selectedMatchId}/detalle`
+          : "/inicio",
+      };
+    }
+
     if (description.trim()) {
       return {
         note: description.trim(),
@@ -419,10 +492,18 @@ export function LiveControlToolsPanel({
     lineupSide,
     minute,
     parsedJsonPayload.value,
+    phase,
+    selectedMatch,
     selectedPlayerId,
+    selectedMatchId,
     statsValues,
     team,
     cardType,
+    mockUserCount,
+    bulkCiudad,
+    bulkEstadio,
+    bulkFecha,
+    bulkSelectedMatchIds,
   ]);
 
   const preview = {
@@ -890,6 +971,146 @@ export function LiveControlToolsPanel({
                 </div>
               </div>
             </div>
+          ) : action === "simulate_phase_results" ||
+            action === "generate_mock_predictions" ||
+            action === "recalculate_phase_ranking" ||
+            action === "bulk_update_selected_matches_metadata" ? (
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label>Fase</Label>
+                <Select value={phase} onValueChange={(value) => setPhase(value as FixturePhaseSlug)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FIXTURE_PHASE_OPTIONS.map((option) => (
+                      <SelectItem key={option.slug} value={option.slug}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {action === "generate_mock_predictions" ? (
+                <div className="grid gap-2">
+                  <Label>Cantidad de usuarios mock</Label>
+                  <Select value={mockUserCount} onValueChange={setMockUserCount}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="4">4 usuarios</SelectItem>
+                      <SelectItem value="5">5 usuarios</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-white/52">
+                    Genera pronosticos aleatorios para usuarios mock y los deja grabados para recalcular despues.
+                  </p>
+                </div>
+              ) : action === "bulk_update_selected_matches_metadata" ? (
+                <div className="grid gap-4">
+                  <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} max-h-64 space-y-2 overflow-y-auto p-3`}>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-xs font-semibold text-white/72">
+                        Partidos de la fase seleccionada
+                      </p>
+                      <span className="text-xs text-white/52">
+                        {bulkSelectedMatchIds.length} seleccionados
+                      </span>
+                    </div>
+                    {phaseMatches.length === 0 ? (
+                      <p className="text-xs text-white/52">
+                        No hay partidos visibles para esta fase.
+                      </p>
+                    ) : (
+                      phaseMatches.map((match) => {
+                        const checked = bulkSelectedMatchIds.includes(match.id);
+                        return (
+                          <button
+                            key={match.id}
+                            type="button"
+                            onClick={() => toggleBulkMatchSelection(match.id)}
+                            className={`w-full rounded-2xl border px-3 py-2 text-left text-xs transition ${
+                              checked
+                                ? "border-[#5993B6]/40 bg-[#5993B6]/16 text-white"
+                                : "border-white/10 bg-[#0E1D30]/72 text-white/78 hover:bg-white/[0.08]"
+                            }`}
+                          >
+                            {match.seleccionLocal?.nombre ?? "Local"} vs{" "}
+                            {match.seleccionVisitante?.nombre ?? "Visitante"}
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                  <div className="grid gap-2 md:grid-cols-2">
+                    <div className="grid gap-2">
+                      <Label>Estadio</Label>
+                      <Input
+                        value={bulkEstadio}
+                        onChange={(event) => setBulkEstadio(event.target.value)}
+                        placeholder="Ej. MetLife Stadium"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Ciudad</Label>
+                      <Input
+                        value={bulkCiudad}
+                        onChange={(event) => setBulkCiudad(event.target.value)}
+                        placeholder="Ej. Nueva Jersey"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Fecha y hora opcional</Label>
+                    <Input
+                      type="datetime-local"
+                      value={bulkFecha}
+                      onChange={(event) => setBulkFecha(event.target.value)}
+                    />
+                  </div>
+                  <p className="text-xs text-white/52">
+                    Aplica los mismos datos solo a los partidos seleccionados. Ideal para tandas con misma sede y localidad.
+                  </p>
+                </div>
+              ) : action === "recalculate_phase_ranking" ? (
+                <p className="text-xs text-white/52">
+                  Recalcula solo el ranking de la fase elegida a partir de los resultados finales y los pronosticos ya guardados.
+                </p>
+              ) : (
+                <p className="text-xs text-white/52">
+                  Borra y vuelve a generar los resultados de la fase elegida dejandolos como finalizados.
+                </p>
+              )}
+              </div>
+          ) : action === "reset_fixture_from_api" ? (
+            <div className="grid gap-3">
+              <div className="rounded-[20px] border border-rose-300/18 bg-rose-300/[0.08] p-4">
+                <p className="text-sm font-semibold text-rose-100">Accion destructiva controlada</p>
+                <p className="mt-2 text-xs leading-6 text-white/72">
+                  Borra partidos, resultados, pronosticos, rankings, eventos live, auditorias, selecciones y planteles actuales.
+                  Despues vuelve a cargar el fixture base desde la API oficial.
+                </p>
+              </div>
+              <p className="text-xs text-white/52">
+                Usala solo cuando realmente necesites volver el torneo a foja cero para pruebas o reinicio completo.
+              </p>
+            </div>
+          ) : action === "send_test_push" ? (
+            <div className="grid gap-2">
+              <Label>Mensaje opcional</Label>
+              <Textarea
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                rows={4}
+                className={LIVE_CONTROL_TEXTAREA_CLASSNAME}
+                placeholder="Si lo dejás vacío, se usa un texto de prueba por defecto."
+              />
+              <p className="text-xs text-white/52">
+                La push se envía al usuario autenticado que esté usando esta consola. Si elegís un partido, el link abre ese detalle.
+              </p>
+            </div>
           ) : action !== "upsert_cards_note" && action !== "create_manual_goal" ? (
             <div className="grid gap-2">
               <Label>Observacion / nota</Label>
@@ -910,7 +1131,11 @@ export function LiveControlToolsPanel({
                 (action === "upsert_lineup" && Boolean(parsedJsonPayload.error)) ||
                 ((action === "upsert_cards_note" ||
                   action === "create_manual_goal") &&
-                  !selectedPlayerId)
+                  !selectedPlayerId) ||
+                (action === "bulk_update_selected_matches_metadata" &&
+                  (!bulkEstadio.trim() ||
+                    !bulkCiudad.trim() ||
+                    bulkSelectedMatchIds.length === 0))
               }
               onClick={() => void onRun(preview)}
             >

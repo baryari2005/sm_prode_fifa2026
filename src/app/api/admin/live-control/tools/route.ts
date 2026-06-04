@@ -4,6 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireLiveControlAccess } from "@/features/live-control/helpers/live-control-permissions";
 import {
   liveLineupPayloadSchema,
+  simulatorMockPredictionsSchema,
+  simulatorPhaseRankingSchema,
+  simulatorPhaseResultsSchema,
+  bulkSelectedMatchesMetadataSchema,
   liveStatsPayloadSchema,
   liveToolActionSchema,
   manualCardSchema,
@@ -21,11 +25,19 @@ import {
   updateLiveMatchStatus,
   validateMatchLiveConsistency,
 } from "@/features/live-control/services/live-control.service";
+import { sendPushNotificationToUser } from "@/features/push/services/push-notification.service";
+import {
+  generateMockPredictionsForPhase,
+  recalculateRankingForPhase,
+  simulatePhaseResults,
+} from "@/features/world-cup-simulator/services/simulator-persistence.service";
 import {
   createResultado,
   getResultadoByPartidoId,
+  updatePartidosMetadataByIds,
   updateResultado,
 } from "@/features/partidos/services/partido.service";
+import { resetFixtureFromApi } from "@/features/partidos/services/fixture-reset.service";
 import { prisma } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -270,6 +282,108 @@ export async function POST(req: NextRequest) {
           ok("Tarjeta cargada correctamente.", {
             createdEvents: result,
           }),
+        );
+      }
+      case "simulate_phase_results": {
+        const result = await simulatePhaseResults(
+          simulatorPhaseResultsSchema.parse(payload).phase,
+        );
+
+        return NextResponse.json(
+          ok(`Resultados simulados para ${result.phaseName}.`, result),
+        );
+      }
+      case "generate_mock_predictions": {
+        const parsedPayload = simulatorMockPredictionsSchema.parse(payload);
+        const result = await generateMockPredictionsForPhase(
+          parsedPayload.phase,
+          parsedPayload.userCount,
+        );
+
+        return NextResponse.json(
+          ok(`Pronosticos mock generados para ${result.phaseName}.`, result),
+        );
+      }
+      case "recalculate_phase_ranking": {
+        const result = await recalculateRankingForPhase(
+          simulatorPhaseRankingSchema.parse(payload).phase,
+        );
+
+        return NextResponse.json(
+          ok(`Ranking recalculado para ${result.phaseName}.`, result),
+        );
+      }
+      case "bulk_update_selected_matches_metadata": {
+        const parsedPayload = bulkSelectedMatchesMetadataSchema.parse(payload);
+        const result = await updatePartidosMetadataByIds(parsedPayload.partidoIds, {
+          fecha: parsedPayload.fecha ? new Date(parsedPayload.fecha) : undefined,
+          estadio: parsedPayload.estadio,
+          ciudad: parsedPayload.ciudad,
+        });
+
+        return NextResponse.json(
+          ok(
+            `Se actualizaron ${result.updatedCount} partidos seleccionados.`,
+            result,
+          ),
+        );
+      }
+      case "reset_fixture_from_api": {
+        const result = await resetFixtureFromApi();
+
+        return NextResponse.json(
+          ok(
+            "Foja cero completada. Se reinicio fixture, resultados, pronosticos y ranking desde la API.",
+            result,
+          ),
+        );
+      }
+      case "send_test_push": {
+        const partido = parsed.partidoId
+          ? await prisma.partido.findUnique({
+              where: { id: parsed.partidoId },
+              include: {
+                seleccionLocal: true,
+                seleccionVisitante: true,
+              },
+            })
+          : null;
+
+        const title =
+          typeof payload.title === "string" && payload.title.trim()
+            ? payload.title.trim()
+            : "Prueba de notificacion";
+        const body =
+          typeof payload.body === "string" && payload.body.trim()
+            ? payload.body.trim()
+            : partido
+              ? `Live Control: ${partido.seleccionLocal.nombre} vs ${partido.seleccionVisitante.nombre}`
+              : "Esta es una push de prueba enviada desde Live Control.";
+        const url =
+          typeof payload.url === "string" && payload.url.trim()
+            ? payload.url.trim()
+            : parsed.partidoId
+              ? `/pronosticos/partidos/${parsed.partidoId}/detalle`
+              : "/inicio";
+
+        const result = await sendPushNotificationToUser(user.id, {
+          title,
+          body,
+          url,
+          tag: parsed.partidoId
+            ? `live-control-test:${parsed.partidoId}`
+            : "live-control-test",
+          data: {
+            source: "live-control",
+            partidoId: parsed.partidoId ?? null,
+            tipo: "TEST_PUSH",
+          },
+        });
+
+        return NextResponse.json(
+          ok("Push de prueba enviada.", result, result.total === 0
+            ? ["El usuario autenticado no tiene suscripciones push activas."]
+            : undefined),
         );
       }
       default:

@@ -30,34 +30,169 @@ function getDisplayName(user: {
 export async function GET(req: NextRequest) {
   try {
     const loggedInUser = await requireAuth(req);
+    const url = new URL(req.url);
+    const faseIdParam = url.searchParams.get("faseId");
+    const scopeParam = url.searchParams.get("scope");
+    const faseId = faseIdParam ? Number(faseIdParam) : null;
+    const scope =
+      scopeParam === "grupos" || scopeParam === "eliminatorias"
+        ? scopeParam
+        : null;
+
+    if (faseIdParam && (!faseId || Number.isNaN(faseId))) {
+      return noStoreJson(
+        { message: "faseId es invalido." },
+        { status: 400 },
+      );
+    }
+
+    if (scopeParam && !scope) {
+      return noStoreJson(
+        { message: "scope es invalido." },
+        { status: 400 },
+      );
+    }
+
+    const fases = await prisma.fase.findMany({
+      where: {
+        activo: true,
+      },
+      select: {
+        id: true,
+        nombre: true,
+        orden: true,
+      },
+      orderBy: {
+        orden: "asc",
+      },
+    });
+
+    const phaseOfGroups = fases[0] ?? null;
+    const knockoutPhases = phaseOfGroups
+      ? fases.filter((fase) => fase.orden > phaseOfGroups.orden)
+      : [];
+
+    let resolvedFaseId = faseId;
+    let resolvedFaseMeta:
+      | {
+          id: number;
+          nombre: string;
+          orden: number;
+        }
+      | null = null;
+
+    if (scope === "grupos" && phaseOfGroups) {
+      resolvedFaseId = phaseOfGroups.id;
+      resolvedFaseMeta = {
+        id: phaseOfGroups.id,
+        nombre: "Fase de grupos",
+        orden: phaseOfGroups.orden,
+      };
+    }
+
+    if (scope === "eliminatorias") {
+      const latestKnockoutPhase = knockoutPhases.at(-1) ?? null;
+
+      if (latestKnockoutPhase) {
+        resolvedFaseId = latestKnockoutPhase.id;
+        resolvedFaseMeta = {
+          id: latestKnockoutPhase.id,
+          nombre: "Fase eliminatorias",
+          orden: latestKnockoutPhase.orden,
+        };
+      } else {
+        resolvedFaseId = null;
+        resolvedFaseMeta = {
+          id: 0,
+          nombre: "Fase eliminatorias",
+          orden: (phaseOfGroups?.orden ?? 0) + 1,
+        };
+      }
+    }
 
     const [rankingRows, myScoredPredictions] = await Promise.all([
-      prisma.rankingUsuario.findMany({
-        include: {
-          usuario: {
-            select: {
-              id: true,
-              nombre: true,
-              apellido: true,
-              userId: true,
-              email: true,
-              avatarUrl: true,
+      resolvedFaseId
+        ? prisma.rankingUsuarioFase.findMany({
+            where: {
+              faseId: resolvedFaseId,
             },
-          },
-        },
-        orderBy: [
-          { puntosTotales: "desc" },
-          { aciertosExactos: "desc" },
-          { aciertosTendencia: "desc" },
-          { updatedAt: "asc" },
-        ],
-      }),
+            include: {
+              usuario: {
+                select: {
+                  id: true,
+                  nombre: true,
+                  apellido: true,
+                  userId: true,
+                  email: true,
+                  avatarUrl: true,
+                },
+              },
+              fase: {
+                select: {
+                  id: true,
+                  nombre: true,
+                  orden: true,
+                },
+              },
+            },
+            orderBy: [
+              { puntosTotales: "desc" },
+              { aciertosExactos: "desc" },
+              { aciertosTendencia: "desc" },
+              { updatedAt: "asc" },
+            ],
+          })
+        : prisma.rankingUsuario.findMany({
+            include: {
+              usuario: {
+                select: {
+                  id: true,
+                  nombre: true,
+                  apellido: true,
+                  userId: true,
+                  email: true,
+                  avatarUrl: true,
+                },
+              },
+            },
+            orderBy: [
+              { puntosTotales: "desc" },
+              { aciertosExactos: "desc" },
+              { aciertosTendencia: "desc" },
+              { updatedAt: "asc" },
+            ],
+          }),
       prisma.prediccionPartido.findMany({
         where: {
           usuarioId: loggedInUser.id,
           calculadoAt: {
             not: null,
           },
+          ...(scope === "grupos" && phaseOfGroups
+            ? {
+                partido: {
+                  faseId: phaseOfGroups.id,
+                },
+              }
+            : {}),
+          ...(scope === "eliminatorias" && phaseOfGroups
+            ? {
+                partido: {
+                  fase: {
+                    orden: {
+                      gt: phaseOfGroups.orden,
+                    },
+                  },
+                },
+              }
+            : {}),
+          ...(scope === null && resolvedFaseId
+            ? {
+                partido: {
+                  faseId: resolvedFaseId,
+                },
+              }
+            : {}),
         },
         include: {
           partido: {
@@ -75,6 +210,16 @@ export async function GET(req: NextRequest) {
         take: 20,
       }),
     ]);
+
+    const fase = resolvedFaseMeta ??
+      (resolvedFaseId && rankingRows.length > 0 && "fase" in rankingRows[0]
+        ? rankingRows[0].fase
+        : resolvedFaseId
+          ? await prisma.fase.findUnique({
+              where: { id: resolvedFaseId },
+              select: { id: true, nombre: true, orden: true },
+            })
+          : null);
 
     const ranking = rankingRows.map((row, index) => ({
       posicion: index + 1,
@@ -122,6 +267,7 @@ export async function GET(req: NextRequest) {
 
     return noStoreJson({
       data: {
+        fase,
         miRanking,
         ranking,
         historial,

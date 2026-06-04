@@ -5,6 +5,7 @@ import type {
   Resultado,
   ResultadoCreateInput,
   ResultadoUpdateInput,
+  PartidoUpdateInput,
 } from "@/features/partidos/types/types";
 import type { TeamLineup } from "@/features/partidos/types/fixture-details";
 
@@ -57,6 +58,19 @@ export async function getPreviousLineups(partidoId: string) {
   const res = await axiosInstance.get<PreviousLineupResponse>(
     `/partidos/${partidoId}/formaciones-base`
   );
+
+  return res.data;
+}
+
+export async function updatePartidoMetadata(
+  partidoId: string,
+  payload: Pick<PartidoUpdateInput, "fecha" | "estadio" | "ciudad">,
+): Promise<Partido> {
+  const res = await axiosInstance.patch<Partido>(`/partidos/${partidoId}`, {
+    fecha: payload.fecha?.toISOString() ?? null,
+    estadio: payload.estadio ?? null,
+    ciudad: payload.ciudad ?? null,
+  });
 
   return res.data;
 }

@@ -7,19 +7,31 @@ import { useAuth } from "@/stores/auth";
 
 type Props = {
   rows: RankingRowDTO[];
+  title?: string | null;
 };
 
-export function RankingTable({ rows }: Props) {
+export function RankingTable({ rows, title }: Props) {
   const myUserId = useAuth((state) => state.user?.id ?? null);
+  const isGroupScope = Boolean(title && title.toLowerCase().includes("grupo"));
+  const tableLabel = !title
+    ? "Tabla general"
+    : isGroupScope
+      ? "Tabla fase de grupos"
+      : "Tabla acumulada";
+  const heading = !title
+    ? "Ranking completo"
+    : isGroupScope
+      ? `Ranking ${title}`
+      : `Ranking acumulado ${title}`;
 
   return (
     <div className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#1E2C46] shadow-[0_20px_60px_rgba(0,0,0,0.24)]">
       <div className="border-b border-white/10 px-5 py-4">
         <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
-          Tabla general
+          {tableLabel}
         </p>
         <h2 className="mt-2 font-brand text-[2rem] leading-none tracking-[0.04em] text-white">
-          Ranking completo
+          {heading}
         </h2>
       </div>
       <div className="overflow-x-auto">

@@ -7,6 +7,7 @@ import {
   getResultadoByPartidoId,
   updateResultado,
 } from "@/features/partidos/services/partido.service";
+import { recalculateRanking } from "@/features/pronosticos/services/ranking-recalculation.service";
 import {
   resultadoCreateSchema,
   resultadoUpdateSchema,
@@ -91,6 +92,16 @@ export async function POST(req: NextRequest) {
 
     const resultado = await createResultado(dto);
 
+    if (resultado.estado === "FINALIZADO") {
+      await recalculateRanking({
+        source: "live-control",
+        triggeredByUserId: loggedInUser.id,
+        partidoId: dto.partidoId,
+        force: true,
+        soloNoCalculados: false,
+      });
+    }
+
     return NextResponse.json(resultado, { status: 201 });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
@@ -156,6 +167,16 @@ export async function PUT(req: NextRequest) {
     await ensureResultadoEditable(partidoId);
 
     const resultado = await updateResultado(partidoId, dto);
+
+    if (resultado.estado === "FINALIZADO") {
+      await recalculateRanking({
+        source: "live-control",
+        triggeredByUserId: loggedInUser.id,
+        partidoId,
+        force: true,
+        soloNoCalculados: false,
+      });
+    }
 
     return NextResponse.json(resultado);
   } catch (err: unknown) {

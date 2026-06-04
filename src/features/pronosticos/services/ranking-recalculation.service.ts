@@ -2,9 +2,10 @@ import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import {
-  recalcularPronosticosDePartido,
-  recalcularPronosticosFinalizadosEnRango,
-} from "@/features/partidos/services/pronosticos.service";
+  recalculateRankingForMatchBatch,
+  recalculateRankingForPhaseBatch,
+  recalculateRankingForRangeBatch,
+} from "@/features/pronosticos/services/ranking-batch.service";
 
 const RANKING_RECALCULATION_LOCK_ID = 20260526;
 
@@ -14,6 +15,7 @@ type RankingRecalculationInput = {
   source: RankingRecalculationSource;
   triggeredByUserId?: string;
   partidoId?: string;
+  faseId?: number;
   force?: boolean;
   fechaDesde?: Date;
   fechaHasta?: Date;
@@ -28,7 +30,7 @@ export type RankingRecalculationResult = {
   fechaDesde: string | null;
   fechaHasta: string | null;
   soloNoCalculados: boolean;
-  scope: "general" | "partido";
+  scope: "general" | "partido" | "fase";
   totalUsuariosRecalculados: number;
   totalPartidosConsiderados: number;
   totalPrediccionesProcesadas: number;
@@ -59,7 +61,7 @@ function buildResult(
     fechaDesde: input.fechaDesde?.toISOString() ?? null,
     fechaHasta: input.fechaHasta?.toISOString() ?? null,
     soloNoCalculados: Boolean(input.soloNoCalculados),
-    scope: input.partidoId ? "partido" : "general",
+    scope: input.partidoId ? "partido" : input.faseId ? "fase" : "general",
     totalUsuariosRecalculados: totals.totalUsuariosRecalculados,
     totalPartidosConsiderados: totals.totalPartidosConsiderados,
     totalPrediccionesProcesadas: totals.totalPrediccionesProcesadas,
@@ -88,6 +90,7 @@ export async function recalculateRanking(
     source: input.source,
     triggeredByUserId: input.triggeredByUserId ?? null,
     partidoId: input.partidoId ?? null,
+    faseId: input.faseId ?? null,
     force: Boolean(input.force),
     fechaDesde: input.fechaDesde?.toISOString() ?? null,
     fechaHasta: input.fechaHasta?.toISOString() ?? null,
@@ -95,35 +98,51 @@ export async function recalculateRanking(
   });
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const lockAcquired = await acquireRankingRecalculationLock(tx);
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const lockAcquired = await acquireRankingRecalculationLock(tx);
 
-      if (!lockAcquired) {
-        throw new Error("RANKING_RECALCULATION_IN_PROGRESS");
-      }
+        if (!lockAcquired) {
+          throw new Error("RANKING_RECALCULATION_IN_PROGRESS");
+        }
 
-      if (input.partidoId) {
-        const partialResult = await recalcularPronosticosDePartido(tx, input.partidoId);
+        if (input.partidoId) {
+          const partialResult = await recalculateRankingForMatchBatch(tx, input.partidoId);
+
+          return buildResult(input, {
+            totalUsuariosRecalculados: partialResult.usuariosActualizados,
+            totalPartidosConsiderados: partialResult.partidosProcesados,
+            totalPrediccionesProcesadas: partialResult.prediccionesProcesadas,
+          });
+        }
+
+        if (input.faseId) {
+          const phaseResult = await recalculateRankingForPhaseBatch(tx, input.faseId);
+
+          return buildResult(input, {
+            totalUsuariosRecalculados: phaseResult.usuariosActualizados,
+            totalPartidosConsiderados: phaseResult.partidosProcesados,
+            totalPrediccionesProcesadas: phaseResult.prediccionesProcesadas,
+          });
+        }
+
+        const generalResult = await recalculateRankingForRangeBatch(tx, {
+          fechaDesde: input.fechaDesde,
+          fechaHasta: input.fechaHasta,
+          soloNoCalculados: input.soloNoCalculados,
+        });
 
         return buildResult(input, {
-          totalUsuariosRecalculados: partialResult.usuariosActualizados,
-          totalPartidosConsiderados: partialResult.procesadas > 0 ? 1 : 0,
-          totalPrediccionesProcesadas: partialResult.procesadas,
+          totalUsuariosRecalculados: generalResult.usuariosActualizados,
+          totalPartidosConsiderados: generalResult.partidosProcesados,
+          totalPrediccionesProcesadas: generalResult.prediccionesProcesadas,
         });
-      }
-
-      const generalResult = await recalcularPronosticosFinalizadosEnRango(tx, {
-        fechaDesde: input.fechaDesde,
-        fechaHasta: input.fechaHasta,
-        soloNoCalculados: input.soloNoCalculados,
-      });
-
-      return buildResult(input, {
-        totalUsuariosRecalculados: generalResult.usuariosActualizados,
-        totalPartidosConsiderados: generalResult.partidosProcesados,
-        totalPrediccionesProcesadas: generalResult.prediccionesProcesadas,
-      });
-    });
+      },
+      {
+        maxWait: 10000,
+        timeout: 20000,
+      },
+    );
 
     logRankingRecalculation("success", result);
     return result;
@@ -141,6 +160,7 @@ export async function recalculateRanking(
         source: input.source,
         triggeredByUserId: input.triggeredByUserId ?? null,
         partidoId: input.partidoId ?? null,
+        faseId: input.faseId ?? null,
         error: error instanceof Error ? error.message : error,
       });
     }

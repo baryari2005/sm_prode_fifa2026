@@ -134,6 +134,19 @@ export type RankingUsuario = {
   updatedAt: Date;
 };
 
+export type RankingUsuarioFase = {
+  id: string;
+  usuarioId: string;
+  faseId: number;
+  puntosTotales: number;
+  aciertosExactos: number;
+  aciertosTendencia: number;
+  partidosPronosticados: number;
+  partidosCalificados: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type PartidoCreateInput = {
   footballDataId?: number | null;
   fecha: Date;

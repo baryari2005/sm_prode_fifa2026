@@ -206,6 +206,52 @@ export async function updatePartido(
   return normalizePartido(partido as unknown as Partido);
 }
 
+export async function updatePartidosMetadataByIds(
+  partidoIds: string[],
+  data: Pick<PartidoUpdateInput, "fecha" | "estadio" | "ciudad">,
+) {
+  const partidos = await prisma.partido.findMany({
+    where: {
+      activo: true,
+      id: {
+        in: partidoIds,
+      },
+    },
+    select: {
+      id: true,
+      fase: {
+        select: {
+          nombre: true,
+        },
+      },
+    },
+  });
+
+  if (partidos.length === 0) {
+    throw new Error("No se encontraron partidos activos para actualizar.");
+  }
+
+  const result = await prisma.partido.updateMany({
+    where: {
+      activo: true,
+      id: {
+        in: partidos.map((partido) => partido.id),
+      },
+    },
+    data: {
+      ...(data.fecha ? { fecha: data.fecha } : {}),
+      ...(Object.prototype.hasOwnProperty.call(data, "estadio") ? { estadio: data.estadio ?? null } : {}),
+      ...(Object.prototype.hasOwnProperty.call(data, "ciudad") ? { ciudad: data.ciudad ?? null } : {}),
+    },
+  });
+
+  return {
+    updatedMatchIds: partidos.map((partido) => partido.id),
+    phases: Array.from(new Set(partidos.map((partido) => partido.fase?.nombre ?? "Sin fase"))),
+    updatedCount: result.count,
+  };
+}
+
 export async function deletePartido(id: string): Promise<void> {
   await prisma.partido.update({
     where: { id },
@@ -810,48 +856,53 @@ export async function generateKnockoutPartidosForPhase(
 
   const updated: Partido[] = [];
 
-  await prisma.$transaction(async (tx) => {
-    for (let index = 0; index < generatedPayloads.length; index += 1) {
-      const payload = generatedPayloads[index];
-      const existing = currentPhaseMatches[index];
+  await prisma.$transaction(
+    async (tx) => {
+      for (let index = 0; index < generatedPayloads.length; index += 1) {
+        const payload = generatedPayloads[index];
+        const existing = currentPhaseMatches[index];
 
-      if (existing) {
-        const partido = await tx.partido.update({
-          where: { id: existing.id },
-          data: payload.data,
-          include: {
-            fase: true,
-            seleccionLocal: true,
-            seleccionVisitante: true,
-            resultado: true,
-          },
-        });
-        updated.push(normalizePartido(partido as unknown as Partido));
-      } else {
-        const partido = await tx.partido.create({
-          data: {
-            ...payload.data,
-            activo: true,
-          },
-          include: {
-            fase: true,
-            seleccionLocal: true,
-            seleccionVisitante: true,
-            resultado: true,
-          },
-        });
-        updated.push(normalizePartido(partido as unknown as Partido));
+        if (existing) {
+          const partido = await tx.partido.update({
+            where: { id: existing.id },
+            data: payload.data,
+            include: {
+              fase: true,
+              seleccionLocal: true,
+              seleccionVisitante: true,
+              resultado: true,
+            },
+          });
+          updated.push(normalizePartido(partido as unknown as Partido));
+        } else {
+          const partido = await tx.partido.create({
+            data: {
+              ...payload.data,
+              activo: true,
+            },
+            include: {
+              fase: true,
+              seleccionLocal: true,
+              seleccionVisitante: true,
+              resultado: true,
+            },
+          });
+          updated.push(normalizePartido(partido as unknown as Partido));
+        }
       }
-    }
 
-    const extras = currentPhaseMatches.slice(generatedPayloads.length);
-    for (const extra of extras) {
-      await tx.partido.update({
-        where: { id: extra.id },
-        data: { activo: false },
-      });
+      const extras = currentPhaseMatches.slice(generatedPayloads.length);
+      for (const extra of extras) {
+        await tx.partido.update({
+          where: { id: extra.id },
+          data: { activo: false },
+        });
+      }
+    },
+    {
+      timeout: 20000,
     }
-  });
+  );
 
   return {
     generated: updated,

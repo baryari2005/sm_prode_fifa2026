@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Award, ListOrdered, Medal, Target, Trophy } from "lucide-react";
 
 import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRankingPage } from "@/features/pronosticos/hooks/useRankingPage";
 import { RankingHeader } from "@/features/pronosticos/components/RankingHeader";
 import { MyRankingSummary } from "@/features/pronosticos/components/MyRankingSummary";
@@ -22,28 +22,54 @@ import {
 import { LateralSummaryHeader } from "@/components/ui/lateralSummaryHeader";
 
 export default function RankingPage() {
-  const { miRanking, ranking, historial, loading, loadData } = useRankingPage();
+  const {
+    scope,
+    faseActual,
+    miRanking,
+    ranking,
+    historial,
+    loading,
+    rankingInitialized,
+    setScope,
+    loadFases,
+    loadData,
+  } = useRankingPage();
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    void loadFases();
+  }, [loadFases]);
 
-  if (loading) {
+  useEffect(() => {
+    if (!rankingInitialized) {
+      return;
+    }
+
+    void loadData(scope);
+  }, [scope, loadData, rankingInitialized]);
+
+  if (loading || !rankingInitialized) {
     return <DashboardLoading source="Loading Ranking" />;
   }
 
   const lider = ranking[0] ?? null;
+  const scopeLabel = faseActual?.nombre ?? "Fase de grupos";
+  const isGroupScope = Boolean(faseActual?.nombre?.toLowerCase().includes("grupo"));
+  const pointsDetail = faseActual
+    ? isGroupScope
+      ? "solo fase de grupos"
+      : "acumulado de eliminacion"
+    : "acumulados";
   const resumen = [
     {
-      label: "Tu posición",
-      detail: "ranking general",
+      label: "Tu posicion",
+      detail: faseActual ? scopeLabel : "ranking general",
       value: miRanking?.posicion ? `#${miRanking.posicion}` : "-",
       icon: Trophy,
       toneClass: "bg-[#FAB438]/14 text-[#FFE4A3]",
     },
     {
       label: "Tus puntos",
-      detail: "acumulados",
+      detail: pointsDetail,
       value: String(miRanking?.puntosTotales ?? 0),
       icon: Target,
       toneClass: "bg-[#5993B6]/18 text-[#AEEBFF]",
@@ -57,7 +83,7 @@ export default function RankingPage() {
     },
     {
       label: "Historial",
-      detail: "pronósticos calificados",
+      detail: faseActual ? "calificados en esta fase" : "pronosticos calificados",
       value: String(historial.length),
       icon: Medal,
       toneClass: "bg-white/10 text-white",
@@ -75,15 +101,32 @@ export default function RankingPage() {
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.82fr)] xl:items-stretch">
-          <RankingHeader />
+          <RankingHeader currentScopeLabel={scopeLabel} />
 
           <aside className="relative min-w-0 overflow-hidden rounded-[28px] border border-white/10 bg-[#1E2C46] p-4 text-white shadow-[0_18px_48px_rgba(2,6,23,0.18)] xl:min-h-[248px]">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(89,147,182,0.18),transparent_36%)]" />
             <div className="relative flex h-full flex-col">
               <LateralSummaryHeader
-                title="Vista rápida"
-                description="Estado rápido del flujo y de los campos que se van a actualizar."
+                title="Vista rapida"
+                description="Resumen del ranking segun la fase elegida y su acumulado correspondiente."
               />
+
+              <div className="mt-4">
+                <Select
+                  value={scope}
+                  onValueChange={(value) =>
+                    setScope(value === "eliminatorias" ? "eliminatorias" : "grupos")
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccionar fase" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="grupos">Fase de grupos</SelectItem>
+                    <SelectItem value="eliminatorias">Fase eliminatorias</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               <div className="mt-3.5 space-y-2">
                 {resumen.map((stat) => {
@@ -121,12 +164,12 @@ export default function RankingPage() {
                     <Award className="h-4.5 w-4.5" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-black text-white">Líder actual</p>
+                    <p className="text-sm font-black text-white">Lider actual</p>
                     <p className="mt-1 truncate text-sm font-semibold text-white/70">
-                      {lider?.nombre ?? "Ranking en preparación"}
+                      {lider?.nombre ?? "Ranking en preparacion"}
                     </p>
                     <p className="mt-1 text-xs font-semibold text-[#AEEBFF]">
-                      {lider ? `${lider.puntosTotales} puntos` : "Sin datos todavía"}
+                      {lider ? `${lider.puntosTotales} puntos` : "Sin datos todavia"}
                     </p>
                   </div>
                 </div>
@@ -145,8 +188,8 @@ export default function RankingPage() {
         </div>
 
         <div className="relative z-10 space-y-6">
-          <MyRankingSummary data={miRanking} />
-          <RankingTable rows={ranking} />
+          <MyRankingSummary data={miRanking} scopeLabel={scopeLabel} />
+          <RankingTable rows={ranking} title={faseActual?.nombre ?? null} />
           <PronosticosHistorial rows={historial} />
         </div>
       </section>

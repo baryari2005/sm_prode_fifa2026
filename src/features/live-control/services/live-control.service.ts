@@ -6,7 +6,6 @@ import {
 } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
-import { recalcularPronosticosDePartido } from "@/features/partidos/services/pronosticos.service";
 import { recalculateRanking } from "@/features/pronosticos/services/ranking-recalculation.service";
 import type {
   ApiGoalCandidate,
@@ -601,7 +600,7 @@ export async function updateLiveMatchStatus(input: {
   observacion?: string | null;
   userId: string;
 }) {
-  return prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     const partido = await tx.partido.findUniqueOrThrow({
       where: { id: input.partidoId },
       include: {
@@ -653,6 +652,16 @@ export async function updateLiveMatchStatus(input: {
       },
     });
   });
+
+  if (input.estado === EstadoPartido.FINALIZADO) {
+    await recalculateRanking({
+      source: "live-control",
+      triggeredByUserId: input.userId,
+      partidoId: input.partidoId,
+      force: true,
+      soloNoCalculados: false,
+    });
+  }
 }
 
 export async function createManualCard(input: {
@@ -1325,7 +1334,12 @@ export async function recalculateScoreFromEvents(partidoId: string, userId: stri
 }
 
 export async function recalculatePointsForMatch(partidoId: string) {
-  return prisma.$transaction((tx) => recalcularPronosticosDePartido(tx, partidoId));
+  return recalculateRanking({
+    source: "live-control",
+    partidoId,
+    force: true,
+    soloNoCalculados: false,
+  });
 }
 
 export async function recalculateRankingFromPredictions() {

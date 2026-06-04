@@ -40,7 +40,27 @@ export function useProdeDashboard(
 
         const fixturePromise = getFixturePronosticos();
         const rankingPromise = canLoadRanking
-          ? getPronosticosRanking()
+          ? (async () => {
+              const activePhaseResponse = await fetch("/api/fases/activa", {
+                cache: "no-store",
+              });
+
+              const activePhaseData = (await activePhaseResponse.json()) as
+                | { id: number; nombre: string; orden: number }
+                | null
+                | { message?: string };
+
+              const faseId =
+                activePhaseResponse.ok &&
+                activePhaseData &&
+                typeof activePhaseData === "object" &&
+                "id" in activePhaseData &&
+                typeof activePhaseData.id === "number"
+                  ? activePhaseData.id
+                  : undefined;
+
+              return getPronosticosRanking({ faseId });
+            })()
           : Promise.resolve({
               miRanking: null,
               ranking: [],

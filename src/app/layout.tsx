@@ -8,6 +8,8 @@ import localFont from "next/font/local";
 import { Smartphone, MonitorSmartphone } from "lucide-react";
 import { brandImages } from "@/config/brand-images";
 
+const MOBILE_APP_URL = "https://sm-prode-fifa2026-mobile.vercel.app";
+
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
@@ -47,6 +49,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 Para continuar, ingres&aacute; desde una computadora o utiliz&aacute; la app del celular.
               </p>
 
+              <div className="mt-6 flex flex-col items-center gap-3">
+                <div className="rounded-[1.75rem] border border-white/10 bg-white p-3 shadow-lg shadow-cyan-950/30">
+                  <Image
+                    src="/qr-prode-mobile.png"
+                    alt="QR para abrir la versi&oacute;n mobile del Prode"
+                    width={180}
+                    height={180}
+                    priority
+                    className="h-auto w-[180px] rounded-xl"
+                  />
+                </div>
+
+                <p className="max-w-xs text-xs leading-5 text-slate-300">
+                  Escane&aacute; el QR desde otro dispositivo para abrir la versi&oacute;n mobile.
+                </p>
+              </div>
+
               <div className="mt-6 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-4 text-left">
                 <div className="flex items-center gap-3">
                   <Smartphone className="h-5 w-5 text-cyan-300" />
@@ -58,6 +77,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <p className="mt-2 text-sm text-slate-200">
                   Abr&iacute; la app del celular para una experiencia adaptada, o ingres&aacute; desde una pantalla m&aacute;s grande.
                 </p>
+
+                <a
+                  href={MOBILE_APP_URL}
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+                >
+                  Ir a la versi&oacute;n mobile
+                </a>
               </div>
             </div>
           </main>

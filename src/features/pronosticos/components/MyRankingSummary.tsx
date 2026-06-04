@@ -12,9 +12,10 @@ import type { RankingRowDTO } from "@/features/pronosticos/services/ranking.serv
 
 type Props = {
   data: RankingRowDTO | null;
+  scopeLabel?: string;
 };
 
-export function MyRankingSummary({ data }: Props) {
+export function MyRankingSummary({ data, scopeLabel = "Ranking general" }: Props) {
   const resumen = data ?? {
     posicion: null,
     puntosTotales: 0,
@@ -25,18 +26,26 @@ export function MyRankingSummary({ data }: Props) {
     nombre: "Usuario",
   };
 
+  const isGeneralScope = scopeLabel === "Ranking general";
+  const isGroupScope = scopeLabel.toLowerCase().includes("grupo");
+  const pointsDetail = isGeneralScope
+    ? "acumulados"
+    : isGroupScope
+      ? "solo fase de grupos"
+      : "acumulado de eliminacion";
+
   return (
     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
       <SummaryCard
         title="Mi posicion"
         value={resumen.posicion ? `#${resumen.posicion}` : "-"}
-        detail="ranking general"
+        detail={scopeLabel}
         tone="gold"
       />
       <SummaryCard
         title="Puntos totales"
         value={`${resumen.puntosTotales}`}
-        detail="acumulados"
+        detail={pointsDetail}
         tone="sky"
       />
       <SummaryCard

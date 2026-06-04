@@ -1,14 +1,19 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Activity, CalendarClock, ChevronLeft, Clock3, MapPin, RefreshCw, Users } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FlagImage } from "@/components/ui/flag-image";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DesktopMatchVersusHero } from "@/features/partidos/components/dashboard/DesktopMatchVersusHero";
 import { PartidoDetalleIncidenciasCard } from "@/features/partidos/components/dashboard/PartidoDetalleIncidenciasCard";
 import { PartidoDetalleDashboardLineups } from "@/features/partidos/components/dashboard/PartidoDetalleDashboardLineups";
+import { updatePartidoMetadata } from "@/features/partidos/services/resultado.service";
 import type { PartidoDetalleViewModel } from "@/features/partidos/types/partido-detalle.types";
 import { TEAM_STAT_DEFINITIONS } from "@/features/partidos/types/fixture-details";
 import {
@@ -23,11 +28,13 @@ import {
 
 type Props = {
   detalle: PartidoDetalleViewModel;
+  canEditMetadata?: boolean;
   autoRefreshEnabled: boolean;
   nextRefreshIn: number;
   isRefreshing: boolean;
   lastRefreshAt: Date | null;
   onBack: () => void;
+  onRefreshData?: () => void;
 };
 
 function DashboardCard({
@@ -58,12 +65,49 @@ function DashboardCard({
 
 export function PartidoDetalleDashboardView({
   detalle,
+  canEditMetadata = false,
   autoRefreshEnabled,
   nextRefreshIn,
   isRefreshing,
   lastRefreshAt,
   onBack,
+  onRefreshData,
 }: Props) {
+  const [fechaHora, setFechaHora] = useState("");
+  const [estadio, setEstadio] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [savingMetadata, setSavingMetadata] = useState(false);
+
+  useEffect(() => {
+    const partidoDate = new Date(detalle.partido.fecha);
+    const timezoneOffset = partidoDate.getTimezoneOffset();
+    const localDate = new Date(partidoDate.getTime() - timezoneOffset * 60000);
+
+    setFechaHora(localDate.toISOString().slice(0, 16));
+    setEstadio(detalle.partido.estadio ?? "");
+    setCiudad(detalle.partido.ciudad ?? "");
+  }, [detalle.partido.ciudad, detalle.partido.estadio, detalle.partido.fecha]);
+
+  async function handleSaveMetadata() {
+    try {
+      setSavingMetadata(true);
+
+      await updatePartidoMetadata(detalle.partidoId, {
+        fecha: fechaHora ? new Date(fechaHora) : new Date(detalle.partido.fecha),
+        estadio: estadio.trim() || null,
+        ciudad: ciudad.trim() || null,
+      });
+
+      toast.success("Datos del partido actualizados");
+      onRefreshData?.();
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudieron actualizar los datos del partido");
+    } finally {
+      setSavingMetadata(false);
+    }
+  }
+
   return (
     <main className="px-3 py-4 md:px-5 md:py-5 xl:px-4">
       <div className="mx-auto flex max-w-[1500px] flex-col gap-5 xl:gap-6">
@@ -320,12 +364,67 @@ export function PartidoDetalleDashboardView({
                         {detalle.partido.estadio ? (
                           <p className="flex items-center gap-2 text-sm text-white/72">
                             <MapPin className="h-4 w-4 text-[#AEEBFF]" />
-                            {detalle.partido.estadio}
+                            {[detalle.partido.estadio, detalle.partido.ciudad]
+                              .filter(Boolean)
+                              .join(" · ")}
                           </p>
                         ) : null}
                       </div>
                     </DashboardCard>
                   </div>
+
+                  {canEditMetadata ? (
+                    <DashboardCard title="Gestion mundial">
+                      <div className="space-y-4">
+                        <p className="text-sm leading-6 text-white/68">
+                          Ajusta manualmente fecha, hora, estadio y ciudad cuando la API no los traiga completos.
+                        </p>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div className="grid gap-2">
+                            <Label htmlFor="fechaHora">Fecha y hora</Label>
+                            <Input
+                              id="fechaHora"
+                              type="datetime-local"
+                              value={fechaHora}
+                              onChange={(event) => setFechaHora(event.target.value)}
+                            />
+                          </div>
+
+                          <div className="grid gap-2">
+                            <Label htmlFor="estadio">Estadio</Label>
+                            <Input
+                              id="estadio"
+                              value={estadio}
+                              onChange={(event) => setEstadio(event.target.value)}
+                              placeholder="A confirmar"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid gap-2">
+                          <Label htmlFor="ciudad">Ciudad</Label>
+                          <Input
+                            id="ciudad"
+                            value={ciudad}
+                            onChange={(event) => setCiudad(event.target.value)}
+                            placeholder="A confirmar"
+                          />
+                        </div>
+
+                        <div className="flex justify-end">
+                          <Button
+                            type="button"
+                            className="rounded-2xl"
+                            onClick={() => void handleSaveMetadata()}
+                            disabled={savingMetadata || !fechaHora}
+                          >
+                            {savingMetadata ? "Guardando..." : "Guardar datos"}
+                          </Button>
+                        </div>
+                      </div>
+                    </DashboardCard>
+                  ) : null}
 
                   <PartidoDetalleIncidenciasCard
                     incidencias={detalle.incidencias ?? []}

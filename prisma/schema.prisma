@@ -39,6 +39,8 @@ model Usuario {
   legajo Legajo?
   prediccionesPartido PrediccionPartido[]
   rankingProde        RankingUsuario?
+  rankingsPorFase     RankingUsuarioFase[]
+  pushSubscriptions   PushSubscription[]
   liveEventsCreados   PartidoEventoLive[]  @relation("PartidoEventoLiveCreatedBy")
   liveAudits          PartidoLiveAudit[]
 
@@ -260,6 +262,7 @@ model Fase {
   updatedAt DateTime @updatedAt
 
   reglasPuntaje ReglaPuntaje[]
+  rankingsUsuarios RankingUsuarioFase[]
 
   @@index([orden])
 }
@@ -427,6 +430,42 @@ model RankingUsuario {
   partidosCalificados Int    @default(0)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model RankingUsuarioFase {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuarioId         String   @db.Uuid
+  faseId            Int
+  usuario           Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  fase              Fase     @relation(fields: [faseId], references: [id], onDelete: Cascade)
+  puntosTotales     Int      @default(0)
+  aciertosExactos   Int      @default(0)
+  aciertosTendencia Int      @default(0)
+  partidosPronosticados Int  @default(0)
+  partidosCalificados Int    @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([usuarioId, faseId])
+  @@index([usuarioId])
+  @@index([faseId])
+}
+
+model PushSubscription {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  user      Usuario  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  scope     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([userId, isActive])
+  @@index([isActive])
 }
 
 model PartidoEventoLive {

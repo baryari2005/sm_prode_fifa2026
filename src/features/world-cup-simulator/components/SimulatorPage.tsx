@@ -2,12 +2,20 @@
 
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
 import { DASHBOARD_PANEL } from "@/features/dashboard/components/home/dashboard-home.styles";
 import { useWorldCupSimulator } from "@/features/world-cup-simulator/hooks/useWorldCupSimulator";
+import { useCan } from "@/hooks/useCan";
+import type { FixturePhaseSlug } from "@/features/partidos/constants/fixture-phase-filter.constants";
+import {
+  generateKnockoutMatchesFromSimulator,
+  generateMockPredictionsFromSimulator,
+  simulatePhaseResultsFromSimulator,
+} from "@/features/world-cup-simulator/services/simulator-tools.client";
 
 import { BestThirdsPanel } from "./BestThirdsPanel";
 import { EmptySimulatorState } from "./EmptySimulatorState";
@@ -18,7 +26,59 @@ import { SimulatorSummaryPanel } from "./SimulatorSummaryPanel";
 
 export function SimulatorPage() {
   const [activeTab, setActiveTab] = useState("grupos");
+  const [isGeneratingMatches, setIsGeneratingMatches] = useState(false);
+  const [runningPhase, setRunningPhase] = useState<FixturePhaseSlug | null>(null);
+  const [mockingPhase, setMockingPhase] = useState<FixturePhaseSlug | null>(null);
   const simulator = useWorldCupSimulator();
+  const canPersist = useCan("partidos", "crear");
+
+  async function handleGenerateMatches() {
+    try {
+      setIsGeneratingMatches(true);
+      const message = await generateKnockoutMatchesFromSimulator();
+      toast.success(message);
+      await simulator.reload();
+      setActiveTab("llave");
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error instanceof Error ? error.message : "No se pudieron cargar los partidos.",
+      );
+    } finally {
+      setIsGeneratingMatches(false);
+    }
+  }
+
+  async function handleSimulatePhase(phase: FixturePhaseSlug) {
+    try {
+      setRunningPhase(phase);
+      const message = await simulatePhaseResultsFromSimulator(phase);
+      toast.success(message);
+      await simulator.reload();
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error instanceof Error ? error.message : "No se pudo simular la fase.",
+      );
+    } finally {
+      setRunningPhase(null);
+    }
+  }
+
+  async function handleGenerateMocks(phase: FixturePhaseSlug) {
+    try {
+      setMockingPhase(phase);
+      const message = await generateMockPredictionsFromSimulator(phase, 4);
+      toast.success(message);
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error instanceof Error ? error.message : "No se pudieron generar los mocks.",
+      );
+    } finally {
+      setMockingPhase(null);
+    }
+  }
 
   if (simulator.loading) {
     return <DashboardLoading source="Simulador mundial" />;
@@ -44,6 +104,9 @@ export function SimulatorPage() {
         onReset={simulator.resetSimulation}
         onRandomize={simulator.randomizeGroupMatches}
         onShowBracket={() => setActiveTab("llave")}
+        onGenerateMatches={handleGenerateMatches}
+        canPersist={canPersist}
+        isGeneratingMatches={isGeneratingMatches}
       />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -98,6 +161,11 @@ export function SimulatorPage() {
                   rounds={simulator.knockoutRounds}
                   champion={simulator.champion}
                   onScoreChange={simulator.updateKnockoutScore}
+                  canPersist={canPersist}
+                  runningPhase={runningPhase}
+                  mockingPhase={mockingPhase}
+                  onSimulatePhase={handleSimulatePhase}
+                  onGenerateMocks={handleGenerateMocks}
                 />
               </TabsContent>
             </Tabs>

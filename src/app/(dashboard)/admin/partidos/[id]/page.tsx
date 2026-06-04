@@ -17,6 +17,7 @@ export default function PartidoDetallePage() {
 
   const partidoId = params.id;
   const canVerDetalle = useCan("partidos", "ver_detalle");
+  const canEditarPartido = useCan("partidos", "editar");
 
   const { detalle, loading, refreshing, loadData } = usePartidoDetallePage({
     partidoId,
@@ -59,11 +60,13 @@ export default function PartidoDetallePage() {
   return (
     <PartidoDetalleDashboardView
       detalle={detalle}
+      canEditMetadata={canEditarPartido}
       autoRefreshEnabled={autoRefreshEnabled}
       nextRefreshIn={nextRefreshIn}
       isRefreshing={isRefreshing || refreshing}
       lastRefreshAt={lastRefreshAt}
       onBack={() => router.push("/admin/partidos")}
+      onRefreshData={() => void loadData({ silent: true })}
     />
   );
 }

@@ -1,9 +1,11 @@
 "use client";
 
-import { Trophy } from "lucide-react";
+import { DatabaseZap, Shuffle, Trophy, Users } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { FlagImage } from "@/components/ui/flag-image";
 import { DASHBOARD_PANEL } from "@/features/dashboard/components/home/dashboard-home.styles";
+import type { FixturePhaseSlug } from "@/features/partidos/constants/fixture-phase-filter.constants";
 import type { KnockoutRounds, TeamStanding } from "@/features/world-cup-simulator/engine/types";
 
 import { KnockoutRoundColumn } from "./KnockoutRoundColumn";
@@ -17,12 +19,31 @@ type KnockoutBracketProps = {
     value: number | null,
     penaltyWinner?: "local" | "visitante" | null,
   ) => void;
+  canPersist?: boolean;
+  runningPhase?: FixturePhaseSlug | null;
+  mockingPhase?: FixturePhaseSlug | null;
+  onSimulatePhase?: (phase: FixturePhaseSlug) => void;
+  onGenerateMocks?: (phase: FixturePhaseSlug) => void;
 };
+
+const ROUND_PHASES: Array<{ title: string; slug: FixturePhaseSlug }> = [
+  { title: "32avos", slug: "dieciseisavos" },
+  { title: "Octavos", slug: "octavos" },
+  { title: "Cuartos", slug: "cuartos" },
+  { title: "Semifinal", slug: "semis" },
+  { title: "Tercer puesto", slug: "tercer-puesto" },
+  { title: "Final", slug: "final" },
+];
 
 export function KnockoutBracket({
   rounds,
   champion,
   onScoreChange,
+  canPersist = false,
+  runningPhase = null,
+  mockingPhase = null,
+  onSimulatePhase,
+  onGenerateMocks,
 }: KnockoutBracketProps) {
   return (
     <section className={`${DASHBOARD_PANEL} rounded-[32px] p-6`}>
@@ -30,10 +51,48 @@ export function KnockoutBracket({
         <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
           Llave final
         </p>
-        <h2 className="mt-2 text-3xl font-black text-white">Camino al campeón</h2>
+        <h2 className="mt-2 text-3xl font-black text-white">Camino al campeon</h2>
         <p className="mt-2 max-w-3xl text-sm text-white/68">
-          La llave se completa con los clasificados del simulador. Si un partido termina empatado, elegí el ganador por penales para que avance.
+          La llave se completa con los clasificados del simulador. Si un partido
+          termina empatado, elegi el ganador por penales para que avance.
         </p>
+        {canPersist ? (
+          <div className="mt-4 flex flex-wrap gap-3">
+            {ROUND_PHASES.map((phase) => (
+              <div key={phase.slug} className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => onSimulatePhase?.(phase.slug)}
+                  disabled={runningPhase !== null}
+                  className="rounded-full bg-[#5993B6] text-white hover:bg-[#6da3c3]"
+                >
+                  <Shuffle className="mr-2 h-4 w-4" />
+                  {runningPhase === phase.slug
+                    ? `Finalizando ${phase.title}...`
+                    : `Finalizar ${phase.title}`}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onGenerateMocks?.(phase.slug)}
+                  disabled={mockingPhase !== null}
+                  className="rounded-full border-white/15 bg-white/6 text-white hover:bg-white/10"
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  {mockingPhase === phase.slug
+                    ? `Mocks ${phase.title}...`
+                    : `Mocks ${phase.title}`}
+                </Button>
+              </div>
+            ))}
+            <div className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100">
+              <DatabaseZap className="mr-2 inline h-3.5 w-3.5" />
+              Persistencia real de resultados y pronosticos mock
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <div className="overflow-x-auto pb-3">
@@ -84,7 +143,7 @@ export function KnockoutBracket({
 
               <div className="mt-6 rounded-[24px] border border-white/10 bg-white/[0.06] px-4 py-5">
                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#AEEBFF]">
-                  Campeón
+                  Campeon
                 </p>
                 {champion ? (
                   <div className="mt-3 flex flex-col items-center gap-3">

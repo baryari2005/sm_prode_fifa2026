@@ -17,6 +17,16 @@ export const FIXTURE_PHASE_LABELS: Record<FixturePhaseSlug, string> = {
   final: "Final",
 };
 
+export const FIXTURE_PHASE_NAME_BY_SLUG: Record<FixturePhaseSlug, string> = {
+  grupos: "Fase de Grupos",
+  dieciseisavos: "Dieciseisavos de Final",
+  octavos: "Octavos de Final",
+  cuartos: "Cuartos de Final",
+  semis: "Semifinal",
+  "tercer-puesto": "Tercer Puesto",
+  final: "Final",
+};
+
 export const FIXTURE_PHASE_OPTIONS: {
   label: string;
   slug: FixturePhaseSlug;

@@ -1,6 +1,6 @@
 "use client";
 
-import { GitBranch, RefreshCcw, Shuffle, Trophy } from "lucide-react";
+import { Database, GitBranch, RefreshCcw, Shuffle, Trophy } from "lucide-react";
 
 import { PageHeaderWithBrand } from "@/components/brand/PageHeaderWithBrand";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,9 @@ type SimulatorPageHeaderProps = {
   onReset: () => void;
   onRandomize: () => void;
   onShowBracket: () => void;
+  onGenerateMatches?: () => void;
+  canPersist?: boolean;
+  isGeneratingMatches?: boolean;
 };
 
 export function SimulatorPageHeader({
@@ -18,6 +21,9 @@ export function SimulatorPageHeader({
   onReset,
   onRandomize,
   onShowBracket,
+  onGenerateMatches,
+  canPersist = false,
+  isGeneratingMatches = false,
 }: SimulatorPageHeaderProps) {
   return (
     <PageHeaderWithBrand
@@ -55,6 +61,17 @@ export function SimulatorPageHeader({
             <GitBranch className="mr-2 h-4 w-4" />
             Ver llave
           </Button>
+          {canPersist && onGenerateMatches ? (
+            <Button
+              type="button"
+              onClick={onGenerateMatches}
+              disabled={isGeneratingMatches}
+              className="rounded-full border border-emerald-300/35 bg-emerald-400/12 text-emerald-100 hover:bg-emerald-400/18"
+            >
+              <Database className={`mr-2 h-4 w-4 ${isGeneratingMatches ? "animate-pulse" : ""}`} />
+              {isGeneratingMatches ? "Cargando partidos..." : "Cargar partidos"}
+            </Button>
+          ) : null}
         </>
       }
     >

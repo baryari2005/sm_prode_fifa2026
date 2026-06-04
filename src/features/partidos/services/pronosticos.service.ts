@@ -127,11 +127,122 @@ async function recomputarRankingUsuarios(
   }
 }
 
+async function recomputarRankingUsuariosPorFase(
+  tx: Prisma.TransactionClient,
+  usuarioIds: string[]
+) {
+  const uniqueUserIds = Array.from(new Set(usuarioIds.filter(Boolean)));
+
+  for (const usuarioId of uniqueUserIds) {
+    const groupedPredictions = await tx.prediccionPartido.groupBy({
+      by: ["usuarioId", "aciertoTipo", "calculadoAt", "partidoId"],
+      where: {
+        usuarioId,
+      },
+    });
+
+    const partidoIds = Array.from(
+      new Set(groupedPredictions.map((item) => item.partidoId))
+    );
+
+    if (partidoIds.length === 0) {
+      await tx.rankingUsuarioFase.deleteMany({
+        where: { usuarioId },
+      });
+      continue;
+    }
+
+    const predictions = await tx.prediccionPartido.findMany({
+      where: {
+        usuarioId,
+        partidoId: {
+          in: partidoIds,
+        },
+      },
+      include: {
+        partido: {
+          select: {
+            faseId: true,
+          },
+        },
+      },
+    });
+
+    const summaryByPhase = new Map<
+      number,
+      {
+        puntosTotales: number;
+        aciertosExactos: number;
+        aciertosTendencia: number;
+        partidosPronosticados: number;
+        partidosCalificados: number;
+      }
+    >();
+
+    for (const prediction of predictions) {
+      const faseId = prediction.partido.faseId;
+      const current = summaryByPhase.get(faseId) ?? {
+        puntosTotales: 0,
+        aciertosExactos: 0,
+        aciertosTendencia: 0,
+        partidosPronosticados: 0,
+        partidosCalificados: 0,
+      };
+
+      current.puntosTotales += prediction.puntosOtorgados ?? 0;
+      current.partidosPronosticados += 1;
+
+      if (prediction.calculadoAt) {
+        current.partidosCalificados += 1;
+      }
+
+      if (prediction.aciertoTipo === AciertoTipo.EXACTO) {
+        current.aciertosExactos += 1;
+      }
+
+      if (prediction.aciertoTipo === AciertoTipo.TENDENCIA) {
+        current.aciertosTendencia += 1;
+      }
+
+      summaryByPhase.set(faseId, current);
+    }
+
+    const activePhaseIds = Array.from(summaryByPhase.keys());
+
+    await tx.rankingUsuarioFase.deleteMany({
+      where: {
+        usuarioId,
+        faseId: {
+          notIn: activePhaseIds,
+        },
+      },
+    });
+
+    for (const [faseId, summary] of summaryByPhase.entries()) {
+      await tx.rankingUsuarioFase.upsert({
+        where: {
+          usuarioId_faseId: {
+            usuarioId,
+            faseId,
+          },
+        },
+        create: {
+          usuarioId,
+          faseId,
+          ...summary,
+        },
+        update: summary,
+      });
+    }
+  }
+}
+
 export async function recomputarRankingUsuariosPorIds(
   tx: Prisma.TransactionClient,
   usuarioIds: string[]
 ) {
   await recomputarRankingUsuarios(tx, usuarioIds);
+  await recomputarRankingUsuariosPorFase(tx, usuarioIds);
 }
 
 export async function recalcularPronosticosDePartido(
@@ -189,6 +300,7 @@ export async function recalcularPronosticosDePartido(
   }
 
   await recomputarRankingUsuarios(tx, usuarioIds);
+  await recomputarRankingUsuariosPorFase(tx, usuarioIds);
 
   return {
     partidoId,
@@ -287,7 +399,90 @@ export async function recalcularPronosticosFinalizadosEnRango(
     }
   }
 
-  await recomputarRankingUsuarios(tx, Array.from(usuarioIds));
+  const usuarioIdsList = Array.from(usuarioIds);
+  await recomputarRankingUsuarios(tx, usuarioIdsList);
+  await recomputarRankingUsuariosPorFase(tx, usuarioIdsList);
+
+  return {
+    partidosProcesados,
+    prediccionesProcesadas,
+    usuariosActualizados: usuarioIds.size,
+  };
+}
+
+export async function recalcularPronosticosFinalizadosDeFase(
+  tx: Prisma.TransactionClient,
+  faseId: number,
+) {
+  const partidos = await tx.partido.findMany({
+    where: {
+      activo: true,
+      faseId,
+      resultado: {
+        is: {
+          estado: "FINALIZADO",
+        },
+      },
+    },
+    include: {
+      fase: {
+        include: {
+          reglasPuntaje: true,
+        },
+      },
+      resultado: true,
+      predicciones: true,
+    },
+    orderBy: {
+      fecha: "asc",
+    },
+  });
+
+  const usuarioIds = new Set<string>();
+  let partidosProcesados = 0;
+  let prediccionesProcesadas = 0;
+
+  for (const partido of partidos) {
+    if (!partido.resultado) {
+      continue;
+    }
+
+    partidosProcesados += 1;
+
+    for (const prediccion of partido.predicciones) {
+      const regla = partido.fase?.reglasPuntaje?.[0]
+        ? {
+            puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
+            puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
+            puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
+          }
+        : undefined;
+
+      const score = calcularPuntajePronostico({
+        prediccionLocal: prediccion.golesLocal,
+        prediccionVisitante: prediccion.golesVisitante,
+        resultadoLocal: partido.resultado.golesLocal,
+        resultadoVisitante: partido.resultado.golesVisitante,
+        regla,
+      });
+
+      await tx.prediccionPartido.update({
+        where: { id: prediccion.id },
+        data: {
+          puntosOtorgados: score.puntosOtorgados,
+          aciertoTipo: score.aciertoTipo,
+          calculadoAt: new Date(),
+        },
+      });
+
+      usuarioIds.add(prediccion.usuarioId);
+      prediccionesProcesadas += 1;
+    }
+  }
+
+  const usuarioIdsList = Array.from(usuarioIds);
+  await recomputarRankingUsuarios(tx, usuarioIdsList);
+  await recomputarRankingUsuariosPorFase(tx, usuarioIdsList);
 
   return {
     partidosProcesados,

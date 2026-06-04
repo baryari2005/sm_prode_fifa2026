@@ -4,7 +4,11 @@ import { HeroVisualImage } from "@/components/brand/HeroVisualImage";
 import { brandImages } from "@/config/brand-images";
 import { DASHBOARD_HERO_PATTERN } from "@/features/dashboard/components/home/dashboard-home.styles";
 
-export function RankingHeader() {
+type RankingHeaderProps = {
+  currentScopeLabel?: string;
+};
+
+export function RankingHeader({ currentScopeLabel = "Ranking general" }: RankingHeaderProps) {
   return (
     <section className="relative h-full w-full min-w-0 overflow-hidden rounded-[30px] border border-white/10 bg-[#1E2C46] px-4 py-5 text-white shadow-[0_24px_70px_rgba(2,6,23,0.24)] md:px-6 md:py-6 xl:min-h-[392px] xl:px-7 xl:py-6 2xl:min-h-[420px] 2xl:px-8 2xl:py-7">
       <div className="pointer-events-none absolute inset-0">
@@ -29,7 +33,7 @@ export function RankingHeader() {
 
           <p className="max-w-[640px] pt-2 text-[0.95rem] leading-7 text-white/78 xl:text-[1rem]">
             El orgullo del barrio se juega fecha a fecha. Segui tu posicion,
-            tus puntos acumulados y el historial de pronosticos ya calificados.
+            tus puntos de {currentScopeLabel.toLowerCase()} y el historial de pronosticos ya calificados.
           </p>
         </div>
       </div>

@@ -35,6 +35,11 @@ export type HistorialPronosticoDTO = {
 
 type RankingResponse = {
   data?: {
+    fase?: {
+      id: number;
+      nombre: string;
+      orden: number;
+    } | null;
     miRanking?: RankingRowDTO;
     ranking?: RankingRowDTO[];
     historial?: HistorialPronosticoDTO[];
@@ -42,16 +47,27 @@ type RankingResponse = {
   message?: string;
 };
 
-export async function getPronosticosRanking() {
+export async function getPronosticosRanking(params?: {
+  faseId?: number | null;
+  scope?: "grupos" | "eliminatorias";
+}) {
   const response = await axiosInstance.get<RankingResponse>("/pronosticos/ranking", {
     headers: {
       "Cache-Control": "no-cache",
     },
+    params:
+      params?.faseId || params?.scope
+        ? {
+            ...(params.faseId ? { faseId: params.faseId } : {}),
+            ...(params.scope ? { scope: params.scope } : {}),
+          }
+        : undefined,
   });
 
   const data = response.data;
 
   return {
+    fase: data.data?.fase ?? null,
     miRanking: data.data?.miRanking ?? null,
     ranking: data.data?.ranking ?? [],
     historial: data.data?.historial ?? [],
