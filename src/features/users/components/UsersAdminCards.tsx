@@ -28,6 +28,11 @@ import { axiosInstance } from "@/lib/axios";
 import { formatApiMessage } from "@/utils/formatters";
 import { DASHBOARD_SUBCARD } from "@/features/dashboard/components/home/dashboard-home.styles";
 import { UserRow } from "../types/types";
+import {
+  canManageProtectedDevSup,
+  isProtectedDevSupUser,
+} from "../lib/user-protection";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 
 type UsersAdminCardsProps = {
   refresh?: string | number | boolean | null | undefined;
@@ -64,6 +69,7 @@ function UsersAdminCardsRenderer({
 }: UsersAdminCardsRendererProps) {
   const canDelete = useCan("usuarios", "eliminar");
   const canEdit = useCan("usuarios", "editar");
+  const { user: currentUser } = useCurrentUser();
 
   function buildDisplayName(user: UserRow) {
     return [user.nombre, user.apellido].filter(Boolean).join(" ") || user.userId;
@@ -76,6 +82,8 @@ function UsersAdminCardsRenderer({
   function buildActions(user: UserRow) {
     const actions: TableAction[] = [];
     const isApproved = user.aprobado ?? true;
+    const isProtectedDevSup = isProtectedDevSupUser(user);
+    const canManageProtectedUser = canManageProtectedDevSup(currentUser ?? {});
 
     if (canEdit) {
       actions.push({
@@ -85,7 +93,7 @@ function UsersAdminCardsRenderer({
       });
     }
 
-    if (isApproved && canEdit) {
+    if (isApproved && canEdit && (!isProtectedDevSup || canManageProtectedUser)) {
       actions.push({
         label: "Deshabilitar",
         icon: <UserX className="h-4 w-4" />,
@@ -108,7 +116,7 @@ function UsersAdminCardsRenderer({
       });
     }
 
-    if (canDelete) {
+    if (canDelete && (!isProtectedDevSup || canManageProtectedUser)) {
       actions.push({
         label: "Eliminar",
         icon: <Trash2 className="h-4 w-4" />,
@@ -177,6 +185,7 @@ function UsersAdminCardsRenderer({
             const displayName = buildDisplayName(user);
             const isApproved = user.aprobado ?? true;
             const actions = buildActions(user);
+            const isProtectedDevSup = isProtectedDevSupUser(user);
 
             return (
               <article
@@ -205,6 +214,12 @@ function UsersAdminCardsRenderer({
                           <Badge className="rounded-full border-[#FAB438]/18 bg-[#FAB438]/10 text-[#FFE4A3] hover:bg-[#FAB438]/10">
                             {user.rol?.nombre ?? "Sin rol"}
                           </Badge>
+
+                          {isProtectedDevSup ? (
+                            <Badge className="rounded-full border-sky-300/18 bg-sky-300/10 text-sky-100 hover:bg-sky-300/10">
+                              Blindado
+                            </Badge>
+                          ) : null}
 
                           <Badge
                             className={

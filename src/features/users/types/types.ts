@@ -51,3 +51,8 @@ export type UserRow = {
   rol?: { id: number; nombre: string } | null;
   localidad?: string | null;
 };
+
+export type UserProtectionMeta = {
+  isProtectedDevSup?: boolean;
+  canManageProtectedDevSup?: boolean;
+};

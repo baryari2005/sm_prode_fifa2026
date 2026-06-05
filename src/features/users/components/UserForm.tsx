@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { formatMessage } from "@/utils/formatters";
 
 import { UserFormFields } from "./UserFormFields";
-import { UserFormValues } from "../types/types";
+import { UserFormValues, type UserProtectionMeta } from "../types/types";
 import { useUserForm } from "../hooks/useUserForm";
 
 type Mode = "create" | "edit";
@@ -20,7 +20,7 @@ type Props = {
   defaultValues?: Partial<UserFormValues> & {
     id?: string;
     rol?: { id: number };
-  };
+  } & UserProtectionMeta;
   onSuccess?: (id: string) => void;
   className?: string;
 };
@@ -98,6 +98,10 @@ export function UserForm({ mode, defaultValues, onSuccess, className }: Props) {
         form={form}
         roles={roles}
         loadingRoles={loadingRoles}
+        disableRoleField={
+          !!defaultValues?.isProtectedDevSup &&
+          !defaultValues?.canManageProtectedDevSup
+        }
         currentAvatarUrl={defaultValues?.avatarUrl || null}
         onTempAvatarUploaded={setTmpPath}
       />

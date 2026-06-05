@@ -14,7 +14,12 @@ import {
   DASHBOARD_TOP_LINE_SWEEP,
 } from "@/features/dashboard/components/home/dashboard-home.styles";
 import DashboardLoading from "@/features/dashboard/components/loading/DashboardLoading";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { UserForm } from "@/features/users/components/UserForm";
+import {
+  canManageProtectedDevSup,
+  isProtectedDevSupUser,
+} from "@/features/users/lib/user-protection";
 import { UserFormValues } from "@/features/users/types/types";
 import { useCan } from "@/hooks/useCan";
 import AccessDenied403Page from "../../403/page";
@@ -22,6 +27,8 @@ import AccessDenied403Page from "../../403/page";
 type EditUserInitialValues = Partial<UserFormValues> & {
   id?: string;
   rol?: { id: number };
+  isProtectedDevSup?: boolean;
+  canManageProtectedDevSup?: boolean;
 };
 
 export default function EditUserPage() {
@@ -39,6 +46,7 @@ function EditUserContent({ id }: { id: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [initial, setInitial] = useState<EditUserInitialValues | null>(null);
+  const { user: currentUser } = useCurrentUser();
 
   useEffect(() => {
     (async () => {
@@ -51,6 +59,8 @@ function EditUserContent({ id }: { id: string }) {
       });
 
       const data = await res.json();
+      const isProtectedUser = isProtectedDevSupUser(data);
+      const canManageProtectedUser = canManageProtectedDevSup(currentUser ?? {});
 
       setInitial({
         id,
@@ -71,11 +81,13 @@ function EditUserContent({ id }: { id: string }) {
         genero: data.genero ?? undefined,
         estadoCivil: data.estadoCivil ?? undefined,
         nacionalidad: data.nacionalidad ?? undefined,
+        isProtectedDevSup: isProtectedUser,
+        canManageProtectedDevSup: canManageProtectedUser,
       });
 
       setLoading(false);
     })();
-  }, [id]);
+  }, [currentUser, id]);
 
   if (loading || !initial) {
     return <DashboardLoading source="Usuarios detalle" />;
@@ -114,6 +126,12 @@ function EditUserContent({ id }: { id: string }) {
                 Actualizá la información del usuario y conserva la consistencia de sus
                 datos de acceso dentro del mismo lenguaje visual del panel.
               </p>
+              {initial.isProtectedDevSup && !initial.canManageProtectedDevSup ? (
+                <p className="max-w-[760px] text-sm leading-6 text-amber-200/90">
+                  El usuario `dev-sup` tiene blindados el rol, la aprobaciÃ³n y la
+                  eliminaciÃ³n. Solo otro `dev-sup` puede administrar esos cambios.
+                </p>
+              ) : null}
             </div>
           </div>
 

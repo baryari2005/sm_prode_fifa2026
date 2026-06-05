@@ -94,11 +94,13 @@ export function UserFormFields({
   form,
   roles,
   loadingRoles,
+  disableRoleField = false,
 }: {
   mode: Mode;
   form: UseFormReturn<UserFormValues>;
   roles: Array<{ id: number; nombre: string }>;
   loadingRoles: boolean;
+  disableRoleField?: boolean;
   currentAvatarUrl?: string | null;
   onTempAvatarUploaded?: (tmpPath: string) => void;
 }) {
@@ -200,8 +202,13 @@ export function UserFormFields({
             })
           }
           roles={roles}
-          disabled={loadingRoles || isSubmitting}          
+          disabled={loadingRoles || isSubmitting || disableRoleField}
         />
+        {disableRoleField ? (
+          <p className="text-xs text-muted-foreground">
+            El rol de un usuario `dev-sup` solo puede modificarlo otro `dev-sup`.
+          </p>
+        ) : null}
         {errors.rolId && (
           <p className="text-xs text-red-600">{String(errors.rolId.message)}</p>
         )}

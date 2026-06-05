@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { PatchUserDto } from "../schemas/user.patch.schema";
 import { ymdToUTCDate } from "../lib/user.date";
+import { shouldBlockProtectedDevSupMutation } from "../lib/user-protection";
 
 function toNull(v: unknown) {
   return v === "" || v === undefined ? null : v;
@@ -28,14 +29,34 @@ export async function getUserByIdOrThrow(id: string) {
   return user;
 }
 
-export async function updateUserById(id: string, dto: PatchUserDto) {
+export async function updateUserById(
+  id: string,
+  dto: PatchUserDto,
+  actor?: { rol?: { nombre?: string | null } | null },
+) {
   const exists = await prisma.usuario.findUnique({
     where: { id },
+    include: { rol: true },
   });
 
   if (!exists || exists.deletedAt) {
     const error = new Error("Usuario no encontrado");
     (error as Error & { status?: number }).status = 404;
+    throw error;
+  }
+
+  if (
+    actor &&
+    shouldBlockProtectedDevSupMutation({
+      actor,
+      target: exists,
+    }) &&
+    ("rolId" in dto || "aprobado" in dto)
+  ) {
+    const error = new Error(
+      "El usuario con rol dev-sup solo puede ser administrado por otro dev-sup."
+    );
+    (error as Error & { status?: number }).status = 403;
     throw error;
   }
 
@@ -78,14 +99,32 @@ export async function updateUserById(id: string, dto: PatchUserDto) {
   return updated;
 }
 
-export async function softDeleteUserById(id: string) {
+export async function softDeleteUserById(
+  id: string,
+  actor?: { rol?: { nombre?: string | null } | null },
+) {
   const user = await prisma.usuario.findUnique({
     where: { id },
+    include: { rol: true },
   });
 
   if (!user || user.deletedAt) {
     const error = new Error("Usuario no encontrado");
     (error as Error & { status?: number }).status = 404;
+    throw error;
+  }
+
+  if (
+    actor &&
+    shouldBlockProtectedDevSupMutation({
+      actor,
+      target: user,
+    })
+  ) {
+    const error = new Error(
+      "El usuario con rol dev-sup solo puede ser eliminado por otro dev-sup."
+    );
+    (error as Error & { status?: number }).status = 403;
     throw error;
   }
 

@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest, ctx: RouteContext) {
     const body = await req.json();
     const dto = patchUserSchema.parse(body);
 
-    const updated = await updateUserById(id, dto);
+    const updated = await updateUserById(id, dto, loggedInUser);
 
     return NextResponse.json(toUserDetail(updated));
   } catch (error) {
@@ -55,7 +55,7 @@ export async function DELETE(req: NextRequest, ctx: RouteContext) {
 
   try {
     const { id } = await ctx.params;
-    await softDeleteUserById(id);
+    await softDeleteUserById(id, loggedInUser);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

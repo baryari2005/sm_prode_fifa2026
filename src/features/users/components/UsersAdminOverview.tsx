@@ -6,6 +6,7 @@ import Image from "next/image";
 import {
   CheckCheck,
   Clock3,
+  FileSpreadsheet,
   ShieldCheck,
   UserPlus,
   Users,
@@ -28,6 +29,7 @@ import { usePendingUsers } from "@/features/dashboard/hooks/usePendingUsers";
 import { ApproveAllUsersDialog } from "@/features/users/components/ApproveAllUsersDialog";
 import { useRoles } from "@/features/users/hooks/useRoles";
 import { approveAllUsers } from "@/features/users/services/user-client.service";
+import { useExportUsers } from "@/features/users/export/hooks/useExportUsers";
 import { UsersAdminCards } from "./UsersAdminCards";
 import { LateralSummaryHeader } from "@/components/ui/lateralSummaryHeader";
 import { brandImages } from "@/config/brand-images";
@@ -35,16 +37,19 @@ import { brandImages } from "@/config/brand-images";
 type UsersAdminOverviewProps = {
   canCreate: boolean;
   canApproveAll: boolean;
+  canExport: boolean;
 };
 
 export function UsersAdminOverview({
   canCreate,
   canApproveAll,
+  canExport,
 }: UsersAdminOverviewProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [usersTotal, setUsersTotal] = useState(0);
   const [approvingAll, setApprovingAll] = useState(false);
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
+  const { loading: exporting, handleExport } = useExportUsers();
 
   const { count: pendingCount, loading: pendingLoading } = usePendingUsers(
     true,
@@ -188,6 +193,19 @@ export function UsersAdminOverview({
                         <UserPlus className="mr-2 h-4 w-4" />
                         Nuevo usuario
                       </Link>
+                    </Button>
+                  ) : null}
+
+                  {canExport ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleExport}
+                      disabled={exporting}
+                      className="rounded-2xl border-white/15 bg-white/10 text-white hover:bg-white/15"
+                    >
+                      <FileSpreadsheet className="mr-2 h-4 w-4" />
+                      {exporting ? "Exportando..." : "Exportar Excel"}
                     </Button>
                   ) : null}
                 </div>
