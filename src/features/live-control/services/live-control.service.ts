@@ -142,6 +142,13 @@ function buildObservaciones(source: "api" | "manual", estado: EstadoPartido, min
   return `Marcador en vivo sincronizado desde football-data.org${suffix}.`;
 }
 
+function isLiveSyncEstado(estado: EstadoPartido) {
+  return (
+    estado === EstadoPartido.EN_JUEGO ||
+    estado === EstadoPartido.ENTRETIEMPO
+  );
+}
+
 export function calculateScoreFromEvents(
   partido: Pick<MatchWithRelations, "seleccionLocalId" | "seleccionVisitanteId" | "eventosLive">,
 ) {
@@ -863,11 +870,23 @@ export async function syncSingleMatchNow(partidoId: string, options?: Omit<SyncM
 }
 
 export async function syncLiveMatches(options?: SyncMatchOptions) {
+  const now = new Date();
+  const liveWindowStart = new Date(now.getTime() - 4 * 60 * 60 * 1000);
+  const liveWindowEnd = new Date(now.getTime() + 15 * 60 * 1000);
+
   const partidos = await prisma.partido.findMany({
     where: {
       activo: true,
       footballDataId: { not: null },
       ...(options?.partidoId ? { id: options.partidoId } : {}),
+      ...(!options?.partidoId
+        ? {
+            fecha: {
+              gte: liveWindowStart,
+              lte: liveWindowEnd,
+            },
+          }
+        : {}),
       OR: [
         { resultado: { is: null } },
         {
@@ -921,6 +940,18 @@ export async function syncLiveMatches(options?: SyncMatchOptions) {
           : await getLiveMatchDetailFromApi(partido.footballDataId);
 
       const estado = mapApiStatusToEstado(remote.status);
+
+      if (!isLiveSyncEstado(estado)) {
+        items.push({
+          partidoId: partido.id,
+          footballDataId: partido.footballDataId,
+          action: "skipped",
+          message: `${partido.seleccionLocal.nombre} vs ${partido.seleccionVisitante.nombre}: omitido porque el estado remoto es ${remote.status}.`,
+          createdEvents: 0,
+        });
+        continue;
+      }
+
       const existingEvents = partido.eventosLive.map((event) => ({
         ...event,
         equipoId: event.equipoId ?? null,
@@ -971,7 +1002,7 @@ export async function syncLiveMatches(options?: SyncMatchOptions) {
           tx,
           partidoActualizado as MatchWithRelations,
           estado,
-          estado === EstadoPartido.FINALIZADO ? 90 : remote.minute ?? null,
+          remote.minute ?? null,
           buildObservaciones("api", estado, remote.minute ?? null),
           {
             local: remote.score?.fullTime?.home ?? null,
