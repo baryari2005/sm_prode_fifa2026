@@ -247,7 +247,13 @@ export function isPredictionClosed(
 }
 
 export function hasMatchStartedForPrediction(partido: PartidoConRelaciones) {
-  return Boolean(partido.resultado);
+  const estado = partido.resultado?.estado;
+
+  if (!estado) {
+    return false;
+  }
+
+  return estado !== "PENDIENTE";
 }
 
 export function isPredictionBlocked(
