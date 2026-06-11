@@ -90,7 +90,18 @@ function normalizeApiUrl(rawUrl: string) {
 
 function buildMatchDetailUrl(baseMatchesUrl: string, matchId: number) {
   const normalized = normalizeApiUrl(baseMatchesUrl).replace(/\/+$/, "");
+  const matchDetailPattern = /\/matches\/\d+$/;
   const matchCollectionSuffix = "/matches";
+  const competitionMatchesPattern = /\/competitions\/[^/]+\/matches$/;
+
+  if (matchDetailPattern.test(normalized)) {
+    return normalized;
+  }
+
+  if (competitionMatchesPattern.test(normalized)) {
+    const apiRoot = normalized.replace(/\/competitions\/[^/]+\/matches$/, "");
+    return `${apiRoot}/matches/${matchId}`;
+  }
 
   if (normalized.endsWith(matchCollectionSuffix)) {
     return `${normalized}/${matchId}`;
@@ -446,9 +457,27 @@ async function registerLiveAudit(
   });
 }
 
-async function ensureResultadoFromLive(tx: Tx, partido: MatchWithRelations, estado: EstadoPartido, minuto: number | null, observaciones: string | null) {
-  const score = calculateScoreFromEvents(partido);
+async function ensureResultadoFromLive(
+  tx: Tx,
+  partido: MatchWithRelations,
+  estado: EstadoPartido,
+  minuto: number | null,
+  observaciones: string | null,
+  remoteScore?: {
+    local?: number | null;
+    visitante?: number | null;
+    penalesLocal?: number | null;
+    penalesVisitante?: number | null;
+  },
+) {
+  const eventScore = calculateScoreFromEvents(partido);
+  const score = {
+    local: remoteScore?.local ?? eventScore.local,
+    visitante: remoteScore?.visitante ?? eventScore.visitante,
+  };
   const cards = calculateCardsFromEvents(partido);
+  const penalesLocal = remoteScore?.penalesLocal ?? null;
+  const penalesVisitante = remoteScore?.penalesVisitante ?? null;
 
   if (partido.resultado) {
     await tx.resultado.update({
@@ -456,6 +485,8 @@ async function ensureResultadoFromLive(tx: Tx, partido: MatchWithRelations, esta
       data: {
         golesLocal: score.local,
         golesVisitante: score.visitante,
+        penalesLocal,
+        penalesVisitante,
         estado,
         tiempoJuego: estado === EstadoPartido.FINALIZADO ? 90 : minuto,
         observaciones,
@@ -475,6 +506,8 @@ async function ensureResultadoFromLive(tx: Tx, partido: MatchWithRelations, esta
       partidoId: partido.id,
       golesLocal: score.local,
       golesVisitante: score.visitante,
+      penalesLocal,
+      penalesVisitante,
       estado,
       tiempoJuego: estado === EstadoPartido.FINALIZADO ? 90 : minuto,
       observaciones,
@@ -917,6 +950,12 @@ export async function syncLiveMatches(options?: SyncMatchOptions) {
           estado,
           estado === EstadoPartido.FINALIZADO ? 90 : remote.minute ?? null,
           buildObservaciones("api", estado, remote.minute ?? null),
+          {
+            local: remote.score?.fullTime?.home ?? null,
+            visitante: remote.score?.fullTime?.away ?? null,
+            penalesLocal: remote.score?.penalties?.home ?? null,
+            penalesVisitante: remote.score?.penalties?.away ?? null,
+          },
         );
       });
 
