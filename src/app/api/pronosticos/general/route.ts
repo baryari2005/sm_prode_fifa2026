@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { EstadoPartido } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/server-auth";
@@ -29,6 +30,7 @@ type PartidoParaValidar = {
   activo: boolean;
   resultado: {
     id: string;
+    estado: EstadoPartido;
   } | null;
 };
 
@@ -37,6 +39,14 @@ function isPredictionClosed(fechaPartido: Date | string) {
   const closeAt = matchDate - PREDICTION_CLOSE_MINUTES_BEFORE * 60 * 1000;
 
   return Date.now() >= closeAt;
+}
+
+function isPredictionBlockedByMatchState(
+  resultado: PartidoParaValidar["resultado"]
+) {
+  if (!resultado) return false;
+
+  return resultado.estado !== EstadoPartido.PENDIENTE;
 }
 
 function removeDuplicatedPredictions(items: PronosticoBulkItem[]) {
@@ -82,6 +92,7 @@ export async function POST(req: NextRequest) {
         resultado: {
           select: {
             id: true,
+            estado: true,
           },
         },
       },
@@ -117,11 +128,11 @@ export async function POST(req: NextRequest) {
         return;
       }
 
-      if (partido.resultado) {
+      if (isPredictionBlockedByMatchState(partido.resultado)) {
         errors.push({
           partidoId: pronostico.partidoId,
           message:
-            "El pronostico de este partido ya no se puede modificar porque el partido esta iniciado",
+            "El pronostico de este partido ya no se puede modificar porque el partido ya no esta pendiente",
         });
         return;
       }

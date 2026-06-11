@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { EstadoPartido } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/server-auth";
@@ -16,6 +17,14 @@ const pronosticoSchema = z.object({
 function isPredictionClosed(fecha: Date, minutesBefore = 60) {
   const closeTime = fecha.getTime() - minutesBefore * 60 * 1000;
   return Date.now() >= closeTime;
+}
+
+function isPredictionBlockedByMatchState(
+  resultado: { estado: EstadoPartido } | null
+) {
+  if (!resultado) return false;
+
+  return resultado.estado !== EstadoPartido.PENDIENTE;
 }
 
 export async function GET(req: NextRequest) {
@@ -99,11 +108,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (partido.resultado) {
+    if (isPredictionBlockedByMatchState(partido.resultado)) {
       return NextResponse.json(
         {
           message:
-            "No se puede modificar el pronostico porque el partido ya esta iniciado.",
+            "No se puede modificar el pronostico porque el partido ya no esta pendiente.",
         },
         { status: 400 }
       );
