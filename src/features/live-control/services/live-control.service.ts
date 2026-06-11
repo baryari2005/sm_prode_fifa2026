@@ -361,24 +361,47 @@ async function getLiveMatchDetailFromApi(matchId: number): Promise<RemoteLiveMat
     cache: "no-store",
   });
 
-  const payload = (await response.json()) as
+  const rawPayload = await response.text();
+  let payload: (
     | {
         id?: number;
         status?: string;
         minute?: number | null;
         score?: RemoteLiveMatch["score"];
       }
-    | { match?: RemoteLiveMatch; message?: string };
+    | { match?: RemoteLiveMatch; message?: string }
+    | null
+  ) = null;
 
-  if (!response.ok) {
-    throw new Error(("message" in payload && payload.message) || `Error al consultar match ${matchId}`);
+  if (rawPayload) {
+    try {
+      payload = JSON.parse(rawPayload) as
+        | {
+            id?: number;
+            status?: string;
+            minute?: number | null;
+            score?: RemoteLiveMatch["score"];
+          }
+        | { match?: RemoteLiveMatch; message?: string };
+    } catch {
+      payload = null;
+    }
   }
 
-  if ("match" in payload && payload.match) {
+  if (!response.ok) {
+    const providerMessage =
+      payload && "message" in payload && typeof payload.message === "string"
+        ? payload.message
+        : rawPayload.trim();
+
+    throw new Error(providerMessage || `Error al consultar match ${matchId}`);
+  }
+
+  if (payload && "match" in payload && payload.match) {
     return payload.match;
   }
 
-  if ("id" in payload && typeof payload.id === "number" && payload.status) {
+  if (payload && "id" in payload && typeof payload.id === "number" && payload.status) {
     return {
       footballDataId: payload.id,
       status: payload.status,
