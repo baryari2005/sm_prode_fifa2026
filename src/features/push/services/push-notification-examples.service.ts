@@ -7,6 +7,11 @@ type TargetableNotificationInput = {
   body?: string;
 };
 
+type TodayMatchesNotificationInput = {
+  userIds?: string[];
+  body?: string;
+};
+
 async function getUsersWithActiveSubscriptions(userIds?: string[]) {
   const subscriptions = await prisma.pushSubscription.findMany({
     where: {
@@ -25,6 +30,63 @@ async function getUsersWithActiveSubscriptions(userIds?: string[]) {
   });
 
   return Array.from(new Set(subscriptions.map((item) => item.userId)));
+}
+
+function getArgentinaTodayBounds(baseDate = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  })
+    .formatToParts(baseDate)
+    .reduce<Record<string, string>>((acc, part) => {
+      if (part.type !== "literal") {
+        acc[part.type] = part.value;
+      }
+      return acc;
+    }, {});
+
+  const year = parts.year;
+  const month = parts.month;
+  const day = parts.day;
+
+  return {
+    start: new Date(`${year}-${month}-${day}T00:00:00-03:00`),
+    end: new Date(`${year}-${month}-${day}T23:59:59.999-03:00`),
+  };
+}
+
+function formatArgentinaMatchHour(fecha: Date | string) {
+  return new Intl.DateTimeFormat("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(fecha));
+}
+
+function buildTodayMatchesBody(
+  matches: Array<{
+    fecha: Date;
+    seleccionLocal: { nombre: string };
+    seleccionVisitante: { nombre: string };
+  }>,
+) {
+  if (matches.length === 0) {
+    return "Hoy no hay partidos programados.";
+  }
+
+  const preview = matches.slice(0, 3).map((match) => {
+    const hora = formatArgentinaMatchHour(match.fecha);
+    return `${match.seleccionLocal.nombre} vs ${match.seleccionVisitante.nombre} ${hora} hs`;
+  });
+
+  if (matches.length <= 3) {
+    return `Partidos de hoy: ${preview.join(" | ")}`;
+  }
+
+  return `Partidos de hoy: ${preview.join(" | ")} | y ${matches.length - 3} mas.`;
 }
 
 export async function notifyPredictionClosed(input: TargetableNotificationInput) {
@@ -162,4 +224,47 @@ export async function notifyMatchFinished(input: TargetableNotificationInput) {
       tipo: "PARTIDO_FINALIZADO",
     },
   });
+}
+
+export async function notifyTodayMatches(input: TodayMatchesNotificationInput = {}) {
+  const { start, end } = getArgentinaTodayBounds();
+  const matches = await prisma.partido.findMany({
+    where: {
+      activo: true,
+      fecha: {
+        gte: start,
+        lte: end,
+      },
+    },
+    include: {
+      seleccionLocal: true,
+      seleccionVisitante: true,
+    },
+    orderBy: {
+      fecha: "asc",
+    },
+  });
+
+  const targetUserIds = await getUsersWithActiveSubscriptions(input.userIds);
+  const result = await sendPushNotificationToManyUsers(targetUserIds, {
+    title: "Partidos de hoy",
+    body: input.body?.trim() || buildTodayMatchesBody(matches),
+    url: "/pronosticos",
+    tag: `partidos-de-hoy:${start.toISOString().slice(0, 10)}`,
+    data: {
+      tipo: "PARTIDOS_DE_HOY",
+      date: start.toISOString().slice(0, 10),
+      totalMatches: matches.length,
+    },
+  });
+
+  return {
+    ...result,
+    matches: matches.map((match) => ({
+      id: match.id,
+      fecha: match.fecha,
+      local: match.seleccionLocal.nombre,
+      visitante: match.seleccionVisitante.nombre,
+    })),
+  };
 }

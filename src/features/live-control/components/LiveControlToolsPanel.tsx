@@ -60,6 +60,7 @@ const ACTION_OPTIONS = [
   { value: "bulk_update_selected_matches_metadata", label: "Actualizar sede de varios partidos" },
   { value: "reset_fixture_from_api", label: "Volver a foja cero desde API" },
   { value: "send_test_push", label: "Enviar push de prueba" },
+  { value: "notify_today_matches", label: "Enviar partidos de hoy" },
   { value: "notify_prediction_closing_soon", label: "Notificar cierre de pronostico (1h)" },
   { value: "notify_match_finished", label: "Notificar resultado final" },
 ];
@@ -480,6 +481,7 @@ export function LiveControlToolsPanel({
     }
 
     if (
+      action === "notify_today_matches" ||
       action === "notify_prediction_closing_soon" ||
       action === "notify_match_finished"
     ) {
@@ -1111,6 +1113,7 @@ export function LiveControlToolsPanel({
               </p>
             </div>
           ) : action === "send_test_push" ||
+            action === "notify_today_matches" ||
             action === "notify_prediction_closing_soon" ||
             action === "notify_match_finished" ? (
             <div className="grid gap-2">
@@ -1125,6 +1128,8 @@ export function LiveControlToolsPanel({
               <p className="text-xs text-white/52">
                 {action === "send_test_push"
                   ? "La push se envía al usuario autenticado que esté usando esta consola. Si elegís un partido, el link abre ese detalle."
+                  : action === "notify_today_matches"
+                    ? "Envía manualmente un resumen de los partidos programados para hoy a usuarios con push activo. Si dejás el mensaje vacío, se arma automáticamente."
                   : action === "notify_prediction_closing_soon"
                     ? "Envía un recordatorio a usuarios con push activo que todavía no cargaron pronóstico para este partido."
                     : "Envía el resultado final a usuarios con push activo que hayan pronosticado este partido."}

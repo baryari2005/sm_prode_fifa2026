@@ -29,6 +29,7 @@ import { sendPushNotificationToUser } from "@/features/push/services/push-notifi
 import {
   notifyMatchFinished,
   notifyPredictionClosingSoon,
+  notifyTodayMatches,
 } from "@/features/push/services/push-notification-examples.service";
 import {
   generateMockPredictionsForPhase,
@@ -388,6 +389,23 @@ export async function POST(req: NextRequest) {
           ok("Push de prueba enviada.", result, result.total === 0
             ? ["El usuario autenticado no tiene suscripciones push activas."]
             : undefined),
+        );
+      }
+      case "notify_today_matches": {
+        const result = await notifyTodayMatches({
+          body: typeof payload.body === "string" ? payload.body : undefined,
+        });
+
+        return NextResponse.json(
+          ok(
+            "Notificacion manual de partidos de hoy enviada.",
+            result,
+            result.total === 0
+              ? ["No hay usuarios con suscripciones push activas."]
+              : result.matches.length === 0
+                ? ["Hoy no hay partidos programados. Se envio el mensaje igualmente."]
+                : undefined,
+          ),
         );
       }
       case "notify_prediction_closing_soon": {
