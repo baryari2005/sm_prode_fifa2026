@@ -34,6 +34,10 @@ const RULES_PANEL_OVERLAY =
 const RULES_PANEL_ITEM =
   "rounded-2xl border border-white/10 bg-[#425675]/55 px-4 py-3";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ReglasYCondicionesPage() {
   const scoreRule = await getHelpScoreRuleSummary();
   const sections = buildRulesSections(scoreRule);

@@ -12,6 +12,10 @@ import {
 import { getHelpScoreRuleSummary } from "@/features/help/lib/help-score-rules";
 import { brandImages } from "@/config/brand-images";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AyudaUsuarioPage() {
   const scoreRule = await getHelpScoreRuleSummary();
   const sections = buildUserHelpSections(scoreRule);

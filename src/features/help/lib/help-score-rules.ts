@@ -20,87 +20,92 @@ const FALLBACK_SCORE_RULE: HelpScoreRuleSummary = {
 export async function getHelpScoreRuleSummary(): Promise<HelpScoreRuleSummary> {
   const now = new Date();
 
-  const [reglas, partidoEnJuego, proximoPartido, ultimoPartido] = await Promise.all([
-    prisma.reglaPuntaje.findMany({
-      where: { activo: true },
-      include: {
-        fase: {
-          select: {
-            id: true,
-            nombre: true,
-            orden: true,
+  try {
+    const [reglas, partidoEnJuego, proximoPartido, ultimoPartido] = await Promise.all([
+      prisma.reglaPuntaje.findMany({
+        where: { activo: true },
+        include: {
+          fase: {
+            select: {
+              id: true,
+              nombre: true,
+              orden: true,
+            },
           },
         },
-      },
-      orderBy: {
-        fase: {
-          orden: "asc",
+        orderBy: {
+          fase: {
+            orden: "asc",
+          },
         },
-      },
-    }),
-    prisma.partido.findFirst({
-      where: {
-        resultado: {
-          estado: EstadoPartido.EN_JUEGO,
+      }),
+      prisma.partido.findFirst({
+        where: {
+          resultado: {
+            estado: EstadoPartido.EN_JUEGO,
+          },
         },
-      },
-      select: {
-        faseId: true,
-      },
-      orderBy: {
-        fecha: "asc",
-      },
-    }),
-    prisma.partido.findFirst({
-      where: {
-        fecha: {
-          gte: now,
+        select: {
+          faseId: true,
         },
-      },
-      select: {
-        faseId: true,
-      },
-      orderBy: {
-        fecha: "asc",
-      },
-    }),
-    prisma.partido.findFirst({
-      where: {
-        fecha: {
-          lt: now,
+        orderBy: {
+          fecha: "asc",
         },
-      },
-      select: {
-        faseId: true,
-      },
-      orderBy: {
-        fecha: "desc",
-      },
-    }),
-  ]);
+      }),
+      prisma.partido.findFirst({
+        where: {
+          fecha: {
+            gte: now,
+          },
+        },
+        select: {
+          faseId: true,
+        },
+        orderBy: {
+          fecha: "asc",
+        },
+      }),
+      prisma.partido.findFirst({
+        where: {
+          fecha: {
+            lt: now,
+          },
+        },
+        select: {
+          faseId: true,
+        },
+        orderBy: {
+          fecha: "desc",
+        },
+      }),
+    ]);
 
-  if (!reglas.length) {
+    if (!reglas.length) {
+      return FALLBACK_SCORE_RULE;
+    }
+
+    const faseActualId =
+      partidoEnJuego?.faseId ?? proximoPartido?.faseId ?? ultimoPartido?.faseId ?? null;
+
+    const reglaActual =
+      reglas.find((regla) => regla.faseId === faseActualId) ?? reglas[0];
+
+    const combinaciones = new Set(
+      reglas.map(
+        (regla) =>
+          `${regla.puntosExacto}-${regla.puntosParcial}-${regla.puntosSinAcierto}`
+      )
+    );
+
+    return {
+      puntosExacto: reglaActual.puntosExacto,
+      puntosParcial: reglaActual.puntosParcial,
+      puntosSinAcierto: reglaActual.puntosSinAcierto,
+      faseNombre: reglaActual.fase?.nombre ?? null,
+      usaMultiplesReglas: combinaciones.size > 1,
+    };
+  } catch (error) {
+    console.error("getHelpScoreRuleSummary error:", error);
     return FALLBACK_SCORE_RULE;
   }
-
-  const faseActualId =
-    partidoEnJuego?.faseId ?? proximoPartido?.faseId ?? ultimoPartido?.faseId ?? null;
-
-  const reglaActual =
-    reglas.find((regla) => regla.faseId === faseActualId) ?? reglas[0];
-
-  const combinaciones = new Set(
-    reglas.map(
-      (regla) =>
-        `${regla.puntosExacto}-${regla.puntosParcial}-${regla.puntosSinAcierto}`
-    )
-  );
-
-  return {
-    puntosExacto: reglaActual.puntosExacto,
-    puntosParcial: reglaActual.puntosParcial,
-    puntosSinAcierto: reglaActual.puntosSinAcierto,
-    faseNombre: reglaActual.fase?.nombre ?? null,
-    usaMultiplesReglas: combinaciones.size > 1,
-  };
 }
