@@ -2,16 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
-      "path": "/api/partidos/actualizar-en-juego-api",
-      "schedule": "*/5 * * * *"
-    },
-    {
       "path": "/api/push/dispatch-automatic",
       "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/pronosticos/recalcular-ranking-diario",
-      "schedule": "0 3 * * *"
     }
   ]
 }
