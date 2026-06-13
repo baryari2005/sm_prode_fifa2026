@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
   LIVE_CONTROL_SECONDARY_BUTTON_CLASSNAME,
@@ -127,6 +128,7 @@ export function LiveControlToolsPanel({
   const [action, setAction] = useState("sync_match");
   const [minute, setMinute] = useState("45");
   const [team, setTeam] = useState<"LOCAL" | "VISITANTE">("LOCAL");
+  const [ownGoal, setOwnGoal] = useState(false);
   const [cardType, setCardType] = useState<"AMARILLA" | "SEGUNDA_AMARILLA" | "ROJA_DIRECTA">("AMARILLA");
   const [description, setDescription] = useState("");
   const [jsonPayload, setJsonPayload] = useState("");
@@ -181,6 +183,11 @@ export function LiveControlToolsPanel({
     [matches, selectedMatchId],
   );
 
+  const goalPlayerTeam = useMemo<TeamSide>(
+    () => (ownGoal ? (team === "LOCAL" ? "VISITANTE" : "LOCAL") : team),
+    [ownGoal, team],
+  );
+
   const phaseMatches = useMemo(() => {
     return matches.filter(
       (match) => getFixturePhaseSlugFromText(match.fase?.nombre) === phase,
@@ -209,7 +216,7 @@ export function LiveControlToolsPanel({
         ? lineupSide === "LOCAL"
           ? selectedMatch.seleccionLocalId
           : selectedMatch.seleccionVisitanteId
-        : team === "LOCAL"
+        : (action === "create_manual_goal" ? goalPlayerTeam : team) === "LOCAL"
         ? selectedMatch.seleccionLocalId
         : selectedMatch.seleccionVisitanteId;
 
@@ -242,7 +249,15 @@ export function LiveControlToolsPanel({
     return () => {
       cancelled = true;
     };
-  }, [action, lineupSide, selectedMatch, team]);
+  }, [action, goalPlayerTeam, lineupSide, selectedMatch, team]);
+
+  useEffect(() => {
+    if (action !== "create_manual_goal") {
+      return;
+    }
+
+    setSelectedPlayerId("");
+  }, [action, ownGoal, team]);
 
   useEffect(() => {
     const current = lineupPlayers[lineupSide];
@@ -394,6 +409,7 @@ export function LiveControlToolsPanel({
         team,
         minute: Number(minute),
         playerId: selectedPlayerId || undefined,
+        ownGoal,
         description: description.trim() || undefined,
       };
     }
@@ -513,6 +529,7 @@ export function LiveControlToolsPanel({
     selectedMatchId,
     statsValues,
     team,
+    ownGoal,
     cardType,
     mockUserCount,
     bulkCiudad,
@@ -618,6 +635,25 @@ export function LiveControlToolsPanel({
                 </div>
 
                 <div className="grid gap-2">
+                  <Label>Tipo de gol</Label>
+                  <div className={`${LIVE_CONTROL_SUBCARD_CLASSNAME} flex items-start gap-3 p-3`}>
+                    <Switch
+                      id="manual-goal-own-goal"
+                      checked={ownGoal}
+                      onCheckedChange={setOwnGoal}
+                    />
+                    <div className="space-y-1">
+                      <Label htmlFor="manual-goal-own-goal" className="cursor-pointer">
+                        Autogol
+                      </Label>
+                      <p className="text-xs text-white/52">
+                        El gol suma para {team === "LOCAL" ? "Local" : "Visitante"}, pero el jugador se toma del equipo contrario.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
                   <Label>Jugador</Label>
                   <Select value={selectedPlayerId} onValueChange={setSelectedPlayerId}>
                     <SelectTrigger>
@@ -635,6 +671,11 @@ export function LiveControlToolsPanel({
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-white/52">
+                    {ownGoal
+                      ? `Se muestra el plantel del ${goalPlayerTeam === "LOCAL" ? "local" : "visitante"} porque ese equipo convierte el gol en contra.`
+                      : `Se muestra el plantel del ${goalPlayerTeam === "LOCAL" ? "local" : "visitante"} que convierte el gol.`}
+                  </p>
                 </div>
               </div>
 

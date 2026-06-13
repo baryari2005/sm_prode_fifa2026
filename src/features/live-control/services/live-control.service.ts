@@ -556,6 +556,7 @@ export async function createManualGoal(input: {
   team: "LOCAL" | "VISITANTE";
   minute: number;
   playerId?: string;
+  ownGoal?: boolean;
   description?: string;
   userId: string;
 }) {
@@ -573,8 +574,22 @@ export async function createManualGoal(input: {
 
   const equipoId =
     input.team === "LOCAL" ? partido.seleccionLocalId : partido.seleccionVisitanteId;
+  const playerTeam =
+    input.ownGoal
+      ? input.team === "LOCAL"
+        ? "VISITANTE"
+        : "LOCAL"
+      : input.team;
 
   return prisma.$transaction(async (tx) => {
+    const normalizedDescription = [
+      input.ownGoal ? "Autogol." : null,
+      input.description?.trim() || null,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+
     const event = await tx.partidoEventoLive.create({
       data: {
         partidoId: partido.id,
@@ -582,7 +597,7 @@ export async function createManualGoal(input: {
         equipoId,
         jugadorId: input.playerId ?? null,
         minuto: input.minute,
-        descripcion: input.description?.trim() || null,
+        descripcion: normalizedDescription || null,
         source: PartidoEventoLiveSource.MANUAL,
         confirmedManual: true,
         protected: true,
@@ -590,9 +605,9 @@ export async function createManualGoal(input: {
       },
     });
 
-    if (partido.resultado && input.playerId) {
+    if (partido.resultado && input.playerId && !input.ownGoal) {
       const currentLineup =
-        input.team === "LOCAL"
+        playerTeam === "LOCAL"
           ? normalizeTeamLineup(partido.resultado.alineacionLocal as Prisma.JsonValue | null | undefined)
           : normalizeTeamLineup(
               partido.resultado.alineacionVisitante as Prisma.JsonValue | null | undefined,
@@ -604,7 +619,7 @@ export async function createManualGoal(input: {
         await tx.resultado.update({
           where: { partidoId: partido.id },
           data:
-            input.team === "LOCAL"
+            playerTeam === "LOCAL"
               ? { alineacionLocal: toJsonInput(nextLineup) }
               : { alineacionVisitante: toJsonInput(nextLineup) },
         });
@@ -649,6 +664,7 @@ export async function createManualGoal(input: {
         minute: input.minute,
         team: input.team,
         playerId: input.playerId ?? null,
+        ownGoal: input.ownGoal ?? false,
       },
     });
 

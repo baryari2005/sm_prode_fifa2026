@@ -42,6 +42,7 @@ export async function postManualGoal(
     team: TeamSide;
     minute: number;
     playerId?: string;
+    ownGoal?: boolean;
     description?: string;
   },
 ) {

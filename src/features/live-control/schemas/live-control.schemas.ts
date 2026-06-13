@@ -9,6 +9,7 @@ export const manualGoalSchema = z.object({
   team: z.enum(["LOCAL", "VISITANTE"]),
   minute: z.number().int().min(0).max(190),
   playerId: z.string().uuid().optional(),
+  ownGoal: z.boolean().optional(),
   description: z.string().trim().max(300).optional(),
 });
 

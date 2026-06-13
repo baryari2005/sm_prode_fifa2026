@@ -24,6 +24,7 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
       team: parsed.team,
       minute: parsed.minute,
       playerId: parsed.playerId,
+      ownGoal: parsed.ownGoal,
       description: parsed.description,
       userId: user.id,
     });

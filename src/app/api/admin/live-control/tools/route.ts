@@ -166,6 +166,7 @@ export async function POST(req: NextRequest) {
           team: goal.team,
           minute: goal.minute,
           playerId: goal.playerId,
+          ownGoal: goal.ownGoal,
           description: goal.description,
           userId: user.id,
         });

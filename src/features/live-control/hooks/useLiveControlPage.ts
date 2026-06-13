@@ -108,6 +108,7 @@ export function useLiveControlPage() {
     team: "LOCAL" | "VISITANTE";
     minute: number;
     playerId?: string;
+    ownGoal?: boolean;
     description?: string;
   }) {
     try {
