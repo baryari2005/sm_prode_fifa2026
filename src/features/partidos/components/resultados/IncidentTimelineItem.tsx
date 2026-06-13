@@ -68,6 +68,8 @@ export function IncidentTimelineItem({
   const headline =
     incident.tipo === "cambio"
       ? `Sale ${incident.jugadorSaleNombre ?? "Jugador"} / Entra ${incident.jugadorEntraNombre ?? "Jugador"}`
+      : incident.tipo === "gol" && incident.autogol
+        ? `${incident.jugadorNombre ?? "Jugador"} (autogol)`
       : incident.jugadorNombre ??
         incident.descripcion ??
         incident.varResultado ??

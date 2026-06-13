@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 import { SectionCard } from "./common/SectionCard";
@@ -44,6 +45,7 @@ type FormState = {
   jugadorEntraId: string;
   descripcion: string;
   penal: boolean;
+  autogol: boolean;
   lesionTipo: string;
   varResultado: string;
 };
@@ -57,6 +59,7 @@ const initialForm: FormState = {
   jugadorEntraId: "",
   descripcion: "",
   penal: false,
+  autogol: false,
   lesionTipo: "",
   varResultado: "",
 };
@@ -88,6 +91,24 @@ export function IncidenciasEditor({
     if (form.equipo === "visitante") return plantelVisitante;
     return [];
   }, [form.equipo, plantelLocal, plantelVisitante]);
+
+  const goalPlayerTeam = useMemo(() => {
+    if (tipo !== "gol" || form.equipo === "general") {
+      return form.equipo;
+    }
+
+    return form.autogol
+      ? form.equipo === "local"
+        ? "visitante"
+        : "local"
+      : form.equipo;
+  }, [form.autogol, form.equipo, tipo]);
+
+  const goalPlayers = useMemo(() => {
+    if (goalPlayerTeam === "local") return plantelLocal;
+    if (goalPlayerTeam === "visitante") return plantelVisitante;
+    return [];
+  }, [goalPlayerTeam, plantelLocal, plantelVisitante]);
 
   const playersByTeam = {
     local: plantelLocal,
@@ -144,7 +165,11 @@ export function IncidenciasEditor({
     if (!Number.isFinite(minute)) return null;
 
     const sourcePlayers =
-      form.equipo === "general" ? [] : playersByTeam[form.equipo];
+      form.equipo === "general"
+        ? []
+        : tipo === "gol"
+          ? goalPlayers
+          : playersByTeam[form.equipo];
 
     return {
       tipo,
@@ -160,6 +185,7 @@ export function IncidenciasEditor({
       jugadorEntraNombre: findPlayerName(sourcePlayers, form.jugadorEntraId),
       descripcion: form.descripcion.trim() || null,
       penal: tipo === "gol" ? form.penal : undefined,
+      autogol: tipo === "gol" ? form.autogol : undefined,
       varResultado: tipo === "var" ? form.varResultado || null : null,
       lesionTipo: tipo === "lesion" ? form.lesionTipo || null : null,
     } satisfies Omit<MatchIncident, "id" | "createdAt">;
@@ -213,6 +239,7 @@ export function IncidenciasEditor({
       jugadorEntraId: incident.jugadorEntraId ?? "",
       descripcion: incident.descripcion ?? "",
       penal: Boolean(incident.penal),
+      autogol: Boolean(incident.autogol),
       lesionTipo: incident.lesionTipo ?? "",
       varResultado: incident.varResultado ?? "",
     });
@@ -309,6 +336,7 @@ export function IncidenciasEditor({
                     asistidorId: "",
                     jugadorSaleId: "",
                     jugadorEntraId: "",
+                    autogol: false,
                   }))
                 }
                 disabled={tipo === "var"}
@@ -337,7 +365,7 @@ export function IncidenciasEditor({
                 panel
               >
                 <PlayerSelect
-                  players={availablePlayers}
+                  players={tipo === "gol" ? goalPlayers : availablePlayers}
                   value={form.jugadorId}
                   onChange={(value) =>
                     setForm((current) => ({
@@ -398,10 +426,34 @@ export function IncidenciasEditor({
           <div className="mt-5 grid gap-4 rounded-[22px] border border-white/10 bg-white/[0.05] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] xl:grid-cols-2">
           {tipo === "gol" && form.equipo !== "general" ? (
             <>
+              <Field label="Tipo" panel>
+                <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.08] px-3 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-white/85">Autogol</p>
+                      <p className="text-xs text-white/52">
+                        El gol suma para {goalTeamLabel}, pero el jugador se elige del equipo contrario.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={form.autogol}
+                      onCheckedChange={(checked) =>
+                        setForm((current) => ({
+                          ...current,
+                          autogol: checked,
+                          jugadorId: "",
+                          asistidorId: "",
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              </Field>
+
               <Field label="Asistidor" panel>
                 <div className="space-y-1">
                   <PlayerSelect
-                    players={availablePlayers}
+                    players={goalPlayers}
                     value={form.asistidorId}
                     onChange={(value) =>
                       setForm((current) => ({
@@ -411,6 +463,11 @@ export function IncidenciasEditor({
                     }                    
                     placeholder="Sin asistidor"
                   />                  
+                  {form.autogol ? (
+                    <p className="text-xs text-white/48">
+                      El goleador y el asistidor se toman del plantel rival porque fue un gol en contra.
+                    </p>
+                  ) : null}
                 </div>
               </Field>
 

@@ -27,6 +27,7 @@ export function buildGoalIncidenciasFromLegacy(
     jugadorNombre: goal.nombre,
     descripcion: goal.penal ? "Gol de penal" : "Gol convertido",
     penal: goal.penal,
+    autogol: goal.autogol,
     createdAt: null,
   }));
 }
@@ -114,20 +115,25 @@ export function deriveResultadoFieldsFromIncidencias(params: {
         nombre: incidencia.jugadorNombre ?? "Jugador",
         minuto: incidencia.minuto,
         penal: Boolean(incidencia.penal),
+        autogol: Boolean(incidencia.autogol),
       };
 
       if (incidencia.equipo === "local") {
         detalleGolesLocal.push(detail);
-        alineacionLocal = updatePlayerInLineup(alineacionLocal, incidencia.jugadorId, (player) => ({
-          ...player,
-          goals: (player.goals ?? 0) + 1,
-        }));
+        if (!incidencia.autogol) {
+          alineacionLocal = updatePlayerInLineup(alineacionLocal, incidencia.jugadorId, (player) => ({
+            ...player,
+            goals: (player.goals ?? 0) + 1,
+          }));
+        }
       } else {
         detalleGolesVisitante.push(detail);
-        alineacionVisitante = updatePlayerInLineup(alineacionVisitante, incidencia.jugadorId, (player) => ({
-          ...player,
-          goals: (player.goals ?? 0) + 1,
-        }));
+        if (!incidencia.autogol) {
+          alineacionVisitante = updatePlayerInLineup(alineacionVisitante, incidencia.jugadorId, (player) => ({
+            ...player,
+            goals: (player.goals ?? 0) + 1,
+          }));
+        }
       }
     }
 

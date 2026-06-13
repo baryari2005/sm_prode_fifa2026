@@ -90,6 +90,7 @@ export type GoalDetail = {
   nombre: string;
   minuto: number;
   penal: boolean;
+  autogol?: boolean;
 };
 
 export type IncidentType =
@@ -118,6 +119,7 @@ export type MatchIncident = {
   jugadorEntraNombre?: string | null;
   descripcion?: string | null;
   penal?: boolean;
+  autogol?: boolean;
   varResultado?: string | null;
   lesionTipo?: string | null;
   createdAt?: string | null;

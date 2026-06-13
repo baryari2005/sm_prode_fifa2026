@@ -19,6 +19,7 @@ export const goalDetailSchema = z.object({
   nombre: z.string().min(1),
   minuto: z.number().int().min(0).max(130),
   penal: z.boolean().default(false),
+  autogol: z.boolean().optional(),
 });
 
 export const matchIncidentSchema = z.object({
@@ -44,6 +45,7 @@ export const matchIncidentSchema = z.object({
   jugadorEntraNombre: z.string().nullable().optional(),
   descripcion: z.string().nullable().optional(),
   penal: z.boolean().optional(),
+  autogol: z.boolean().optional(),
   varResultado: z.string().nullable().optional(),
   lesionTipo: z.string().nullable().optional(),
   createdAt: z.string().nullable().optional(),
