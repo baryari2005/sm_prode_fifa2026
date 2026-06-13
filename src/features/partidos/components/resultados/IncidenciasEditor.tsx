@@ -354,6 +354,34 @@ export function IncidenciasEditor({
               </Select>
             </Field>
 
+            {tipo === "gol" && form.equipo !== "general" ? (
+              <Field label="Tipo de gol" panel>
+                <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.08] px-3 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-white/85">Autogol</p>
+                      <p className="text-xs text-white/52">
+                        El gol suma para {goalTeamLabel}, pero el jugador se elige del equipo contrario.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={form.autogol}
+                      onCheckedChange={(checked) =>
+                        setForm((current) => ({
+                          ...current,
+                          autogol: checked,
+                          jugadorId: "",
+                          asistidorId: "",
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              </Field>
+            ) : (
+              <div />
+            )}
+
             {(tipo === "gol" ||
               tipo === "tarjeta_amarilla" ||
               tipo === "tarjeta_roja" ||
@@ -374,6 +402,13 @@ export function IncidenciasEditor({
                     }))
                   }
                 />
+                {tipo === "gol" ? (
+                  <p className="mt-2 text-xs text-white/48">
+                    {form.autogol
+                      ? `Se muestra el plantel del ${goalPlayerTeam === "local" ? localNombre : visitanteNombre} porque ese equipo convierte el gol en contra.`
+                      : `Se muestra el plantel de ${goalPlayerTeam === "local" ? localNombre : visitanteNombre}.`}
+                  </p>
+                ) : null}
               </Field>
             ) : (
               <div />
@@ -426,30 +461,6 @@ export function IncidenciasEditor({
           <div className="mt-5 grid gap-4 rounded-[22px] border border-white/10 bg-white/[0.05] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] xl:grid-cols-2">
           {tipo === "gol" && form.equipo !== "general" ? (
             <>
-              <Field label="Tipo" panel>
-                <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.08] px-3 py-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-medium text-white/85">Autogol</p>
-                      <p className="text-xs text-white/52">
-                        El gol suma para {goalTeamLabel}, pero el jugador se elige del equipo contrario.
-                      </p>
-                    </div>
-                    <Switch
-                      checked={form.autogol}
-                      onCheckedChange={(checked) =>
-                        setForm((current) => ({
-                          ...current,
-                          autogol: checked,
-                          jugadorId: "",
-                          asistidorId: "",
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
-              </Field>
-
               <Field label="Asistidor" panel>
                 <div className="space-y-1">
                   <PlayerSelect
