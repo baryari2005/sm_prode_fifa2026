@@ -159,6 +159,7 @@ export function IncidenciasEditor({
 
     return true;
   }, [
+    form.autogol,
     form.descripcion,
     form.jugadorEntraId,
     form.jugadorId,

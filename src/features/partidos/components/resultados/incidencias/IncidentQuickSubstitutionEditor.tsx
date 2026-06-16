@@ -191,7 +191,7 @@ export function IncidentQuickSubstitutionEditor({
               >
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-white">
-                    {row.minuto}' · Sale {sale?.nombre ?? "Jugador"} / Entra {entra?.nombre ?? "Jugador"}
+                    {row.minuto}&apos; · Sale {sale?.nombre ?? "Jugador"} / Entra {entra?.nombre ?? "Jugador"}
                   </p>
                   {row.descripcion ? (
                     <p className="text-xs text-white/52">{row.descripcion}</p>

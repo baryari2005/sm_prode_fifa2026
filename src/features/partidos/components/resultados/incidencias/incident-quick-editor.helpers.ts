@@ -2,7 +2,6 @@ import { createMatchIncident } from "@/features/partidos/helpers/resultado-incid
 import type {
   IncidentTeamSide,
   IncidentType,
-  MatchIncident,
   TeamLineup,
 } from "@/features/partidos/types/fixture-details";
 import type { JugadorSeleccion } from "@/features/partidos/types/types";
