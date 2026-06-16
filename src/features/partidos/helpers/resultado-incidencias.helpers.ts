@@ -109,10 +109,10 @@ export function deriveResultadoFieldsFromIncidencias(params: {
   };
 
   for (const incidencia of params.incidencias) {
-    if (incidencia.tipo === "gol" && incidencia.equipo !== "general" && incidencia.jugadorId) {
+    if (incidencia.tipo === "gol" && incidencia.equipo !== "general") {
       const detail: GoalDetail = {
-        jugadorId: incidencia.jugadorId,
-        nombre: incidencia.jugadorNombre ?? "Jugador",
+        jugadorId: incidencia.jugadorId ?? `autogol-${incidencia.equipo}-${incidencia.minuto}-${incidencia.id}`,
+        nombre: incidencia.jugadorNombre ?? (incidencia.autogol ? "Autogol" : "Jugador"),
         minuto: incidencia.minuto,
         penal: Boolean(incidencia.penal),
         autogol: Boolean(incidencia.autogol),
@@ -120,7 +120,7 @@ export function deriveResultadoFieldsFromIncidencias(params: {
 
       if (incidencia.equipo === "local") {
         detalleGolesLocal.push(detail);
-        if (!incidencia.autogol) {
+        if (!incidencia.autogol && incidencia.jugadorId) {
           alineacionLocal = updatePlayerInLineup(alineacionLocal, incidencia.jugadorId, (player) => ({
             ...player,
             goals: (player.goals ?? 0) + 1,
@@ -128,7 +128,7 @@ export function deriveResultadoFieldsFromIncidencias(params: {
         }
       } else {
         detalleGolesVisitante.push(detail);
-        if (!incidencia.autogol) {
+        if (!incidencia.autogol && incidencia.jugadorId) {
           alineacionVisitante = updatePlayerInLineup(alineacionVisitante, incidencia.jugadorId, (player) => ({
             ...player,
             goals: (player.goals ?? 0) + 1,

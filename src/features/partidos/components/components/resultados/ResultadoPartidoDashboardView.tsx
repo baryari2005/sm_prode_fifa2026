@@ -238,6 +238,8 @@ export function ResultadoPartidoDashboardView({
               visitanteNombre={visitanteNombre}
               plantelLocal={plantelLocal}
               plantelVisitante={plantelVisitante}
+              alineacionLocal={form.alineacionLocal}
+              alineacionVisitante={form.alineacionVisitante}
               incidencias={form.incidencias}
               onChange={updateIncidencias}
               showTimeline={false}

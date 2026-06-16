@@ -7,6 +7,7 @@ import { createMatchIncident } from "@/features/partidos/helpers/resultado-incid
 import type {
   IncidentType,
   MatchIncident,
+  TeamLineup,
 } from "@/features/partidos/types/fixture-details";
 import type { JugadorSeleccion } from "@/features/partidos/types/types";
 
@@ -25,12 +26,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { SectionCard } from "./common/SectionCard";
 import { IncidentTimeline } from "./IncidentTimeline";
 import { IncidentTypeTabs } from "./IncidentTypeTabs";
+import { IncidentQuickPlayerBatchEditor } from "./incidencias/IncidentQuickPlayerBatchEditor";
+import { IncidentQuickSubstitutionEditor } from "./incidencias/IncidentQuickSubstitutionEditor";
 
 type IncidenciasEditorProps = {
   localNombre: string;
   visitanteNombre: string;
   plantelLocal: JugadorSeleccion[];
   plantelVisitante: JugadorSeleccion[];
+  alineacionLocal: TeamLineup;
+  alineacionVisitante: TeamLineup;
   incidencias: MatchIncident[];
   onChange: (incidencias: MatchIncident[]) => void;
   showTimeline?: boolean;
@@ -76,6 +81,8 @@ export function IncidenciasEditor({
   visitanteNombre,
   plantelLocal,
   plantelVisitante,
+  alineacionLocal,
+  alineacionVisitante,
   incidencias,
   onChange,
   showTimeline = true,
@@ -115,6 +122,11 @@ export function IncidenciasEditor({
     visitante: plantelVisitante,
   } as const;
 
+  const lineupsByTeam = {
+    local: alineacionLocal,
+    visitante: alineacionVisitante,
+  } as const;
+
   const canSubmitIncident = useMemo(() => {
     const minute = Number(form.minuto);
     if (!Number.isFinite(minute) || minute < 0 || minute > 130) return false;
@@ -138,6 +150,10 @@ export function IncidenciasEditor({
       tipo === "lesion" ||
       tipo === "penal"
     ) {
+      if (tipo === "gol" && form.autogol) {
+        return true;
+      }
+
       return Boolean(form.jugadorId);
     }
 
@@ -176,7 +192,9 @@ export function IncidenciasEditor({
       minuto: minute,
       equipo: form.equipo,
       jugadorId: form.jugadorId || null,
-      jugadorNombre: findPlayerName(sourcePlayers, form.jugadorId),
+      jugadorNombre:
+        findPlayerName(sourcePlayers, form.jugadorId) ??
+        (tipo === "gol" && form.autogol ? "Autogol" : null),
       asistidorId: form.asistidorId || null,
       asistidorNombre: findPlayerName(sourcePlayers, form.asistidorId),
       jugadorSaleId: form.jugadorSaleId || null,
@@ -224,6 +242,12 @@ export function IncidenciasEditor({
     resetForm(tipo === "var" ? "general" : form.equipo);
   }
 
+  function appendIncidents(nextIncidents: MatchIncident[]) {
+    onChange(
+      [...incidencias, ...nextIncidents].sort((a, b) => a.minuto - b.minuto),
+    );
+  }
+
   function startEditingIncident(id: string) {
     const incident = incidencias.find((entry) => entry.id === id);
     if (!incident) return;
@@ -263,6 +287,12 @@ export function IncidenciasEditor({
       : form.equipo === "visitante"
         ? visitanteNombre
         : "General";
+  const usesQuickBatchEditor =
+    tipo === "cambio" ||
+    tipo === "tarjeta_amarilla" ||
+    tipo === "tarjeta_roja" ||
+    tipo === "lesion";
+  const showSingleIncidentForm = !usesQuickBatchEditor || Boolean(editingIncidentId);
 
   return (
     <SectionCard
@@ -306,6 +336,73 @@ export function IncidenciasEditor({
             }}
           />
 
+          {usesQuickBatchEditor && !editingIncidentId && form.equipo !== "general" ? (
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-[0.16em] text-[#AEEBFF]">
+                Equipo
+              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  setForm((current) => ({
+                    ...current,
+                    equipo: "local",
+                  }))
+                }
+                className={`rounded-full border px-4 py-2 text-xs font-black uppercase tracking-[0.14em] transition ${
+                  form.equipo === "local"
+                    ? "border-transparent bg-[#5993B6] text-white"
+                    : "border-white/12 bg-white/[0.05] text-white/72 hover:bg-white/[0.1]"
+                }`}
+              >
+                {localNombre}
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setForm((current) => ({
+                    ...current,
+                    equipo: "visitante",
+                  }))
+                }
+                className={`rounded-full border px-4 py-2 text-xs font-black uppercase tracking-[0.14em] transition ${
+                  form.equipo === "visitante"
+                    ? "border-transparent bg-[#5993B6] text-white"
+                    : "border-white/12 bg-white/[0.05] text-white/72 hover:bg-white/[0.1]"
+                }`}
+              >
+                {visitanteNombre}
+              </button>
+            </div>
+          ) : null}
+
+          {tipo === "cambio" && form.equipo !== "general" ? (
+            <div className="mt-5">
+              <IncidentQuickSubstitutionEditor
+                teamLabel={form.equipo === "local" ? localNombre : visitanteNombre}
+                teamSide={form.equipo}
+                lineup={lineupsByTeam[form.equipo]}
+                onAddIncidents={appendIncidents}
+              />
+            </div>
+          ) : null}
+
+          {(tipo === "tarjeta_amarilla" ||
+            tipo === "tarjeta_roja" ||
+            tipo === "lesion") &&
+          form.equipo !== "general" ? (
+            <div className="mt-5">
+              <IncidentQuickPlayerBatchEditor
+                tipo={tipo}
+                teamLabel={form.equipo === "local" ? localNombre : visitanteNombre}
+                teamSide={form.equipo}
+                players={availablePlayers}
+                onAddIncidents={appendIncidents}
+              />
+            </div>
+          ) : null}
+
+          {showSingleIncidentForm ? (
           <div className="relative mt-5 grid gap-4 rounded-[22px] border border-white/10 bg-white/[0.05] p-4 
           shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-stretch">
             <Field label="Minuto" panel>
@@ -439,6 +536,7 @@ export function IncidenciasEditor({
               </div>
             </div>
           </div>
+          ) : null}
         </div>
 
         <div className="rounded-2xl border border-[#FAB438]/25 bg-[#FAB438]/10 px-4 py-3 text-sm font-medium text-[#FFE3A1]">
@@ -447,6 +545,7 @@ export function IncidenciasEditor({
           partido.
         </div>
 
+        {showSingleIncidentForm ? (
         <div className="rounded-[26px] border border-white/10 bg-white/[0.035] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] md:p-5">
           <div className="space-y-2">
             <p className="text-sm font-black uppercase tracking-[0.2em] text-[#AEEBFF]">
@@ -655,6 +754,7 @@ export function IncidenciasEditor({
           ) : null}
           </div>
         </div>
+        ) : null}
 
         {showTimeline ? (
           <div className="space-y-2">

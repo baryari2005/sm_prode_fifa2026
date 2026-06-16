@@ -1,11 +1,14 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
+
 import { Card, CardContent } from "@/components/ui/card";
 
 import { BenchPanel } from "@/features/partidos/components/lineup-editor/BenchPanel";
 import { LineupBasicFields } from "@/features/partidos/components/lineup-editor/LineupBasicFields";
 import { LineupHeader } from "@/features/partidos/components/lineup-editor/LineupHeader";
 import { LineupPitch } from "@/features/partidos/components/lineup-editor/LineupPitch";
+import { QuickLineupBuilder } from "@/features/partidos/components/lineup-editor/QuickLineupBuilder";
 import { LineupTabs } from "@/features/partidos/components/lineup-editor/LineupTabs";
 import { StartersPanel } from "@/features/partidos/components/lineup-editor/StartersPanel";
 
@@ -39,11 +42,38 @@ export function LineupEditorCard({
   onApplyPrevious,
   compactPlayers = false,
 }: Props) {
+  const selectableSquad = useMemo(
+    () =>
+      squad.filter(
+        (player) => player.posicion?.trim().toUpperCase() !== "CT",
+      ),
+    [squad],
+  );
+
   const editor = useLineupEditor({
     lineup,
-    squad,
+    squad: selectableSquad,
     onChange,
   });
+
+  useEffect(() => {
+    if ((lineup.entrenador ?? "").trim()) {
+      return;
+    }
+
+    const coach = squad.find(
+      (player) => player.posicion?.trim().toUpperCase() === "CT",
+    );
+
+    if (!coach) {
+      return;
+    }
+
+    onChange({
+      ...lineup,
+      entrenador: coach.nombre,
+    });
+  }, [lineup, onChange, squad]);
 
   return (
     <Card className="group relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[#223553]/90 text-white shadow-[0_20px_55px_rgba(2,8,23,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#7DD3FC]/30 hover:shadow-[0_26px_60px_rgba(2,8,23,0.3)]">
@@ -77,6 +107,12 @@ export function LineupEditorCard({
               entrenador: value,
             })
           }
+        />
+
+        <QuickLineupBuilder
+          lineup={lineup}
+          squad={selectableSquad}
+          onApply={onChange}
         />
 
         <LineupTabs
@@ -123,7 +159,7 @@ export function LineupEditorCard({
             teamCode={teamCode}
             teamName={title}
             players={lineup.titulares}
-            squad={squad}
+            squad={selectableSquad}
             availablePlayers={editor.availablePlayers}
             selectedPlayerId={editor.selectedStarterId}
             onSelectedPlayerChange={editor.setSelectedStarterId}
@@ -159,7 +195,7 @@ export function LineupEditorCard({
             teamCode={teamCode}
             teamName={title}
             players={lineup.suplentes}
-            squad={squad}
+            squad={selectableSquad}
             availablePlayers={editor.availablePlayers}
             selectedPlayerId={editor.selectedBenchId}
             onSelectedPlayerChange={editor.setSelectedBenchId}
