@@ -126,7 +126,7 @@ export function UpcomingMatchesCard({
               <div className="hidden shrink-0 md:block">
                 <span className="whitespace-nowrap rounded-full bg-[#5993B6]/18 px-2.5 py-1 text-[11px] font-black text-[#D8F2FF]">
                   {getPredictionCountdownLabel(
-                    partido.fecha,
+                    partido,
                     PREDICTION_CLOSE_MINUTES_BEFORE,
                     now,
                   )}

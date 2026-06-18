@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import Image from "next/image";
 import {
   CalendarDays,
@@ -68,7 +62,10 @@ export function PronosticoDialog({
   partido,
   onSaved,
 }: PronosticoDialogProps) {
-  const now = useCountdownNow();
+  const referenceNow = partido?.predictionMeta?.evaluatedAt
+    ? new Date(partido.predictionMeta.evaluatedAt).getTime()
+    : null;
+  const now = useCountdownNow(referenceNow);
 
   const [golesLocal, setGolesLocal] = useState("0");
   const [golesVisitante, setGolesVisitante] = useState("0");
@@ -90,7 +87,7 @@ export function PronosticoDialog({
 
   const countdownLabel = partido
     ? getPredictionCountdownLabel(
-        partido.fecha,
+        partido,
         PREDICTION_CLOSE_MINUTES_BEFORE,
         now,
       )
@@ -113,7 +110,7 @@ export function PronosticoDialog({
     if (!partido?.fecha) return "";
 
     const closeTimestamp = getPredictionCloseTimestamp(
-      partido.fecha,
+      partido,
       PREDICTION_CLOSE_MINUTES_BEFORE,
     );
 
@@ -121,7 +118,7 @@ export function PronosticoDialog({
       hour: "2-digit",
       minute: "2-digit",
     }).format(new Date(closeTimestamp));
-  }, [partido?.fecha]);
+  }, [partido]);
 
   useEffect(() => {
     if (!open || !partido) return;

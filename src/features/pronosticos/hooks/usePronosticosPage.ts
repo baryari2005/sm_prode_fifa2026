@@ -14,6 +14,7 @@ import { getFixturePronosticos } from "@/features/pronosticos/services/pronostic
 
 export function usePronosticosPage() {
   const [partidos, setPartidos] = useState<PartidoConRelaciones[]>([]);
+  const [serverNow, setServerNow] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const partidosRef = useRef<PartidoConRelaciones[]>([]);
@@ -28,13 +29,15 @@ export function usePronosticosPage() {
         setLoading(true);
       }
 
-      const items = await getFixturePronosticos();
+      const response = await getFixturePronosticos();
+      const items = response.data;
 
       if (hasLoadedRef.current) {
         enqueueGoalEvents(detectGoalEvents(partidosRef.current, items));
       }
 
       setPartidos(items);
+      setServerNow(response.serverNow);
       partidosRef.current = items;
       hasLoadedRef.current = true;
     } catch (error) {
@@ -70,6 +73,7 @@ export function usePronosticosPage() {
 
   return {
     partidos,
+    serverNow,
     partidosFiltrados,
     partidosAgrupados,
     hasVisibleLiveMatches,

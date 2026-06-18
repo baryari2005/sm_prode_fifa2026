@@ -5,7 +5,10 @@ import { toast } from "sonner";
 
 import { detectGoalEvents } from "@/features/partidos/lib/goal-events";
 import { useGoalCelebrationStore } from "@/stores/goal-celebration";
-import { PartidoConRelaciones } from "@/features/partidos/utils/partidos-ui.helpers";
+import {
+  PartidoConRelaciones,
+  isPredictionBlocked,
+} from "@/features/partidos/utils/partidos-ui.helpers";
 import { getFixturePronosticos } from "@/features/pronosticos/services/pronosticos.service";
 import {
   getPronosticosRanking,
@@ -24,6 +27,7 @@ export function useProdeDashboard(
   const [ranking, setRanking] = useState<RankingRowDTO[]>([]);
   const [miRanking, setMiRanking] = useState<RankingRowDTO | null>(null);
   const [fixture, setFixture] = useState<PartidoConRelaciones[]>([]);
+  const [serverNow, setServerNow] = useState<string | null>(null);
   const fixtureRef = useRef<PartidoConRelaciones[]>([]);
   const hasLoadedRef = useRef(false);
   const canLoadRanking = options?.canLoadRanking ?? true;
@@ -67,10 +71,11 @@ export function useProdeDashboard(
               historial: [],
             });
 
-        const [rankingData, fixtureData] = await Promise.all([
+        const [rankingData, fixtureResponse] = await Promise.all([
           rankingPromise,
           fixturePromise,
         ]);
+        const fixtureData = fixtureResponse.data;
 
         if (hasLoadedRef.current) {
           enqueueGoalEvents(detectGoalEvents(fixtureRef.current, fixtureData));
@@ -79,6 +84,7 @@ export function useProdeDashboard(
         setRanking(rankingData.ranking);
         setMiRanking(rankingData.miRanking);
         setFixture(fixtureData);
+        setServerNow(fixtureResponse.serverNow);
         fixtureRef.current = fixtureData;
         hasLoadedRef.current = true;
       } catch (error) {
@@ -113,7 +119,7 @@ export function useProdeDashboard(
     return fixture
       .filter((partido) => {
         if (partido.resultado?.estado === "FINALIZADO") return false;
-        return new Date(partido.fecha).getTime() >= Date.now();
+        return !isPredictionBlocked(partido);
       })
       .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
       .slice(0, 3);
@@ -146,6 +152,7 @@ export function useProdeDashboard(
     ranking,
     miRanking,
     fixture,
+    serverNow,
     partidosEnJuego,
     pronosticosCargados,
     proximosPartidos,

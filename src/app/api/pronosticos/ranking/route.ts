@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/server-auth";
+import {
+  isPublicRankingParticipant,
+  isPublicRankingRole,
+} from "@/features/pronosticos/utils/public-ranking.helpers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -110,11 +114,16 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const [rankingRows, myScoredPredictions] = await Promise.all([
+    const [rankingRows, myOwnRankingRow, myScoredPredictions] = await Promise.all([
       resolvedFaseId
         ? prisma.rankingUsuarioFase.findMany({
             where: {
               faseId: resolvedFaseId,
+              usuario: {
+                rol: {
+                  nombre: "user",
+                },
+              },
             },
             include: {
               usuario: {
@@ -125,6 +134,11 @@ export async function GET(req: NextRequest) {
                   userId: true,
                   email: true,
                   avatarUrl: true,
+                  rol: {
+                    select: {
+                      nombre: true,
+                    },
+                  },
                 },
               },
               fase: {
@@ -143,6 +157,13 @@ export async function GET(req: NextRequest) {
             ],
           })
         : prisma.rankingUsuario.findMany({
+            where: {
+              usuario: {
+                rol: {
+                  nombre: "user",
+                },
+              },
+            },
             include: {
               usuario: {
                 select: {
@@ -152,6 +173,11 @@ export async function GET(req: NextRequest) {
                   userId: true,
                   email: true,
                   avatarUrl: true,
+                  rol: {
+                    select: {
+                      nombre: true,
+                    },
+                  },
                 },
               },
             },
@@ -161,6 +187,61 @@ export async function GET(req: NextRequest) {
               { aciertosTendencia: "desc" },
               { updatedAt: "asc" },
             ],
+          }),
+      resolvedFaseId
+        ? prisma.rankingUsuarioFase.findUnique({
+            where: {
+              usuarioId_faseId: {
+                usuarioId: loggedInUser.id,
+                faseId: resolvedFaseId,
+              },
+            },
+            include: {
+              usuario: {
+                select: {
+                  id: true,
+                  nombre: true,
+                  apellido: true,
+                  userId: true,
+                  email: true,
+                  avatarUrl: true,
+                  rol: {
+                    select: {
+                      nombre: true,
+                    },
+                  },
+                },
+              },
+              fase: {
+                select: {
+                  id: true,
+                  nombre: true,
+                  orden: true,
+                },
+              },
+            },
+          })
+        : prisma.rankingUsuario.findUnique({
+            where: {
+              usuarioId: loggedInUser.id,
+            },
+            include: {
+              usuario: {
+                select: {
+                  id: true,
+                  nombre: true,
+                  apellido: true,
+                  userId: true,
+                  email: true,
+                  avatarUrl: true,
+                  rol: {
+                    select: {
+                      nombre: true,
+                    },
+                  },
+                },
+              },
+            },
           }),
       prisma.prediccionPartido.findMany({
         where: {
@@ -226,6 +307,7 @@ export async function GET(req: NextRequest) {
       usuarioId: row.usuarioId,
       nombre: getDisplayName(row.usuario),
       avatarUrl: row.usuario.avatarUrl ?? null,
+      isPublicParticipant: isPublicRankingParticipant(row.usuario),
       puntosTotales: row.puntosTotales,
       aciertosExactos: row.aciertosExactos,
       aciertosTendencia: row.aciertosTendencia,
@@ -234,17 +316,25 @@ export async function GET(req: NextRequest) {
       updatedAt: row.updatedAt,
     }));
 
-    const miRanking = ranking.find((item) => item.usuarioId === loggedInUser.id) ?? {
-      posicion: null,
+    const loggedInUserIsPublic = isPublicRankingRole(loggedInUser.rol?.nombre);
+
+    const publicOwnRanking =
+      loggedInUserIsPublic
+        ? ranking.find((item) => item.usuarioId === loggedInUser.id) ?? null
+        : null;
+
+    const miRanking = publicOwnRanking ?? {
+      posicion: loggedInUserIsPublic ? null : null,
       usuarioId: loggedInUser.id,
       nombre: getDisplayName(loggedInUser),
       avatarUrl: loggedInUser.avatarUrl ?? null,
-      puntosTotales: 0,
-      aciertosExactos: 0,
-      aciertosTendencia: 0,
-      partidosPronosticados: 0,
-      partidosCalificados: 0,
-      updatedAt: null,
+      isPublicParticipant: loggedInUserIsPublic,
+      puntosTotales: myOwnRankingRow?.puntosTotales ?? 0,
+      aciertosExactos: myOwnRankingRow?.aciertosExactos ?? 0,
+      aciertosTendencia: myOwnRankingRow?.aciertosTendencia ?? 0,
+      partidosPronosticados: myOwnRankingRow?.partidosPronosticados ?? 0,
+      partidosCalificados: myOwnRankingRow?.partidosCalificados ?? 0,
+      updatedAt: myOwnRankingRow?.updatedAt ?? null,
     };
 
     const historial = myScoredPredictions.map((item) => ({

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Clock3, Eye, TimerReset, Trophy, UsersRound } from "lucide-react";
 import Link from "next/link";
 
@@ -16,6 +17,7 @@ import {
   isPredictionBlocked,
 } from "@/features/partidos/utils/partidos-ui.helpers";
 import { TeamPredictionColumn } from "@/features/pronosticos/components/rapido/TeamPredictionColumn";
+import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
 
 import type {
   PartidoPronosticoRapido,
@@ -41,11 +43,16 @@ export function PronosticoRapidoMatchCard({
   onScoreChange,
 }: PronosticoRapidoMatchCardProps) {
   const canViewPartidoDetalle = useCan("partidos", "ver_detalle");
-  const closed = isPredictionBlocked(partido);
+  const referenceNow = useMemo(() => {
+    const evaluatedAt = partido.predictionMeta?.evaluatedAt;
+    return evaluatedAt ? new Date(evaluatedAt).getTime() : null;
+  }, [partido.predictionMeta?.evaluatedAt]);
+  const now = useCountdownNow(referenceNow);
+  const closed = isPredictionBlocked(partido, undefined, now);
   const faseNombre = getFaseNombre(partido, []);
   const grupoNombre = getGrupoNombre(partido);
   const hora = formatMatchHour(partido.fecha);
-  const countdownLabel = getPredictionCountdownLabel(partido.fecha);
+  const countdownLabel = getPredictionCountdownLabel(partido, undefined, now);
   const resultadoActual = partido.resultado;
   const marcadorActual = resultadoActual
     ? `${resultadoActual.golesLocal} - ${resultadoActual.golesVisitante}`
@@ -55,7 +62,7 @@ export function PronosticoRapidoMatchCard({
     resultadoActual?.estado === "ENTRETIEMPO";
   const estaFinalizado = resultadoActual?.estado === "FINALIZADO";
   const matchStatus = getMatchStatusMeta(partido);
-  const predictionStatus = getPredictionStatusMeta(partido);
+  const predictionStatus = getPredictionStatusMeta(partido, now);
 
   return (
     <article className="group relative overflow-hidden rounded-[1.35rem] bg-transparent transition-all duration-200">

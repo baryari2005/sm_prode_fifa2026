@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Building2, Clock3, Trophy, UsersRound } from "lucide-react";
 
@@ -54,7 +54,11 @@ export function PartidoCard({
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // Se actualiza cada 30 segundos porque tu hook tiene intervalMs = 30000 por defecto.
-  const now = useCountdownNow();
+  const referenceNow = useMemo(() => {
+    const evaluatedAt = partido.predictionMeta?.evaluatedAt;
+    return evaluatedAt ? new Date(evaluatedAt).getTime() : null;
+  }, [partido.predictionMeta?.evaluatedAt]);
+  const now = useCountdownNow(referenceNow);
 
   const local = getSeleccionResumen(partido, "local", selecciones);
   const visitante = getSeleccionResumen(partido, "visitante", selecciones);
@@ -75,7 +79,7 @@ export function PartidoCard({
   const miPronostico = partido.miPrediccion;
 
   const pronosticoCerrado = isPredictionClosed(
-    partido.fecha,
+    partido,
     PREDICTION_CLOSE_MINUTES_BEFORE,
     now
   );
@@ -86,7 +90,7 @@ export function PartidoCard({
   const countdownLabel =
     allowPronostico && !tieneResultadoFinal
       ? getPredictionCountdownLabel(
-          partido.fecha,
+          partido,
           PREDICTION_CLOSE_MINUTES_BEFORE,
           now
         )

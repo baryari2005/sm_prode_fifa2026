@@ -1,11 +1,14 @@
 "use client";
 
-import { CalendarDays, Search } from "lucide-react";
+import { CalendarDays, Clock3, Search } from "lucide-react";
 import { UserMenu } from "@/components/layout/user-menu";
 import { brandImages } from "@/config/brand-images";
 import Image from "next/image";
+import { useServerClock } from "@/features/server-time/hooks/useServerClock";
 
 export function Topbar() {
+  const { loading: serverTimeLoading, timeLabel } = useServerClock();
+
   return (
     <div className="flex h-[var(--topbar-h)] w-full items-center justify-between gap-4 border-b border-white/10 bg-[rgba(6,27,51,0.72)] px-[var(--content-pad)] text-white backdrop-blur-xl lg:gap-5">
       <div className="min-w-0 flex-1">
@@ -42,6 +45,14 @@ export function Topbar() {
       </div>
 
       <div className="flex min-w-0 shrink-0 items-center gap-2 lg:gap-3">
+        <div className="hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-white/88 shadow-sm lg:flex">
+          <Clock3 className="h-4 w-4 text-[#AEEBFF]" />
+          <span className="text-white/62">Hora servidor</span>
+          <span className="font-black text-white">
+            {serverTimeLoading ? "..." : timeLabel}
+          </span>
+        </div>
+
         <div className="hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-white/88 shadow-sm xl:flex">
           <CalendarDays className="h-4 w-4 text-[#AEEBFF]" />
           Mundial 2026

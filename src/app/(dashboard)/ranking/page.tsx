@@ -53,6 +53,7 @@ export default function RankingPage() {
 
   const lider = ranking[0] ?? null;
   const scopeLabel = faseActual?.nombre ?? "Fase de grupos";
+  const hasPublicPosition = miRanking?.isPublicParticipant !== false;
   const isGroupScope = Boolean(faseActual?.nombre?.toLowerCase().includes("grupo"));
   const pointsDetail = faseActual
     ? isGroupScope
@@ -63,7 +64,8 @@ export default function RankingPage() {
     {
       label: "Tu posicion",
       detail: faseActual ? scopeLabel : "ranking general",
-      value: miRanking?.posicion ? `#${miRanking.posicion}` : "-",
+      value:
+        hasPublicPosition && miRanking?.posicion ? `#${miRanking.posicion}` : "-",
       icon: Trophy,
       toneClass: "bg-[#FAB438]/14 text-[#FFE4A3]",
     },

@@ -27,7 +27,6 @@ import DashboardLoading from "@/features/dashboard/components/loading/DashboardL
 
 export default function DashboardPage() {
   const router = useRouter();
-  const now = useCountdownNow();
 
   const user = useAuth((state) => state.user);
   const displayName = getDisplayName(user);
@@ -61,10 +60,14 @@ export default function DashboardPage() {
     proximosPartidos,
     partidosEnJuego,
     rankingDestacado,
+    serverNow,
     loadData,
   } = useProdeDashboard(user?.id, {
     canLoadRanking: canAccessRanking,
   });
+
+  const referenceNow = serverNow ? new Date(serverNow).getTime() : null;
+  const now = useCountdownNow(referenceNow);
 
   useEffect(() => {
     void loadData();

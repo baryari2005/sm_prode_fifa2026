@@ -260,7 +260,7 @@ export function usePronosticoRapidoPage() {
         return;
       }
 
-      if (partido && isPredictionClosed(partido.fecha)) {
+      if (partido && isPredictionClosed(partido)) {
         nextErrors[partidoId] =
           "El pronostico de este partido ya esta cerrado";
         return;

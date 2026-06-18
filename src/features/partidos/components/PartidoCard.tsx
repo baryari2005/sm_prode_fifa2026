@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Building2, Clock3, Eye, Trophy, UsersRound } from "lucide-react";
 import Link from "next/link";
 
@@ -54,7 +54,11 @@ export function PartidoCard({
   compact = false,
 }: PartidoCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const now = useCountdownNow();
+  const referenceNow = useMemo(() => {
+    const evaluatedAt = partido.predictionMeta?.evaluatedAt;
+    return evaluatedAt ? new Date(evaluatedAt).getTime() : null;
+  }, [partido.predictionMeta?.evaluatedAt]);
+  const now = useCountdownNow(referenceNow);
   const canViewPartidoDetalle = useCan("partidos", "ver_detalle");
 
   const local = getSeleccionResumen(partido, "local", selecciones);
@@ -92,7 +96,7 @@ export function PartidoCard({
   const countdownLabel =
     allowPronostico && !tieneResultadoFinal
       ? getPredictionCountdownLabel(
-          partido.fecha,
+          partido,
           PREDICTION_CLOSE_MINUTES_BEFORE,
           now,
         )

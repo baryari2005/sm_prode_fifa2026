@@ -8,9 +8,50 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+function buildPredictionMeta(params: {
+  fecha: Date;
+  activo: boolean;
+  resultado: { estado: EstadoPartido } | null;
+  hasPrediction: boolean;
+  serverNow: Date;
+}) {
+  const closeAt = new Date(
+    params.fecha.getTime() - 60 * 60 * 1000,
+  );
+  const isClosed = params.serverNow.getTime() >= closeAt.getTime();
+  const started =
+    params.resultado?.estado !== undefined &&
+    params.resultado.estado !== EstadoPartido.PENDIENTE;
+  const isBlocked = started || isClosed;
+  const canEdit = params.activo && !isBlocked;
+
+  let status: "pendiente" | "cargado" | "cerrado" | "partido_iniciado" | "finalizado" =
+    "pendiente";
+
+  if (params.resultado?.estado === EstadoPartido.FINALIZADO) {
+    status = "finalizado";
+  } else if (started) {
+    status = "partido_iniciado";
+  } else if (isClosed) {
+    status = "cerrado";
+  } else if (params.hasPrediction) {
+    status = "cargado";
+  }
+
+  return {
+    canEdit,
+    isClosed,
+    isBlocked,
+    status,
+    closeAt: closeAt.toISOString(),
+    evaluatedAt: params.serverNow.toISOString(),
+  };
+}
+
 export async function GET(req: NextRequest) {
   try {
     const loggedInUser = await requireAuth(req);
+    const serverNow = new Date();
 
     const [partidosFinalizados, partidosAbiertos] = await Promise.all([
       prisma.partido.findMany({
@@ -91,6 +132,15 @@ export async function GET(req: NextRequest) {
       return {
         ...partido,
         miPrediccion,
+        predictionMeta: buildPredictionMeta({
+          fecha: partido.fecha,
+          activo: partido.activo !== false,
+          resultado: partido.resultado
+            ? { estado: partido.resultado.estado }
+            : null,
+          hasPrediction: Boolean(miPrediccion),
+          serverNow,
+        }),
       };
     });
 
@@ -99,6 +149,7 @@ export async function GET(req: NextRequest) {
         data,
         meta: {
           total: data.length,
+          serverNow: serverNow.toISOString(),
         },
       },
       {

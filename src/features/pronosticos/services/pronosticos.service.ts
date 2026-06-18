@@ -3,6 +3,15 @@ import type { PartidoConRelaciones } from "@/features/partidos/utils/partidos-ui
 
 type FixturePronosticosResponse = {
   data?: PartidoConRelaciones[];
+  meta?: {
+    total?: number;
+    serverNow?: string;
+  };
+};
+
+export type FixturePronosticosPayload = {
+  data: PartidoConRelaciones[];
+  serverNow: string | null;
 };
 
 export class PronosticosApiError extends Error {
@@ -39,7 +48,7 @@ function getAuthHeaders(): HeadersInit {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export async function getFixturePronosticos(): Promise<PartidoConRelaciones[]> {
+export async function getFixturePronosticos(): Promise<FixturePronosticosPayload> {
   const res = await fetch("/api/pronosticos/fixture", {
     method: "GET",
     cache: "no-store",
@@ -60,7 +69,10 @@ export async function getFixturePronosticos(): Promise<PartidoConRelaciones[]> {
     );
   }
 
-  return data.data || [];
+  return {
+    data: data.data || [],
+    serverNow: data.meta?.serverNow ?? null,
+  };
 }
 
 export async function upsertPronostico(input: {

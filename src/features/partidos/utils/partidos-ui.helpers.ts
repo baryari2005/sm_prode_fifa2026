@@ -20,11 +20,39 @@ type FaseConGrupo = Fase & {
   grupoCodigo?: string | null;
 };
 
+function isPartidoConRelaciones(
+  value: string | Date | PartidoConRelaciones,
+): value is PartidoConRelaciones {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "id" in value &&
+    "fecha" in value
+  );
+}
+
+export type PredictionStatus =
+  | "pendiente"
+  | "cargado"
+  | "cerrado"
+  | "partido_iniciado"
+  | "finalizado";
+
+export type PredictionMeta = {
+  canEdit: boolean;
+  isClosed: boolean;
+  isBlocked: boolean;
+  status: PredictionStatus;
+  closeAt: string | null;
+  evaluatedAt: string;
+};
+
 export type PartidoConRelaciones = Partido & {
   seleccionLocal?: Seleccion | null;
   seleccionVisitante?: Seleccion | null;
   fase?: FaseConGrupo | null;
   miPrediccion?: PrediccionPartido | null;
+  predictionMeta?: PredictionMeta | null;
 
   grupo?: string | GrupoLike | null;
   grupoNombre?: string | null;
@@ -220,10 +248,25 @@ function capitalizeFirst(value: string): string {
 export const PREDICTION_CLOSE_MINUTES_BEFORE = 60;
 
 export function getPredictionCloseTimestamp(
-  fecha: string | Date,
+  fecha: string | Date | PartidoConRelaciones,
   minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE
 ) {
-  const matchTime = new Date(fecha).getTime();
+  let baseFecha: string | Date;
+
+  if (isPartidoConRelaciones(fecha)) {
+    const closeAt = fecha.predictionMeta?.closeAt;
+
+    if (closeAt) {
+      const closeTime = new Date(closeAt).getTime();
+      return Number.isNaN(closeTime) ? 0 : closeTime;
+    }
+
+    baseFecha = fecha.fecha;
+  } else {
+    baseFecha = fecha;
+  }
+
+  const matchTime = new Date(baseFecha).getTime();
 
   if (Number.isNaN(matchTime)) {
     return 0;
@@ -233,10 +276,18 @@ export function getPredictionCloseTimestamp(
 }
 
 export function isPredictionClosed(
-  fecha: string | Date,
+  fecha: string | Date | PartidoConRelaciones,
   minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE,
   now = Date.now()
 ) {
+  if (isPartidoConRelaciones(fecha)) {
+    const predictionMeta = fecha.predictionMeta;
+
+    if (predictionMeta) {
+      return predictionMeta.isClosed;
+    }
+  }
+
   const closeTime = getPredictionCloseTimestamp(fecha, minutesBefore);
 
   if (!closeTime) {
@@ -261,6 +312,10 @@ export function isPredictionBlocked(
   minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE,
   now = Date.now()
 ) {
+  if (partido.predictionMeta) {
+    return partido.predictionMeta.isBlocked;
+  }
+
   return (
     hasMatchStartedForPrediction(partido) ||
     isPredictionClosed(partido.fecha, minutesBefore, now)
@@ -268,7 +323,7 @@ export function isPredictionBlocked(
 }
 
 export function getPredictionCountdownLabel(
-  fecha: string | Date,
+  fecha: string | Date | PartidoConRelaciones,
   minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE,
   now = Date.now()
 ) {
@@ -350,6 +405,36 @@ export function getPredictionStatusMeta(
   now = Date.now(),
   minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE
 ): PredictionStatusMeta {
+  if (partido.predictionMeta) {
+    switch (partido.predictionMeta.status) {
+      case "finalizado":
+        return {
+          label: "Finalizado",
+          toneClassName: "bg-emerald-50 text-emerald-700",
+        };
+      case "partido_iniciado":
+        return {
+          label: "Partido iniciado",
+          toneClassName: "bg-red-50 text-red-700",
+        };
+      case "cargado":
+        return {
+          label: "Cargado",
+          toneClassName: "bg-green-50 text-green-700",
+        };
+      case "cerrado":
+        return {
+          label: "Pronostico cerrado",
+          toneClassName: "bg-amber-50 text-amber-700",
+        };
+      default:
+        return {
+          label: "Pendiente",
+          toneClassName: "bg-[#FFF7E1] text-[#9A6500]",
+        };
+    }
+  }
+
   if (partido.resultado?.estado === "FINALIZADO") {
     return {
       label: "Finalizado",

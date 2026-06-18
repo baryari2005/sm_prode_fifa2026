@@ -24,7 +24,9 @@ export function MyRankingSummary({ data, scopeLabel = "Ranking general" }: Props
     partidosPronosticados: 0,
     partidosCalificados: 0,
     nombre: "Usuario",
+    isPublicParticipant: true,
   };
+  const hasPublicPosition = resumen.isPublicParticipant !== false;
 
   const isGeneralScope = scopeLabel === "Ranking general";
   const isGroupScope = scopeLabel.toLowerCase().includes("grupo");
@@ -37,9 +39,15 @@ export function MyRankingSummary({ data, scopeLabel = "Ranking general" }: Props
   return (
     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
       <SummaryCard
-        title="Mi posicion"
-        value={resumen.posicion ? `#${resumen.posicion}` : "-"}
-        detail={scopeLabel}
+        title={hasPublicPosition ? "Mi posicion" : "Posicion publica"}
+        value={
+          hasPublicPosition && resumen.posicion ? `#${resumen.posicion}` : "-"
+        }
+        detail={
+          hasPublicPosition
+            ? scopeLabel
+            : "Vista privada. No participas del ranking publico."
+        }
         tone="gold"
       />
       <SummaryCard

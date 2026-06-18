@@ -109,7 +109,7 @@ export function LiveMatchesCard({
           <span className="inline-flex items-center gap-2 rounded-full bg-[#FAB438]/14 px-3 py-1 font-black text-[#FFE4A3]">
             <Clock3 className="h-4 w-4" />
             {getPredictionCountdownLabel(
-              nextPredictionClose.fecha,
+              nextPredictionClose,
               PREDICTION_CLOSE_MINUTES_BEFORE,
               now,
             )}

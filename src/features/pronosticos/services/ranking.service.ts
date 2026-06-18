@@ -7,6 +7,7 @@ export type RankingRowDTO = {
   usuarioId: string;
   nombre: string;
   avatarUrl: string | null;
+  isPublicParticipant?: boolean;
   puntosTotales: number;
   aciertosExactos: number;
   aciertosTendencia: number;
