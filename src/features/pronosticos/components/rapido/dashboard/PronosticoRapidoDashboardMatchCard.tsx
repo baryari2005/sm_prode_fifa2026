@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Clock3, Eye, MapPin } from "lucide-react";
 import Link from "next/link";
 
@@ -12,6 +13,7 @@ import {
   getPredictionCountdownLabel,
   isPredictionBlocked,
 } from "@/features/partidos/utils/partidos-ui.helpers";
+import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
 import {
   DASHBOARD_PANEL,
   DASHBOARD_SUBCARD,
@@ -47,9 +49,14 @@ export function PronosticoRapidoDashboardMatchCard({
 }: PronosticoRapidoDashboardMatchCardProps) {
   const canViewPartidoDetalle = useCan("partidos", "ver_detalle");
   const partidoFinalizado = partido.resultado?.estado === "FINALIZADO";
-  const closed = isPredictionBlocked(partido);
+  const referenceNow = useMemo(() => {
+    const evaluatedAt = partido.predictionMeta?.evaluatedAt;
+    return evaluatedAt ? new Date(evaluatedAt).getTime() : null;
+  }, [partido.predictionMeta?.evaluatedAt]);
+  const now = useCountdownNow(referenceNow);
+  const closed = isPredictionBlocked(partido, undefined, now);
   const hora = formatMatchHour(partido.fecha);
-  const countdownLabel = getPredictionCountdownLabel(partido.fecha);
+  const countdownLabel = getPredictionCountdownLabel(partido, undefined, now);
   const estadioCiudad = getEstadioCiudad(partido);
   const pronosticoAnterior =
     partido.miPrediccion ?? partido.pronostico ?? partido.prediccion ?? null;

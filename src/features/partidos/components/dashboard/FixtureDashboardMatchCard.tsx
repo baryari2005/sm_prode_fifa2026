@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Clock3, MapPin, Network, TrendingUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
   getSeleccionResumen,
   PartidoConRelaciones,
 } from "@/features/partidos/utils/partidos-ui.helpers";
+import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
 
 type FixtureDashboardMatchCardProps = {
   partido: PartidoConRelaciones;
@@ -39,9 +41,14 @@ export function FixtureDashboardMatchCard({
 }: FixtureDashboardMatchCardProps) {
   const local = getSeleccionResumen(partido, "local", selecciones);
   const visitante = getSeleccionResumen(partido, "visitante", selecciones);
+  const referenceNow = useMemo(() => {
+    const evaluatedAt = partido.predictionMeta?.evaluatedAt;
+    return evaluatedAt ? new Date(evaluatedAt).getTime() : null;
+  }, [partido.predictionMeta?.evaluatedAt]);
+  const now = useCountdownNow(referenceNow);
   const hora = formatMatchHour(partido.fecha);
   const estadioCiudad = getEstadioCiudad(partido);
-  const cierre = getPredictionCountdownLabel(partido.fecha);
+  const cierre = getPredictionCountdownLabel(partido, undefined, now);
   const resultadoEnJuego =
     partido.resultado?.estado === "EN_JUEGO" ||
     partido.resultado?.estado === "ENTRETIEMPO";
