@@ -4,6 +4,7 @@ import { EstadoPartido } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/server-auth";
+import { isKnockoutPhaseName } from "@/features/partidos/utils/partidos-ui.helpers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +15,7 @@ const pronosticoBulkItemSchema = z.object({
   partidoId: z.string().min(1, "El partido es obligatorio"),
   golesLocal: z.number().int().min(0, "Los goles no pueden ser negativos"),
   golesVisitante: z.number().int().min(0, "Los goles no pueden ser negativos"),
+  equipoClasificadoId: z.string().uuid().nullable().optional(),
 });
 
 const pronosticoBulkSchema = z.object({
@@ -28,6 +30,11 @@ type PartidoParaValidar = {
   id: string;
   fecha: Date;
   activo: boolean;
+  fase: {
+    nombre: string;
+  } | null;
+  seleccionLocalId: string;
+  seleccionVisitanteId: string;
   resultado: {
     id: string;
     estado: EstadoPartido;
@@ -57,6 +64,38 @@ function removeDuplicatedPredictions(items: PronosticoBulkItem[]) {
   });
 
   return Array.from(map.values());
+}
+
+function resolveEquipoClasificadoId(
+  pronostico: PronosticoBulkItem,
+  partido: PartidoParaValidar,
+): { equipoClasificadoId: string | null } | { error: string } {
+  const requiereClasificado =
+    isKnockoutPhaseName(partido.fase?.nombre) &&
+    pronostico.golesLocal === pronostico.golesVisitante;
+
+  if (!requiereClasificado) return { equipoClasificadoId: null };
+
+  if (!pronostico.equipoClasificadoId) {
+    return {
+      error:
+        "Debes seleccionar quien pasa por penales para pronosticar un empate en eliminatorias",
+    };
+  }
+
+  if (
+    ![partido.seleccionLocalId, partido.seleccionVisitanteId].includes(
+      pronostico.equipoClasificadoId,
+    )
+  ) {
+    return {
+      error: "El equipo clasificado debe pertenecer al partido",
+    };
+  }
+
+  return {
+    equipoClasificadoId: pronostico.equipoClasificadoId,
+  };
 }
 
 export async function POST(req: NextRequest) {
@@ -89,6 +128,13 @@ export async function POST(req: NextRequest) {
         id: true,
         fecha: true,
         activo: true,
+        fase: {
+          select: {
+            nombre: true,
+          },
+        },
+        seleccionLocalId: true,
+        seleccionVisitanteId: true,
         resultado: {
           select: {
             id: true,
@@ -145,7 +191,23 @@ export async function POST(req: NextRequest) {
         return;
       }
 
-      pronosticosValidos.push(pronostico);
+      const clasificado = resolveEquipoClasificadoId(pronostico, partido);
+
+      if (clasificado && "error" in clasificado) {
+        errors.push({
+          partidoId: pronostico.partidoId,
+          message: clasificado.error,
+        });
+        return;
+      }
+
+      pronosticosValidos.push({
+        ...pronostico,
+        equipoClasificadoId:
+          clasificado && "equipoClasificadoId" in clasificado
+            ? clasificado.equipoClasificadoId
+            : null,
+      });
     });
 
     if (pronosticosValidos.length === 0) {
@@ -172,12 +234,17 @@ export async function POST(req: NextRequest) {
           update: {
             golesLocal: pronostico.golesLocal,
             golesVisitante: pronostico.golesVisitante,
+            equipoClasificadoId: pronostico.equipoClasificadoId ?? null,
+            puntosOtorgados: 0,
+            aciertoTipo: null,
+            calculadoAt: null,
           },
           create: {
             usuarioId: loggedInUser.id,
             partidoId: pronostico.partidoId,
             golesLocal: pronostico.golesLocal,
             golesVisitante: pronostico.golesVisitante,
+            equipoClasificadoId: pronostico.equipoClasificadoId ?? null,
           },
         }),
       ),

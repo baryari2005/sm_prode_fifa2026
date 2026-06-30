@@ -288,6 +288,18 @@ async function recalculatePredictionsForMatches(
           END
         ) THEN COALESCE(rp."puntosParcial", 1)
         ELSE COALESCE(rp."puntosSinAcierto", 0)
+      END + CASE
+        WHEN r."golesLocal" = r."golesVisitante"
+          AND pp."golesLocal" = pp."golesVisitante"
+          AND r."penalesLocal" IS NOT NULL
+          AND r."penalesVisitante" IS NOT NULL
+          AND pp."equipoClasificadoId" = CASE
+            WHEN r."penalesLocal" > r."penalesVisitante" THEN p."seleccionLocalId"::uuid
+            WHEN r."penalesVisitante" > r."penalesLocal" THEN p."seleccionVisitanteId"::uuid
+            ELSE NULL
+          END
+          THEN COALESCE(rp."puntosClasificadoPenales", 1)
+        ELSE 0
       END,
       "aciertoTipo" = CASE
         WHEN pp."golesLocal" = r."golesLocal"

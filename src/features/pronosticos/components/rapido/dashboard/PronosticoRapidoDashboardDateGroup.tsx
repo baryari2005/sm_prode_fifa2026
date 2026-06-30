@@ -28,6 +28,7 @@ type PronosticoRapidoDashboardDateGroupProps = {
     field: PronosticoRapidoField,
     value: string,
   ) => void;
+  onClasificadoChange: (partidoId: string, equipoClasificadoId: string) => void;
 };
 
 export function PronosticoRapidoDashboardDateGroup({
@@ -35,6 +36,7 @@ export function PronosticoRapidoDashboardDateGroup({
   values,
   errors,
   onScoreChange,
+  onClasificadoChange,
 }: PronosticoRapidoDashboardDateGroupProps) {
   return (
     <section className="space-y-4">
@@ -74,6 +76,7 @@ export function PronosticoRapidoDashboardDateGroup({
           const value = values[partidoRapido.id] ?? {
             golesLocal: "",
             golesVisitante: "",
+            equipoClasificadoId: null,
           };
 
           return (
@@ -83,6 +86,7 @@ export function PronosticoRapidoDashboardDateGroup({
               value={value}
               error={errors[partidoRapido.id]}
               onScoreChange={onScoreChange}
+              onClasificadoChange={onClasificadoChange}
             />
           );
         })}

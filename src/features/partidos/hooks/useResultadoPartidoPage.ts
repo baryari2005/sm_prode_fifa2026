@@ -29,6 +29,7 @@ import {
   deriveResultadoFieldsFromIncidencias,
 } from "@/features/partidos/helpers/resultado-incidencias.helpers";
 import { resolveBanderaSrc } from "@/lib/flags";
+import { isKnockoutPartido } from "@/features/partidos/utils/partidos-ui.helpers";
 
 import type {
   GoalDetail,
@@ -345,15 +346,34 @@ export function useResultadoPartidoPage() {
         estadisticasLocal: form.estadisticasLocal,
         estadisticasVisitante: form.estadisticasVisitante,
       });
+      const requiereGanadorPorPenales =
+        partido &&
+        form.estado === "FINALIZADO" &&
+        isKnockoutPartido(partido) &&
+        derivedPayload.golesLocal === derivedPayload.golesVisitante;
+      const penalesLocal =
+        form.penalesLocal.trim() === "" ? null : Number(form.penalesLocal);
+      const penalesVisitante =
+        form.penalesVisitante.trim() === ""
+          ? null
+          : Number(form.penalesVisitante);
+
+      if (
+        requiereGanadorPorPenales &&
+        (penalesLocal === null ||
+          penalesVisitante === null ||
+          penalesLocal === penalesVisitante)
+      ) {
+        toast.error(
+          "Selecciona quien paso por penales antes de finalizar el partido"
+        );
+        return;
+      }
 
       const payload = {
         partidoId,
-        penalesLocal:
-          form.penalesLocal.trim() === "" ? null : Number(form.penalesLocal),
-        penalesVisitante:
-          form.penalesVisitante.trim() === ""
-            ? null
-            : Number(form.penalesVisitante),
+        penalesLocal,
+        penalesVisitante,
         estado: form.estado,
         tiempoJuego:
           form.tiempoJuego.trim() === "" ? null : Number(form.tiempoJuego),

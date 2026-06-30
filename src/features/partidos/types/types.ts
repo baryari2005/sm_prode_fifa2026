@@ -115,6 +115,7 @@ export type PrediccionPartido = {
   partidoId: string;
   golesLocal: number;
   golesVisitante: number;
+  equipoClasificadoId: string | null;
   puntosOtorgados: number;
   aciertoTipo: AciertoTipo | null;
   calculadoAt: Date | null;

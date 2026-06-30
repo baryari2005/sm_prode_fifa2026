@@ -10,6 +10,7 @@ export type ReglaPuntaje = {
   puntosExacto: number;
   puntosParcial: number;
   puntosSinAcierto: number;
+  puntosClasificadoPenales: number;
   bloqueada?: boolean;
 };
 
@@ -18,4 +19,5 @@ export type ReglaPuntajeFormValues = {
   puntosExacto: number;
   puntosParcial: number;
   puntosSinAcierto: 0;
+  puntosClasificadoPenales: number;
 };

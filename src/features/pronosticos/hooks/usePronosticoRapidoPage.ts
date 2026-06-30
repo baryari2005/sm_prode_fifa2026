@@ -18,6 +18,7 @@ import {
   hasMatchStartedForPrediction,
   isPredictionBlocked,
   isPredictionClosed,
+  isKnockoutPartido,
 } from "@/features/partidos/utils/partidos-ui.helpers";
 import {
   getGrupoFilterValue,
@@ -233,6 +234,7 @@ export function usePronosticoRapidoPage() {
       [partidoId]: {
         golesLocal: prev[partidoId]?.golesLocal ?? "",
         golesVisitante: prev[partidoId]?.golesVisitante ?? "",
+        equipoClasificadoId: prev[partidoId]?.equipoClasificadoId ?? null,
         [field]: cleanValue,
       },
     }));
@@ -252,6 +254,7 @@ export function usePronosticoRapidoPage() {
       const initialValue = initialValues[partidoId] ?? {
         golesLocal: "",
         golesVisitante: "",
+        equipoClasificadoId: null,
       };
 
       if (partido && hasMatchStartedForPrediction(partido)) {
@@ -268,6 +271,17 @@ export function usePronosticoRapidoPage() {
 
       if (isPartialPrediction(value)) {
         nextErrors[partidoId] = "Complete ambos resultados";
+        return;
+      }
+
+      if (
+        partido &&
+        isKnockoutPartido(partido) &&
+        value.golesLocal !== "" &&
+        value.golesLocal === value.golesVisitante &&
+        !value.equipoClasificadoId
+      ) {
+        nextErrors[partidoId] = "Selecciona quien pasa por penales";
         return;
       }
 
@@ -295,6 +309,7 @@ export function usePronosticoRapidoPage() {
         partidoId,
         golesLocal: Number(value.golesLocal),
         golesVisitante: Number(value.golesVisitante),
+        equipoClasificadoId: value.equipoClasificadoId,
       }));
 
     if (payload.length === 0) return;
@@ -362,6 +377,22 @@ export function usePronosticoRapidoPage() {
     setShowOnlyPending,
     handlePhaseChange,
     updateScore,
+    updateClasificado: (partidoId: string, equipoClasificadoId: string) => {
+      setValues((prev) => ({
+        ...prev,
+        [partidoId]: {
+          golesLocal: prev[partidoId]?.golesLocal ?? "",
+          golesVisitante: prev[partidoId]?.golesVisitante ?? "",
+          equipoClasificadoId,
+        },
+      }));
+
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[partidoId];
+        return next;
+      });
+    },
     handleSaveAll,
   };
 }

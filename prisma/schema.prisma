@@ -388,6 +388,7 @@ model PrediccionPartido {
   partido        Partido      @relation(fields: [partidoId], references: [id], onDelete: Cascade)
   golesLocal     Int
   golesVisitante Int
+  equipoClasificadoId String? @db.Uuid
   puntosOtorgados Int         @default(0)
   aciertoTipo    AciertoTipo?
   calculadoAt    DateTime?
@@ -409,6 +410,7 @@ model ReglaPuntaje {
   puntosExacto     Int
   puntosParcial    Int
   puntosSinAcierto Int      @default(0)
+  puntosClasificadoPenales Int @default(1)
 
   activo           Boolean  @default(true)
 

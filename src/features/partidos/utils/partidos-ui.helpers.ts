@@ -134,6 +134,33 @@ export function getFaseNombre(
   return fase?.nombre ?? "Sin fase";
 }
 
+export function isKnockoutPhaseName(faseNombre?: string | null): boolean {
+  if (!faseNombre) return false;
+
+  const normalized = faseNombre
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  return [
+    "dieciseisavos",
+    "16vos",
+    "octavos",
+    "8vos",
+    "cuartos",
+    "4tos",
+    "semifinal",
+    "semi",
+    "final",
+    "tercer puesto",
+    "3 y 4",
+  ].some((keyword) => normalized.includes(keyword));
+}
+
+export function isKnockoutPartido(partido: PartidoConRelaciones): boolean {
+  return isKnockoutPhaseName(getFaseNombre(partido, []));
+}
+
 export function getGrupoNombre(partido: PartidoConRelaciones): string {
   const grupoFromPartido = resolveGrupoValue(partido.grupo);
   const grupoFromFase = resolveGrupoValue(partido.fase?.grupo);
@@ -327,6 +354,24 @@ export function getPredictionCountdownLabel(
   minutesBefore = PREDICTION_CLOSE_MINUTES_BEFORE,
   now = Date.now()
 ) {
+  if (isPartidoConRelaciones(fecha)) {
+    const predictionMeta = fecha.predictionMeta;
+
+    if (predictionMeta) {
+      if (predictionMeta.status === "finalizado") {
+        return "Finalizado";
+      }
+
+      if (predictionMeta.status === "partido_iniciado") {
+        return "Partido iniciado";
+      }
+
+      if (predictionMeta.isClosed || predictionMeta.status === "cerrado") {
+        return "Pronostico cerrado";
+      }
+    }
+  }
+
   const closeTime = getPredictionCloseTimestamp(fecha, minutesBefore);
 
   if (!closeTime) {

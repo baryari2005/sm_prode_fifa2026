@@ -12,7 +12,9 @@ import {
   getEstadioCiudad,
   getPredictionCountdownLabel,
   isPredictionBlocked,
+  isKnockoutPartido,
 } from "@/features/partidos/utils/partidos-ui.helpers";
+import { KnockoutQualifierSelector } from "@/features/pronosticos/components/rapido/KnockoutQualifierSelector";
 import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
 import {
   DASHBOARD_PANEL,
@@ -39,6 +41,7 @@ type PronosticoRapidoDashboardMatchCardProps = {
     field: PronosticoRapidoField,
     value: string,
   ) => void;
+  onClasificadoChange: (partidoId: string, equipoClasificadoId: string) => void;
 };
 
 export function PronosticoRapidoDashboardMatchCard({
@@ -46,6 +49,7 @@ export function PronosticoRapidoDashboardMatchCard({
   value,
   error,
   onScoreChange,
+  onClasificadoChange,
 }: PronosticoRapidoDashboardMatchCardProps) {
   const canViewPartidoDetalle = useCan("partidos", "ver_detalle");
   const partidoFinalizado = partido.resultado?.estado === "FINALIZADO";
@@ -73,6 +77,11 @@ export function PronosticoRapidoDashboardMatchCard({
   const displayedVisitanteValue = partidoFinalizado
     ? String(partido.resultado?.golesVisitante ?? "")
     : value.golesVisitante;
+  const mostrarClasificado =
+    !partidoFinalizado &&
+    isKnockoutPartido(partido) &&
+    value.golesLocal !== "" &&
+    value.golesLocal === value.golesVisitante;
 
   return (
     <article className={`${DASHBOARD_PANEL} rounded-[28px] p-4`}>
@@ -170,6 +179,30 @@ export function PronosticoRapidoDashboardMatchCard({
               codigo={partido.seleccionVisitante?.codigo}
             />
           </div>
+
+          {mostrarClasificado ? (
+            <div className="mt-4 border-t border-white/10 pt-4">
+              <KnockoutQualifierSelector
+                local={{
+                  id: partido.seleccionLocalId,
+                  nombre: partido.seleccionLocal?.nombre ?? "Equipo local",
+                  bandera: partido.seleccionLocal?.bandera,
+                  codigo: partido.seleccionLocal?.codigo,
+                }}
+                visitante={{
+                  id: partido.seleccionVisitanteId,
+                  nombre:
+                    partido.seleccionVisitante?.nombre ?? "Equipo visitante",
+                  bandera: partido.seleccionVisitante?.bandera,
+                  codigo: partido.seleccionVisitante?.codigo,
+                }}
+                value={value.equipoClasificadoId}
+                disabled={closed || partidoFinalizado}
+                variant="dark"
+                onChange={(equipoId) => onClasificadoChange(partido.id, equipoId)}
+              />
+            </div>
+          ) : null}
 
           {canViewPartidoDetalle ? (
             <div className="mt-4 flex justify-end border-t border-white/10 pt-4">

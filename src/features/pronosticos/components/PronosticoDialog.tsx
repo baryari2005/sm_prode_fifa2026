@@ -41,9 +41,11 @@ import {
   getPredictionCountdownLabel,
   hasMatchStartedForPrediction,
   isPredictionBlocked,
+  isKnockoutPartido,
   PREDICTION_CLOSE_MINUTES_BEFORE,
   type PartidoConRelaciones,
 } from "@/features/partidos/utils/partidos-ui.helpers";
+import { KnockoutQualifierSelector } from "@/features/pronosticos/components/rapido/KnockoutQualifierSelector";
 import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
 import { upsertPronostico } from "@/features/pronosticos/services/pronosticos.service";
 import { resolveTeamAsset } from "@/features/partidos/components/dashboard/team-assets";
@@ -69,6 +71,9 @@ export function PronosticoDialog({
 
   const [golesLocal, setGolesLocal] = useState("0");
   const [golesVisitante, setGolesVisitante] = useState("0");
+  const [equipoClasificadoId, setEquipoClasificadoId] = useState<string | null>(
+    null,
+  );
   const [saving, setSaving] = useState(false);
 
   const local = partido?.seleccionLocal;
@@ -84,6 +89,11 @@ export function PronosticoDialog({
   const partidoFinalizado = partido?.resultado?.estado === "FINALIZADO";
   const bloqueado = pronosticoCerrado || partidoFinalizado || !partido;
   const cargaDeshabilitada = bloqueado || saving;
+  const mostrarClasificado =
+    partido &&
+    isKnockoutPartido(partido) &&
+    golesLocal !== "" &&
+    golesLocal === golesVisitante;
 
   const countdownLabel = partido
     ? getPredictionCountdownLabel(
@@ -125,6 +135,7 @@ export function PronosticoDialog({
 
     setGolesLocal(String(partido.miPrediccion?.golesLocal ?? 0));
     setGolesVisitante(String(partido.miPrediccion?.golesVisitante ?? 0));
+    setEquipoClasificadoId(partido.miPrediccion?.equipoClasificadoId ?? null);
   }, [open, partido]);
 
   const setNumericValue = (
@@ -158,6 +169,11 @@ export function PronosticoDialog({
   const handleSubmit = async () => {
     if (!partido || bloqueado) return;
 
+    if (mostrarClasificado && !equipoClasificadoId) {
+      toast.error("Selecciona quien pasa por penales");
+      return;
+    }
+
     try {
       setSaving(true);
 
@@ -165,6 +181,7 @@ export function PronosticoDialog({
         partidoId: partido.id,
         golesLocal: Number(golesLocal),
         golesVisitante: Number(golesVisitante),
+        equipoClasificadoId: mostrarClasificado ? equipoClasificadoId : null,
       });
 
       toast.success("Pronostico guardado correctamente");
@@ -379,6 +396,29 @@ export function PronosticoDialog({
                         }
                       />
                     </div>
+
+                    {mostrarClasificado ? (
+                      <div className="mt-4">
+                        <KnockoutQualifierSelector
+                          local={{
+                            id: partido.seleccionLocalId,
+                            nombre: local?.nombre ?? "Local",
+                            bandera: local?.bandera,
+                            codigo: local?.codigo,
+                          }}
+                          visitante={{
+                            id: partido.seleccionVisitanteId,
+                            nombre: visitante?.nombre ?? "Visitante",
+                            bandera: visitante?.bandera,
+                            codigo: visitante?.codigo,
+                          }}
+                          value={equipoClasificadoId}
+                          disabled={cargaDeshabilitada}
+                          variant="dark"
+                          onChange={setEquipoClasificadoId}
+                        />
+                      </div>
+                    ) : null}
                   </section>
 
                   <Separator className="bg-white/10" />

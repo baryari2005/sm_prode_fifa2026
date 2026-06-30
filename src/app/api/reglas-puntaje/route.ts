@@ -86,8 +86,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { faseId, puntosExacto, puntosParcial, puntosSinAcierto } =
-      parsed.data;
+    const {
+      faseId,
+      puntosExacto,
+      puntosParcial,
+      puntosSinAcierto,
+      puntosClasificadoPenales,
+    } = parsed.data;
 
     const bloqueada = await faseYaEmpezo(faseId);
 
@@ -110,11 +115,13 @@ export async function POST(req: NextRequest) {
         puntosExacto,
         puntosParcial,
         puntosSinAcierto,
+        puntosClasificadoPenales,
       },
       update: {
         puntosExacto,
         puntosParcial,
         puntosSinAcierto,
+        puntosClasificadoPenales,
       },
     });
 

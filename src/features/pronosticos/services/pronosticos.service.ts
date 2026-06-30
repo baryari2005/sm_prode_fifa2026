@@ -28,6 +28,7 @@ export type BulkPronosticoInput = {
   partidoId: string;
   golesLocal: number;
   golesVisitante: number;
+  equipoClasificadoId?: string | null;
 };
 
 export type BulkPronosticoResponse = {
@@ -79,6 +80,7 @@ export async function upsertPronostico(input: {
   partidoId: string;
   golesLocal: number;
   golesVisitante: number;
+  equipoClasificadoId?: string | null;
 }): Promise<PrediccionPartido> {
   const res = await fetch("/api/pronosticos", {
     method: "POST",

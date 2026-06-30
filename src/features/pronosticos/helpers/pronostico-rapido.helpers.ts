@@ -29,6 +29,7 @@ export function getInitialPredictionValue(
       pronostico?.golesVisitante !== undefined
         ? String(pronostico.golesVisitante)
         : "",
+    equipoClasificadoId: pronostico?.equipoClasificadoId ?? null,
   };
 }
 
@@ -42,7 +43,8 @@ export function valuesAreEqual(
 ) {
   return (
     current?.golesLocal === initial?.golesLocal &&
-    current?.golesVisitante === initial?.golesVisitante
+    current?.golesVisitante === initial?.golesVisitante &&
+    current?.equipoClasificadoId === initial?.equipoClasificadoId
   );
 }
 

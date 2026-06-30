@@ -14,6 +14,11 @@ export const reglaPuntajeSchema = z
       .int("Debe ser un número entero")
       .min(0, "No puede ser negativo"),
 
+    puntosClasificadoPenales: z.coerce
+      .number()
+      .int("Debe ser un numero entero")
+      .min(0, "No puede ser negativo"),
+
     puntosSinAcierto: z.literal(0),
   })
   .refine((data) => data.puntosExacto > data.puntosParcial, {

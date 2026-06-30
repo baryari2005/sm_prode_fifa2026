@@ -3,6 +3,7 @@ import type { PartidoConRelaciones } from "@/features/partidos/utils/partidos-ui
 export type PronosticoRapidoValue = {
   golesLocal: string;
   golesVisitante: string;
+  equipoClasificadoId: string | null;
 };
 
 export type PronosticoRapidoField = keyof PronosticoRapidoValue;
@@ -12,6 +13,7 @@ export type PronosticoRapidoErrors = Record<string, string>;
 export type PronosticoExistente = {
   golesLocal: number | null;
   golesVisitante: number | null;
+  equipoClasificadoId?: string | null;
 };
 
 export type PartidoPronosticoRapido = PartidoConRelaciones & {

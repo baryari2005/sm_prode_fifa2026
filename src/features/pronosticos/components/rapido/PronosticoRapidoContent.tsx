@@ -49,6 +49,7 @@ export function PronosticoRapidoContent() {
     setShowOnlyPending,
     handlePhaseChange,
     updateScore,
+    updateClasificado,
     handleSaveAll,
   } = usePronosticoRapidoPage();
   const partidoIdFromQuery = searchParams.get("partidoId");
@@ -176,6 +177,7 @@ export function PronosticoRapidoContent() {
                     values={values}
                     errors={errors}
                     onScoreChange={updateScore}
+                    onClasificadoChange={updateClasificado}
                   />
                 ))}
               </div>

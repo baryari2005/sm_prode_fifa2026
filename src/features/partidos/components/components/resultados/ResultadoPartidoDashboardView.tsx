@@ -18,6 +18,7 @@ import { EstadisticasSection } from "@/features/partidos/components/resultados/E
 import { IncidentTimelineCard } from "@/features/partidos/components/resultados/IncidentTimelineCard";
 import { IncidenciasEditor } from "@/features/partidos/components/resultados/IncidenciasEditor";
 import { MatchIncidentRealSummary } from "@/features/partidos/components/resultados/MatchIncidentRealSummary";
+import { PenaltyShootoutSection } from "@/features/partidos/components/resultados/PenaltyShootoutSection";
 import {
   DASHBOARD_PANEL,
   DASHBOARD_TOP_LINE,
@@ -26,6 +27,7 @@ import {
   DASHBOARD_TOP_LINE_INNER,
   DASHBOARD_TOP_LINE_SWEEP,
 } from "@/features/dashboard/components/home/dashboard-home.styles";
+import { isKnockoutPartido } from "@/features/partidos/utils/partidos-ui.helpers";
 import type { useResultadoPartidoPage } from "@/features/partidos/hooks/useResultadoPartidoPage";
 
 type ResultadoPartidoPageState = ReturnType<typeof useResultadoPartidoPage>;
@@ -83,6 +85,8 @@ export function ResultadoPartidoDashboardView({
     partido.fase?.grupoNombre ?? partido.fase?.nombre ?? "Partido";
   const localCodigo = partido.seleccionLocal?.codigo ?? null;
   const visitanteCodigo = partido.seleccionVisitante?.codigo ?? null;
+  const mostrarPenales =
+    isKnockoutPartido(partido) && form.golesLocal === form.golesVisitante;
 
   return (
     <main className="px-3 py-4 md:px-5 md:py-5 xl:px-4">
@@ -244,6 +248,26 @@ export function ResultadoPartidoDashboardView({
               onChange={updateIncidencias}
               showTimeline={false}
             />
+
+            {mostrarPenales ? (
+              <PenaltyShootoutSection
+                local={{
+                  id: partido.seleccionLocalId,
+                  nombre: localNombre,
+                  bandera: partido.seleccionLocal?.bandera,
+                  codigo: localCodigo,
+                }}
+                visitante={{
+                  id: partido.seleccionVisitanteId,
+                  nombre: visitanteNombre,
+                  bandera: partido.seleccionVisitante?.bandera,
+                  codigo: visitanteCodigo,
+                }}
+                form={form}
+                disabled={!canEditCurrentResult || saving}
+                onChange={updateForm}
+              />
+            ) : null}
 
             <section className="relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-white/[0.05] p-5">
               <div className={DASHBOARD_TOP_LINE}>

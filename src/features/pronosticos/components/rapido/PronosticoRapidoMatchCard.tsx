@@ -15,7 +15,9 @@ import {
   getPredictionCountdownLabel,
   getPredictionStatusMeta,
   isPredictionBlocked,
+  isKnockoutPartido,
 } from "@/features/partidos/utils/partidos-ui.helpers";
+import { KnockoutQualifierSelector } from "@/features/pronosticos/components/rapido/KnockoutQualifierSelector";
 import { TeamPredictionColumn } from "@/features/pronosticos/components/rapido/TeamPredictionColumn";
 import { useCountdownNow } from "@/features/pronosticos/hooks/useCountdownNow";
 
@@ -34,6 +36,7 @@ type PronosticoRapidoMatchCardProps = {
     field: PronosticoRapidoField,
     value: string
   ) => void;
+  onClasificadoChange: (partidoId: string, equipoClasificadoId: string) => void;
 };
 
 export function PronosticoRapidoMatchCard({
@@ -41,6 +44,7 @@ export function PronosticoRapidoMatchCard({
   value,
   error,
   onScoreChange,
+  onClasificadoChange,
 }: PronosticoRapidoMatchCardProps) {
   const canViewPartidoDetalle = useCan("partidos", "ver_detalle");
   const referenceNow = useMemo(() => {
@@ -63,6 +67,10 @@ export function PronosticoRapidoMatchCard({
   const estaFinalizado = resultadoActual?.estado === "FINALIZADO";
   const matchStatus = getMatchStatusMeta(partido);
   const predictionStatus = getPredictionStatusMeta(partido, now);
+  const mostrarClasificado =
+    isKnockoutPartido(partido) &&
+    value.golesLocal !== "" &&
+    value.golesLocal === value.golesVisitante;
 
   return (
     <article className="group relative overflow-hidden rounded-[1.35rem] bg-transparent transition-all duration-200">
@@ -100,6 +108,31 @@ export function PronosticoRapidoMatchCard({
                 }
               />
             </div>
+
+            {mostrarClasificado ? (
+              <div className="mt-3">
+                <KnockoutQualifierSelector
+                  local={{
+                    id: partido.seleccionLocalId,
+                    nombre: partido.seleccionLocal?.nombre ?? "Equipo local",
+                    bandera: partido.seleccionLocal?.bandera,
+                    codigo: partido.seleccionLocal?.codigo,
+                  }}
+                  visitante={{
+                    id: partido.seleccionVisitanteId,
+                    nombre:
+                      partido.seleccionVisitante?.nombre ?? "Equipo visitante",
+                    bandera: partido.seleccionVisitante?.bandera,
+                    codigo: partido.seleccionVisitante?.codigo,
+                  }}
+                  value={value.equipoClasificadoId}
+                  disabled={closed}
+                  onChange={(equipoId) =>
+                    onClasificadoChange(partido.id, equipoId)
+                  }
+                />
+              </div>
+            ) : null}
           </div>
 
           <div className="hidden flex-wrap items-center gap-2 2xl:flex 2xl:flex-nowrap 2xl:justify-end">

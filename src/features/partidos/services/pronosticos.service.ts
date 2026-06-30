@@ -9,6 +9,7 @@ type PuntajeRegla = {
   puntosExacto: number;
   puntosParcial: number;
   puntosSinAcierto: number;
+  puntosClasificadoPenales?: number;
 };
 
 function getResultadoClave(golesLocal: number, golesVisitante: number) {
@@ -20,29 +21,59 @@ function getResultadoClave(golesLocal: number, golesVisitante: number) {
 export function calcularPuntajePronostico(input: {
   prediccionLocal: number;
   prediccionVisitante: number;
+  prediccionEquipoClasificadoId?: string | null;
   resultadoLocal: number;
   resultadoVisitante: number;
+  resultadoPenalesLocal?: number | null;
+  resultadoPenalesVisitante?: number | null;
+  seleccionLocalId?: string | null;
+  seleccionVisitanteId?: string | null;
   regla?: PuntajeRegla;
 }): ScoreResult {
   const {
     prediccionLocal,
     prediccionVisitante,
+    prediccionEquipoClasificadoId,
     resultadoLocal,
     resultadoVisitante,
+    resultadoPenalesLocal,
+    resultadoPenalesVisitante,
+    seleccionLocalId,
+    seleccionVisitanteId,
     regla,
   } = input;
 
   const puntosExacto = regla?.puntosExacto ?? 3;
   const puntosParcial = regla?.puntosParcial ?? 1;
   const puntosSinAcierto = regla?.puntosSinAcierto ?? 0;
+  const puntosClasificadoPenales = regla?.puntosClasificadoPenales ?? 1;
 
   const esExacto =
     prediccionLocal === resultadoLocal &&
     prediccionVisitante === resultadoVisitante;
+  const equipoClasificadoRealId =
+    resultadoLocal === resultadoVisitante &&
+    resultadoPenalesLocal !== null &&
+    resultadoPenalesLocal !== undefined &&
+    resultadoPenalesVisitante !== null &&
+    resultadoPenalesVisitante !== undefined
+      ? resultadoPenalesLocal > resultadoPenalesVisitante
+        ? seleccionLocalId
+        : resultadoPenalesVisitante > resultadoPenalesLocal
+          ? seleccionVisitanteId
+          : null
+      : null;
+  const puntoExtraClasificado =
+    prediccionEquipoClasificadoId &&
+    equipoClasificadoRealId &&
+    prediccionLocal === prediccionVisitante &&
+    prediccionEquipoClasificadoId === equipoClasificadoRealId
+      ? puntosClasificadoPenales
+      : 0;
 
   if (esExacto) {
     return {
-      puntosOtorgados: puntosExacto,
+      puntosOtorgados: puntosExacto + puntoExtraClasificado,
       aciertoTipo: AciertoTipo.EXACTO,
     };
   }
@@ -55,13 +86,13 @@ export function calcularPuntajePronostico(input: {
 
   if (resultadoPronosticado === resultadoReal) {
     return {
-      puntosOtorgados: puntosParcial,
+      puntosOtorgados: puntosParcial + puntoExtraClasificado,
       aciertoTipo: AciertoTipo.TENDENCIA,
     };
   }
 
   return {
-    puntosOtorgados: puntosSinAcierto,
+    puntosOtorgados: puntosSinAcierto + puntoExtraClasificado,
     aciertoTipo: AciertoTipo.NINGUNO,
   };
 }
@@ -276,13 +307,20 @@ export async function recalcularPronosticosDePartido(
     const score = calcularPuntajePronostico({
       prediccionLocal: prediccion.golesLocal,
       prediccionVisitante: prediccion.golesVisitante,
+      prediccionEquipoClasificadoId: prediccion.equipoClasificadoId,
       resultadoLocal: partido.resultado.golesLocal,
       resultadoVisitante: partido.resultado.golesVisitante,
+      resultadoPenalesLocal: partido.resultado.penalesLocal,
+      resultadoPenalesVisitante: partido.resultado.penalesVisitante,
+      seleccionLocalId: partido.seleccionLocalId,
+      seleccionVisitanteId: partido.seleccionVisitanteId,
       regla: partido.fase?.reglasPuntaje?.[0]
         ? {
             puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
             puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
             puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
+            puntosClasificadoPenales:
+              partido.fase.reglasPuntaje[0].puntosClasificadoPenales,
           }
         : undefined,
     });
@@ -374,14 +412,21 @@ export async function recalcularPronosticosFinalizadosEnRango(
             puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
             puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
             puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
+            puntosClasificadoPenales:
+              partido.fase.reglasPuntaje[0].puntosClasificadoPenales,
           }
         : undefined;
 
       const score = calcularPuntajePronostico({
         prediccionLocal: prediccion.golesLocal,
         prediccionVisitante: prediccion.golesVisitante,
+        prediccionEquipoClasificadoId: prediccion.equipoClasificadoId,
         resultadoLocal: partido.resultado.golesLocal,
         resultadoVisitante: partido.resultado.golesVisitante,
+        resultadoPenalesLocal: partido.resultado.penalesLocal,
+        resultadoPenalesVisitante: partido.resultado.penalesVisitante,
+        seleccionLocalId: partido.seleccionLocalId,
+        seleccionVisitanteId: partido.seleccionVisitanteId,
         regla,
       });
 
@@ -455,14 +500,21 @@ export async function recalcularPronosticosFinalizadosDeFase(
             puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
             puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
             puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
+            puntosClasificadoPenales:
+              partido.fase.reglasPuntaje[0].puntosClasificadoPenales,
           }
         : undefined;
 
       const score = calcularPuntajePronostico({
         prediccionLocal: prediccion.golesLocal,
         prediccionVisitante: prediccion.golesVisitante,
+        prediccionEquipoClasificadoId: prediccion.equipoClasificadoId,
         resultadoLocal: partido.resultado.golesLocal,
         resultadoVisitante: partido.resultado.golesVisitante,
+        resultadoPenalesLocal: partido.resultado.penalesLocal,
+        resultadoPenalesVisitante: partido.resultado.penalesVisitante,
+        seleccionLocalId: partido.seleccionLocalId,
+        seleccionVisitanteId: partido.seleccionVisitanteId,
         regla,
       });
 

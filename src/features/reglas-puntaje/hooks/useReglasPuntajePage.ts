@@ -20,6 +20,7 @@ const DEFAULT_VALUES: ReglaPuntajeFormValues = {
   puntosExacto: 3,
   puntosParcial: 1,
   puntosSinAcierto: 0,
+  puntosClasificadoPenales: 1,
 };
 
 export function useReglasPuntajePage() {
@@ -79,6 +80,7 @@ export function useReglasPuntajePage() {
           puntosExacto: regla.puntosExacto,
           puntosParcial: regla.puntosParcial,
           puntosSinAcierto: 0,
+          puntosClasificadoPenales: regla.puntosClasificadoPenales ?? 1,
         });
       } else {
         setValues((prev) => ({
@@ -86,6 +88,7 @@ export function useReglasPuntajePage() {
           puntosExacto: 3,
           puntosParcial: 1,
           puntosSinAcierto: 0,
+          puntosClasificadoPenales: 1,
         }));
       }
     } catch (error) {
