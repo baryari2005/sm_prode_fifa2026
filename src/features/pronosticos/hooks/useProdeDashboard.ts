@@ -12,12 +12,48 @@ import {
 import { getFixturePronosticos } from "@/features/pronosticos/services/pronosticos.service";
 import {
   getPronosticosRanking,
+  RankingScope,
   RankingRowDTO,
 } from "@/features/pronosticos/services/ranking.service";
 
 type UseProdeDashboardOptions = {
   canLoadRanking?: boolean;
 };
+
+type ActivePhaseData =
+  | { id: number; nombre: string; orden: number }
+  | null
+  | { message?: string };
+
+function normalizePhaseName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function getDashboardRankingConfig(
+  activePhaseData: ActivePhaseData,
+): RankingScope {
+  if (
+    !activePhaseData ||
+    typeof activePhaseData !== "object" ||
+    !("id" in activePhaseData) ||
+    typeof activePhaseData.id !== "number"
+  ) {
+    return "grupos";
+  }
+
+  if (activePhaseData.orden === 1) {
+    return "grupos";
+  }
+
+  const phaseName = normalizePhaseName(activePhaseData.nombre);
+  const isRoundOf32 =
+    phaseName.includes("dieciseisavos") || phaseName.includes("16vos");
+
+  return isRoundOf32 ? "dieciseisavos" : "eliminatorias";
+}
 
 export function useProdeDashboard(
   currentUserId?: string | null,
@@ -49,21 +85,13 @@ export function useProdeDashboard(
                 cache: "no-store",
               });
 
-              const activePhaseData = (await activePhaseResponse.json()) as
-                | { id: number; nombre: string; orden: number }
-                | null
-                | { message?: string };
+              const activePhaseData =
+                (await activePhaseResponse.json()) as ActivePhaseData;
+              const rankingScope = activePhaseResponse.ok
+                ? getDashboardRankingConfig(activePhaseData)
+                : ("grupos" as RankingScope);
 
-              const faseId =
-                activePhaseResponse.ok &&
-                activePhaseData &&
-                typeof activePhaseData === "object" &&
-                "id" in activePhaseData &&
-                typeof activePhaseData.id === "number"
-                  ? activePhaseData.id
-                  : undefined;
-
-              return getPronosticosRanking({ faseId });
+              return getPronosticosRanking({ scope: rankingScope });
             })()
           : Promise.resolve({
               miRanking: null,

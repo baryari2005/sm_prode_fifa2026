@@ -9,7 +9,6 @@ type PuntajeRegla = {
   puntosExacto: number;
   puntosParcial: number;
   puntosSinAcierto: number;
-  puntosClasificadoPenales?: number;
 };
 
 function getResultadoClave(golesLocal: number, golesVisitante: number) {
@@ -46,8 +45,6 @@ export function calcularPuntajePronostico(input: {
   const puntosExacto = regla?.puntosExacto ?? 3;
   const puntosParcial = regla?.puntosParcial ?? 1;
   const puntosSinAcierto = regla?.puntosSinAcierto ?? 0;
-  const puntosClasificadoPenales = regla?.puntosClasificadoPenales ?? 1;
-
   const esExacto =
     prediccionLocal === resultadoLocal &&
     prediccionVisitante === resultadoVisitante;
@@ -63,17 +60,24 @@ export function calcularPuntajePronostico(input: {
           ? seleccionVisitanteId
           : null
       : null;
-  const puntoExtraClasificado =
+  const requiereClasificadoCorrecto =
+    resultadoLocal === resultadoVisitante && Boolean(equipoClasificadoRealId);
+  const acertoClasificado =
     prediccionEquipoClasificadoId &&
     equipoClasificadoRealId &&
     prediccionLocal === prediccionVisitante &&
-    prediccionEquipoClasificadoId === equipoClasificadoRealId
-      ? puntosClasificadoPenales
-      : 0;
+    prediccionEquipoClasificadoId === equipoClasificadoRealId;
+
+  if (requiereClasificadoCorrecto && !acertoClasificado) {
+    return {
+      puntosOtorgados: puntosSinAcierto,
+      aciertoTipo: AciertoTipo.NINGUNO,
+    };
+  }
 
   if (esExacto) {
     return {
-      puntosOtorgados: puntosExacto + puntoExtraClasificado,
+      puntosOtorgados: puntosExacto,
       aciertoTipo: AciertoTipo.EXACTO,
     };
   }
@@ -86,13 +90,13 @@ export function calcularPuntajePronostico(input: {
 
   if (resultadoPronosticado === resultadoReal) {
     return {
-      puntosOtorgados: puntosParcial + puntoExtraClasificado,
+      puntosOtorgados: puntosParcial,
       aciertoTipo: AciertoTipo.TENDENCIA,
     };
   }
 
   return {
-    puntosOtorgados: puntosSinAcierto + puntoExtraClasificado,
+    puntosOtorgados: puntosSinAcierto,
     aciertoTipo: AciertoTipo.NINGUNO,
   };
 }
@@ -319,8 +323,6 @@ export async function recalcularPronosticosDePartido(
             puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
             puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
             puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
-            puntosClasificadoPenales:
-              partido.fase.reglasPuntaje[0].puntosClasificadoPenales,
           }
         : undefined,
     });
@@ -412,8 +414,6 @@ export async function recalcularPronosticosFinalizadosEnRango(
             puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
             puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
             puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
-            puntosClasificadoPenales:
-              partido.fase.reglasPuntaje[0].puntosClasificadoPenales,
           }
         : undefined;
 
@@ -500,8 +500,6 @@ export async function recalcularPronosticosFinalizadosDeFase(
             puntosExacto: partido.fase.reglasPuntaje[0].puntosExacto,
             puntosParcial: partido.fase.reglasPuntaje[0].puntosParcial,
             puntosSinAcierto: partido.fase.reglasPuntaje[0].puntosSinAcierto,
-            puntosClasificadoPenales:
-              partido.fase.reglasPuntaje[0].puntosClasificadoPenales,
           }
         : undefined;
 

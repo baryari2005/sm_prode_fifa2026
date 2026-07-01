@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Network, ShieldCheck, Target, Trophy } from "lucide-react";
+import { Network, Target, Trophy } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -72,13 +72,6 @@ export function ReglasPuntajeOverview({
       icon: Target,
       toneClass: "bg-emerald-400/14 text-emerald-200",
     },
-    {
-      label: "Bonus penales",
-      detail: selectedFase ? "Valor actual" : "Seleccionar una fase",
-      value: String(values.puntosClasificadoPenales),
-      icon: ShieldCheck,
-      toneClass: "bg-cyan-400/14 text-cyan-200",
-    },
   ];
 
   return (
@@ -132,9 +125,6 @@ export function ReglasPuntajeOverview({
                   </Badge>
                   <Badge className="rounded-full border-white/10 bg-white/10 text-[#AEEBFF] hover:bg-white/10">
                     Parcial {values.puntosParcial}
-                  </Badge>
-                  <Badge className="rounded-full border-white/10 bg-white/10 text-[#AEEBFF] hover:bg-white/10">
-                    Penales {values.puntosClasificadoPenales}
                   </Badge>
                 </div>
 

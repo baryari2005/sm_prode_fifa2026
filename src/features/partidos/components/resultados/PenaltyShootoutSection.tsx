@@ -74,7 +74,8 @@ export function PenaltyShootoutSection({
           </p>
           <p className="max-w-2xl text-sm leading-6 text-white/68">
             Como el partido termino empatado en una fase eliminatoria, indica
-            quien paso de ronda. Este dato se usa para el bonus de ranking.
+            quien paso de ronda. Este dato define si los empates de
+            eliminatorias pueden sumar puntos.
           </p>
         </div>
 

@@ -2,6 +2,8 @@ import type { AciertoTipo } from "@prisma/client";
 import type { Fase, Resultado, Seleccion } from "@/features/partidos/types/types";
 import { axiosInstance } from "@/lib/axios";
 
+export type RankingScope = "grupos" | "dieciseisavos" | "eliminatorias";
+
 export type RankingRowDTO = {
   posicion: number | null;
   usuarioId: string;
@@ -50,7 +52,7 @@ type RankingResponse = {
 
 export async function getPronosticosRanking(params?: {
   faseId?: number | null;
-  scope?: "grupos" | "eliminatorias";
+  scope?: RankingScope;
 }) {
   const response = await axiosInstance.get<RankingResponse>("/pronosticos/ranking", {
     headers: {

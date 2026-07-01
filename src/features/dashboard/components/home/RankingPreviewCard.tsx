@@ -71,7 +71,7 @@ export function RankingPreviewCard({
 
       {rankingDestacado.length === 0 ? (
         <div className="rounded-[24px] border border-dashed border-white/14 bg-white/[0.04] px-4 py-10 text-center text-sm font-semibold text-white/60">
-          Todavía no hay ranking disponible.
+          Todavia no hay ranking disponible.
         </div>
       ) : (
         <div className="space-y-3">

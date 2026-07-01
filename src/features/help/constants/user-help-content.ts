@@ -90,7 +90,7 @@ export function buildUserHelpSections(
       points: [
         `Resultado exacto: ${scoreRule.puntosExacto} puntos.`,
         `Tendencia correcta, ganador o empate: ${scoreRule.puntosParcial} punto${scoreRule.puntosParcial === 1 ? "" : "s"}.`,
-        `Clasificado por penales correcto: ${scoreRule.puntosClasificadoPenales} punto${scoreRule.puntosClasificadoPenales === 1 ? "" : "s"} extra.`,
+        "En empates de eliminatorias, solo suma si tambien acertaste quien pasa por penales.",
         `Pronóstico incorrecto: ${scoreRule.puntosSinAcierto} puntos.`,
       ],
       note: notaReglasPorFase,

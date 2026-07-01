@@ -7,12 +7,32 @@ import type { Fase } from "@/features/partidos/types/types";
 import {
   getPronosticosRanking,
   HistorialPronosticoDTO,
+  RankingScope,
   RankingRowDTO,
 } from "@/features/pronosticos/services/ranking.service";
 
+function normalizePhaseName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function getRankingScopeForPhase(fase?: Pick<Fase, "nombre" | "orden"> | null): RankingScope {
+  if (!fase || fase.orden === 1) return "grupos";
+
+  const phaseName = normalizePhaseName(fase.nombre);
+
+  if (phaseName.includes("dieciseisavos") || phaseName.includes("16vos")) {
+    return "dieciseisavos";
+  }
+
+  return "eliminatorias";
+}
+
 export function useRankingPage() {
   const [fases, setFases] = useState<Fase[]>([]);
-  const [scope, setScope] = useState<"grupos" | "eliminatorias">("grupos");
+  const [scope, setScope] = useState<RankingScope>("grupos");
   const [rankingInitialized, setRankingInitialized] = useState(false);
   const [faseActual, setFaseActual] = useState<Pick<Fase, "id" | "nombre" | "orden"> | null>(null);
   const [miRanking, setMiRanking] = useState<RankingRowDTO | null>(null);
@@ -59,11 +79,10 @@ export function useRankingPage() {
       "id" in faseActivaData &&
       typeof faseActivaData.id === "number"
     ) {
-      const activeScope = Array.isArray(fasesData)
-        ? (fasesData as Fase[]).find((fase) => fase.id === faseActivaData.id)?.orden === 1
-          ? "grupos"
-          : "eliminatorias"
-        : "grupos";
+      const activePhase = Array.isArray(fasesData)
+        ? (fasesData as Fase[]).find((fase) => fase.id === faseActivaData.id)
+        : null;
+      const activeScope = getRankingScopeForPhase(activePhase);
 
       setScope(activeScope);
       setRankingInitialized(true);
@@ -74,7 +93,7 @@ export function useRankingPage() {
     setRankingInitialized(true);
   }, []);
 
-  const loadData = useCallback(async (nextScope: "grupos" | "eliminatorias") => {
+  const loadData = useCallback(async (nextScope: RankingScope) => {
     try {
       setLoading(true);
       const data = await getPronosticosRanking({

@@ -4,7 +4,6 @@ import {
   AlertTriangle,
   Loader2,
   Save,
-  ShieldCheck,
   Target,
   Trophy,
   type LucideIcon,
@@ -30,7 +29,6 @@ import type {
 type ScoreMetricKey =
   | "puntosExacto"
   | "puntosParcial"
-  | "puntosClasificadoPenales"
   | "puntosSinAcierto";
 
 type ReglaPuntajeFormProps = {
@@ -120,14 +118,6 @@ const SCORE_CARD_CONFIG: Array<{
     title: "Resultado parcial",
     summaryTitle: "Parcial",
     description: "Acierta ganador o empate sin clavar el marcador.",
-    editable: true,
-  },
-  {
-    key: "puntosClasificadoPenales",
-    icon: ShieldCheck,
-    title: "Clasificado por penales",
-    summaryTitle: "Penales",
-    description: "Bonus para quien acierta el equipo que pasa de ronda.",
     editable: true,
   },
   {
@@ -234,7 +224,7 @@ export function ReglaPuntajeForm({
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_320px]">
         <div className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {scoreMetrics.map((item) => (
               <ScoreCard
                 key={item.key}

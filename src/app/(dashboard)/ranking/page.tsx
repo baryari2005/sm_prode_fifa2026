@@ -54,11 +54,17 @@ export default function RankingPage() {
   const lider = ranking[0] ?? null;
   const scopeLabel = faseActual?.nombre ?? "Fase de grupos";
   const hasPublicPosition = miRanking?.isPublicParticipant !== false;
-  const isGroupScope = Boolean(faseActual?.nombre?.toLowerCase().includes("grupo"));
+  const normalizedScopeLabel = scopeLabel.toLowerCase();
+  const isGroupScope = normalizedScopeLabel.includes("grupo");
+  const isRoundOf32Scope =
+    normalizedScopeLabel.includes("dieciseisavos") ||
+    normalizedScopeLabel.includes("16vos");
   const pointsDetail = faseActual
     ? isGroupScope
       ? "solo fase de grupos"
-      : "acumulado de eliminacion"
+      : isRoundOf32Scope
+        ? "solo dieciseisavos"
+        : "acumulado desde octavos"
     : "acumulados";
   const resumen = [
     {
@@ -117,7 +123,11 @@ export default function RankingPage() {
                 <Select
                   value={scope}
                   onValueChange={(value) =>
-                    setScope(value === "eliminatorias" ? "eliminatorias" : "grupos")
+                    setScope(
+                      value === "dieciseisavos" || value === "eliminatorias"
+                        ? value
+                        : "grupos",
+                    )
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -125,7 +135,10 @@ export default function RankingPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="grupos">Fase de grupos</SelectItem>
-                    <SelectItem value="eliminatorias">Fase eliminatorias</SelectItem>
+                    <SelectItem value="dieciseisavos">Dieciseisavos</SelectItem>
+                    <SelectItem value="eliminatorias">
+                      Eliminatorias (Octavos a Final)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

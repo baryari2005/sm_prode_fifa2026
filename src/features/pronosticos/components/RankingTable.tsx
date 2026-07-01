@@ -12,17 +12,25 @@ type Props = {
 
 export function RankingTable({ rows, title }: Props) {
   const myUserId = useAuth((state) => state.user?.id ?? null);
-  const isGroupScope = Boolean(title && title.toLowerCase().includes("grupo"));
+  const normalizedTitle = title?.toLowerCase() ?? "";
+  const isGroupScope = normalizedTitle.includes("grupo");
+  const isRoundOf32Scope =
+    normalizedTitle.includes("dieciseisavos") ||
+    normalizedTitle.includes("16vos");
   const tableLabel = !title
     ? "Tabla general"
     : isGroupScope
       ? "Tabla fase de grupos"
-      : "Tabla acumulada";
+      : isRoundOf32Scope
+        ? "Tabla dieciseisavos"
+        : "Tabla acumulada";
   const heading = !title
     ? "Ranking completo"
     : isGroupScope
       ? `Ranking ${title}`
-      : `Ranking acumulado ${title}`;
+      : isRoundOf32Scope
+        ? `Ranking ${title}`
+        : `Ranking acumulado ${title}`;
 
   return (
     <div className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#1E2C46] shadow-[0_20px_60px_rgba(0,0,0,0.24)]">

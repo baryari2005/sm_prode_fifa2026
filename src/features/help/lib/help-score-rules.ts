@@ -5,7 +5,6 @@ export type HelpScoreRuleSummary = {
   puntosExacto: number;
   puntosParcial: number;
   puntosSinAcierto: number;
-  puntosClasificadoPenales: number;
   faseNombre: string | null;
   usaMultiplesReglas: boolean;
 };
@@ -14,7 +13,6 @@ const FALLBACK_SCORE_RULE: HelpScoreRuleSummary = {
   puntosExacto: 3,
   puntosParcial: 1,
   puntosSinAcierto: 0,
-  puntosClasificadoPenales: 1,
   faseNombre: null,
   usaMultiplesReglas: false,
 };
@@ -95,7 +93,7 @@ export async function getHelpScoreRuleSummary(): Promise<HelpScoreRuleSummary> {
     const combinaciones = new Set(
       reglas.map(
         (regla) =>
-          `${regla.puntosExacto}-${regla.puntosParcial}-${regla.puntosSinAcierto}-${regla.puntosClasificadoPenales}`
+          `${regla.puntosExacto}-${regla.puntosParcial}-${regla.puntosSinAcierto}`
       )
     );
 
@@ -103,7 +101,6 @@ export async function getHelpScoreRuleSummary(): Promise<HelpScoreRuleSummary> {
       puntosExacto: reglaActual.puntosExacto,
       puntosParcial: reglaActual.puntosParcial,
       puntosSinAcierto: reglaActual.puntosSinAcierto,
-      puntosClasificadoPenales: reglaActual.puntosClasificadoPenales,
       faseNombre: reglaActual.fase?.nombre ?? null,
       usaMultiplesReglas: combinaciones.size > 1,
     };

@@ -31,6 +31,30 @@ function getDisplayName(user: {
   return fullName || user.userId || user.email || "Usuario";
 }
 
+function normalizePhaseName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function getKnockoutAccumulationStartOrder(
+  phases: Array<{ nombre: string; orden: number }>,
+) {
+  return (
+    phases.find((phase) => normalizePhaseName(phase.nombre).includes("octavos"))
+      ?.orden ??
+    phases[0]?.orden ??
+    null
+  );
+}
+
+function isRoundOf32PhaseName(value: string) {
+  const phaseName = normalizePhaseName(value);
+
+  return phaseName.includes("dieciseisavos") || phaseName.includes("16vos");
+}
+
 export async function GET(req: NextRequest) {
   try {
     const loggedInUser = await requireAuth(req);
@@ -39,7 +63,9 @@ export async function GET(req: NextRequest) {
     const scopeParam = url.searchParams.get("scope");
     const faseId = faseIdParam ? Number(faseIdParam) : null;
     const scope =
-      scopeParam === "grupos" || scopeParam === "eliminatorias"
+      scopeParam === "grupos" ||
+      scopeParam === "dieciseisavos" ||
+      scopeParam === "eliminatorias"
         ? scopeParam
         : null;
 
@@ -75,6 +101,8 @@ export async function GET(req: NextRequest) {
     const knockoutPhases = phaseOfGroups
       ? fases.filter((fase) => fase.orden > phaseOfGroups.orden)
       : [];
+    const knockoutAccumulationStartOrder =
+      getKnockoutAccumulationStartOrder(knockoutPhases);
 
     let resolvedFaseId = faseId;
     let resolvedFaseMeta:
@@ -94,28 +122,77 @@ export async function GET(req: NextRequest) {
       };
     }
 
+    if (scope === "dieciseisavos") {
+      const roundOf32Phase =
+        knockoutPhases.find((fase) => isRoundOf32PhaseName(fase.nombre)) ?? null;
+
+      if (roundOf32Phase) {
+        resolvedFaseId = roundOf32Phase.id;
+        resolvedFaseMeta = {
+          id: roundOf32Phase.id,
+          nombre: "Dieciseisavos",
+          orden: roundOf32Phase.orden,
+        };
+      } else {
+        resolvedFaseId = null;
+        resolvedFaseMeta = {
+          id: 0,
+          nombre: "Dieciseisavos",
+          orden: (phaseOfGroups?.orden ?? 0) + 1,
+        };
+      }
+    }
+
     if (scope === "eliminatorias") {
-      const latestKnockoutPhase = knockoutPhases.at(-1) ?? null;
+      const accumulatedKnockoutPhases =
+        knockoutAccumulationStartOrder === null
+          ? knockoutPhases
+          : knockoutPhases.filter(
+              (fase) => fase.orden >= knockoutAccumulationStartOrder,
+            );
+      const latestKnockoutPhase = accumulatedKnockoutPhases.at(-1) ?? null;
 
       if (latestKnockoutPhase) {
         resolvedFaseId = latestKnockoutPhase.id;
         resolvedFaseMeta = {
           id: latestKnockoutPhase.id,
-          nombre: "Fase eliminatorias",
+          nombre: "Eliminatorias (Octavos a Final)",
           orden: latestKnockoutPhase.orden,
         };
       } else {
         resolvedFaseId = null;
         resolvedFaseMeta = {
           id: 0,
-          nombre: "Fase eliminatorias",
+          nombre: "Eliminatorias (Octavos a Final)",
           orden: (phaseOfGroups?.orden ?? 0) + 1,
         };
       }
     }
 
+    const hasAccumulatedKnockoutScores =
+      scope === "eliminatorias" && knockoutAccumulationStartOrder !== null
+        ? (await prisma.prediccionPartido.count({
+            where: {
+              calculadoAt: {
+                not: null,
+              },
+              partido: {
+                fase: {
+                  orden: {
+                    gte: knockoutAccumulationStartOrder,
+                  },
+                },
+              },
+            },
+          })) > 0
+        : true;
+    const shouldHideStaleAccumulatedKnockoutRanking =
+      scope === "eliminatorias" && !hasAccumulatedKnockoutScores;
+
     const [rankingRows, myOwnRankingRow, myScoredPredictions] = await Promise.all([
-      resolvedFaseId
+      shouldHideStaleAccumulatedKnockoutRanking
+        ? Promise.resolve([])
+        : resolvedFaseId
         ? prisma.rankingUsuarioFase.findMany({
             where: {
               faseId: resolvedFaseId,
@@ -188,7 +265,9 @@ export async function GET(req: NextRequest) {
               { updatedAt: "asc" },
             ],
           }),
-      resolvedFaseId
+      shouldHideStaleAccumulatedKnockoutRanking
+        ? Promise.resolve(null)
+        : resolvedFaseId
         ? prisma.rankingUsuarioFase.findUnique({
             where: {
               usuarioId_faseId: {
@@ -256,12 +335,19 @@ export async function GET(req: NextRequest) {
                 },
               }
             : {}),
-          ...(scope === "eliminatorias" && phaseOfGroups
+          ...(scope === "dieciseisavos" && resolvedFaseId
+            ? {
+                partido: {
+                  faseId: resolvedFaseId,
+                },
+              }
+            : {}),
+          ...(scope === "eliminatorias" && knockoutAccumulationStartOrder !== null
             ? {
                 partido: {
                   fase: {
                     orden: {
-                      gt: phaseOfGroups.orden,
+                      gte: knockoutAccumulationStartOrder,
                     },
                   },
                 },

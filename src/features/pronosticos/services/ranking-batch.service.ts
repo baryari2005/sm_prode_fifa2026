@@ -17,6 +17,28 @@ type MatchSummary = {
   faseId: number;
 };
 
+type PhaseSummary = {
+  id: number;
+  nombre: string;
+  orden: number;
+};
+
+function normalizePhaseName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function getKnockoutAccumulationStartOrder(phases: PhaseSummary[]) {
+  return (
+    phases.find((phase) => normalizePhaseName(phase.nombre).includes("octavos"))
+      ?.orden ??
+    phases[0]?.orden ??
+    null
+  );
+}
+
 function buildUuidList(ids: string[]) {
   return Prisma.join(ids.map((id) => Prisma.sql`${id}::uuid`));
 }
@@ -101,6 +123,7 @@ async function rebuildPhaseRankingForAffectedScope(
   const phaseContext = await tx.fase.findMany({
     select: {
       id: true,
+      nombre: true,
       orden: true,
     },
     orderBy: {
@@ -114,6 +137,8 @@ async function rebuildPhaseRankingForAffectedScope(
 
   const groupPhase = phaseContext[0];
   const knockoutPhases = phaseContext.filter((phase) => phase.orden > groupPhase.orden);
+  const knockoutAccumulationStartOrder =
+    getKnockoutAccumulationStartOrder(knockoutPhases);
   const affectedPhaseSet = new Set(phaseIds);
   const includesGroupPhase = affectedPhaseSet.has(groupPhase.id);
   const affectedKnockoutPhases = knockoutPhases.filter((phase) => affectedPhaseSet.has(phase.id));
@@ -124,14 +149,34 @@ async function rebuildPhaseRankingForAffectedScope(
     targetPhaseIds.add(groupPhase.id);
   }
 
-  if (affectedKnockoutPhases.length > 0) {
-    const earliestAffectedKnockoutOrder = Math.min(
-      ...affectedKnockoutPhases.map((phase) => phase.orden),
+  if (affectedKnockoutPhases.length > 0 && knockoutAccumulationStartOrder !== null) {
+    const affectedStandaloneKnockoutPhases = affectedKnockoutPhases.filter(
+      (phase) => phase.orden < knockoutAccumulationStartOrder,
     );
 
-    knockoutPhases
-      .filter((phase) => phase.orden >= earliestAffectedKnockoutOrder)
-      .forEach((phase) => targetPhaseIds.add(phase.id));
+    affectedStandaloneKnockoutPhases.forEach((phase) =>
+      targetPhaseIds.add(phase.id),
+    );
+
+    if (affectedStandaloneKnockoutPhases.length > 0) {
+      knockoutPhases
+        .filter((phase) => phase.orden >= knockoutAccumulationStartOrder)
+        .forEach((phase) => targetPhaseIds.add(phase.id));
+    }
+
+    const affectedAccumulatedKnockoutPhases = affectedKnockoutPhases.filter(
+      (phase) => phase.orden >= knockoutAccumulationStartOrder,
+    );
+
+    if (affectedAccumulatedKnockoutPhases.length > 0) {
+      const earliestAffectedKnockoutOrder = Math.min(
+        ...affectedAccumulatedKnockoutPhases.map((phase) => phase.orden),
+      );
+
+      knockoutPhases
+        .filter((phase) => phase.orden >= earliestAffectedKnockoutOrder)
+        .forEach((phase) => targetPhaseIds.add(phase.id));
+    }
   }
 
   if (targetPhaseIds.size === 0) {
@@ -243,6 +288,16 @@ async function rebuildPhaseRankingForAffectedScope(
       FROM knockout_targets kt
       INNER JOIN knockout_sources ks
         ON ks."orden" <= kt."orden"
+        AND (
+          (
+            kt."orden" < ${knockoutAccumulationStartOrder}
+            AND ks."orden" = kt."orden"
+          )
+          OR (
+            kt."orden" >= ${knockoutAccumulationStartOrder}
+            AND ks."orden" >= ${knockoutAccumulationStartOrder}
+          )
+        )
       INNER JOIN "Partido" p
         ON p."faseId" = ks."faseId"
       INNER JOIN "PrediccionPartido" pp
@@ -271,6 +326,28 @@ async function recalculatePredictionsForMatches(
     UPDATE "PrediccionPartido" AS pp
     SET
       "puntosOtorgados" = CASE
+        WHEN r."golesLocal" = r."golesVisitante"
+          AND r."penalesLocal" IS NOT NULL
+          AND r."penalesVisitante" IS NOT NULL
+          THEN CASE
+            WHEN pp."golesLocal" = pp."golesVisitante"
+              AND pp."equipoClasificadoId" = CASE
+                WHEN r."penalesLocal" > r."penalesVisitante" THEN p."seleccionLocalId"::uuid
+                WHEN r."penalesVisitante" > r."penalesLocal" THEN p."seleccionVisitanteId"::uuid
+                ELSE NULL
+              END
+              AND pp."golesLocal" = r."golesLocal"
+              AND pp."golesVisitante" = r."golesVisitante"
+              THEN COALESCE(rp."puntosExacto", 3)
+            WHEN pp."golesLocal" = pp."golesVisitante"
+              AND pp."equipoClasificadoId" = CASE
+                WHEN r."penalesLocal" > r."penalesVisitante" THEN p."seleccionLocalId"::uuid
+                WHEN r."penalesVisitante" > r."penalesLocal" THEN p."seleccionVisitanteId"::uuid
+                ELSE NULL
+              END
+              THEN COALESCE(rp."puntosParcial", 1)
+            ELSE COALESCE(rp."puntosSinAcierto", 0)
+          END
         WHEN pp."golesLocal" = r."golesLocal"
           AND pp."golesVisitante" = r."golesVisitante"
           THEN COALESCE(rp."puntosExacto", 3)
@@ -288,20 +365,30 @@ async function recalculatePredictionsForMatches(
           END
         ) THEN COALESCE(rp."puntosParcial", 1)
         ELSE COALESCE(rp."puntosSinAcierto", 0)
-      END + CASE
-        WHEN r."golesLocal" = r."golesVisitante"
-          AND pp."golesLocal" = pp."golesVisitante"
-          AND r."penalesLocal" IS NOT NULL
-          AND r."penalesVisitante" IS NOT NULL
-          AND pp."equipoClasificadoId" = CASE
-            WHEN r."penalesLocal" > r."penalesVisitante" THEN p."seleccionLocalId"::uuid
-            WHEN r."penalesVisitante" > r."penalesLocal" THEN p."seleccionVisitanteId"::uuid
-            ELSE NULL
-          END
-          THEN COALESCE(rp."puntosClasificadoPenales", 1)
-        ELSE 0
       END,
       "aciertoTipo" = CASE
+        WHEN r."golesLocal" = r."golesVisitante"
+          AND r."penalesLocal" IS NOT NULL
+          AND r."penalesVisitante" IS NOT NULL
+          THEN CASE
+            WHEN pp."golesLocal" = pp."golesVisitante"
+              AND pp."equipoClasificadoId" = CASE
+                WHEN r."penalesLocal" > r."penalesVisitante" THEN p."seleccionLocalId"::uuid
+                WHEN r."penalesVisitante" > r."penalesLocal" THEN p."seleccionVisitanteId"::uuid
+                ELSE NULL
+              END
+              AND pp."golesLocal" = r."golesLocal"
+              AND pp."golesVisitante" = r."golesVisitante"
+              THEN CAST('EXACTO' AS "AciertoTipo")
+            WHEN pp."golesLocal" = pp."golesVisitante"
+              AND pp."equipoClasificadoId" = CASE
+                WHEN r."penalesLocal" > r."penalesVisitante" THEN p."seleccionLocalId"::uuid
+                WHEN r."penalesVisitante" > r."penalesLocal" THEN p."seleccionVisitanteId"::uuid
+                ELSE NULL
+              END
+              THEN CAST('TENDENCIA' AS "AciertoTipo")
+            ELSE CAST('NINGUNO' AS "AciertoTipo")
+          END
         WHEN pp."golesLocal" = r."golesLocal"
           AND pp."golesVisitante" = r."golesVisitante"
           THEN CAST('EXACTO' AS "AciertoTipo")

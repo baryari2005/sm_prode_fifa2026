@@ -29,12 +29,18 @@ export function MyRankingSummary({ data, scopeLabel = "Ranking general" }: Props
   const hasPublicPosition = resumen.isPublicParticipant !== false;
 
   const isGeneralScope = scopeLabel === "Ranking general";
-  const isGroupScope = scopeLabel.toLowerCase().includes("grupo");
+  const normalizedScopeLabel = scopeLabel.toLowerCase();
+  const isGroupScope = normalizedScopeLabel.includes("grupo");
+  const isRoundOf32Scope =
+    normalizedScopeLabel.includes("dieciseisavos") ||
+    normalizedScopeLabel.includes("16vos");
   const pointsDetail = isGeneralScope
     ? "acumulados"
     : isGroupScope
       ? "solo fase de grupos"
-      : "acumulado de eliminacion";
+      : isRoundOf32Scope
+        ? "solo dieciseisavos"
+        : "acumulado desde octavos";
 
   return (
     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
